@@ -1,0 +1,53 @@
+<div class="flex flex-col lg:flex-row">
+	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
+		<div class="flex flex-col tracking-tight leading-tight">
+			<div class="text-2xl font-bold uppercase text-sky-900">
+				Fitness Dashboard
+			</div>
+			<div class="text-gray-500 text-sm">
+				/fitness /dashboard
+			</div>
+		</div>
+		<div class="flex flex-col divide-y divide-gray-200">
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Routines
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_fitness_routine_path %>
+					<%= link_to "explore. ", fitness_routines_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Exercises
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_fitness_exercise_path %>
+					<%= link_to "explore. ", fitness_exercises_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Log book
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_fitness_log_path %>
+					<%= link_to "explore. ", fitness_logs_path %>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="flex flex-col w-full bg-sky-900 text-white p-5">
+		<div class="flex flex-col p-5 bg-sky-800">
+			<div>
+				Logs this week
+			</div>
+			<div>
+				<% @logs_this_week.each do |log| %>
+				<%= log.id %><br>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</div>

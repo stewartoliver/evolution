@@ -1,0 +1,47 @@
+<div class="flex justify-center p-5">
+	<div class="flex flex-col gap-4 rounded-md p-8 w-4/5 border border-gray-300">
+		<div class="flex justify-between pb-4 border-b border-gray-300">
+			<div class="text-lg font-bold uppercase text-sky-900">
+				All Exercises
+			</div>
+			<div class="flex gap-2 items-center">
+				<div class="">
+					<%= link_to "New", new_operator_fitness_exercise_path, class: "underline text-gray-500" %>
+				</div>
+			</div>
+		</div>
+		<div class="flex gap-4">
+			<% if @exercises.exists? %>
+			<div class="overflow-x-auto w-full">
+				<table class="w-full text-left text-sm">
+					<thead class="border-b font-medium">
+						<tr class="text-sky-900">
+							<th class="px-6 py-4"></th>
+							<th class="px-6 py-4">Name</th>
+							<th class="px-6 py-4">
+								<div class="flex">
+									Actions
+								</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% @exercises.each do |exercise| %>
+						<tr class="hover:bg-sky-500/20 border-b text-gray-500">
+							<td class="px-6 py-4"><span class="select-all"><%= exercise.id %></span></td>
+							<td class="px-6 py-4 w-full"><%= exercise.name.capitalize %></td>
+							<td class="px-6 py-4">
+								<div class="flex items-center gap-4">
+									<%= link_to 'show', operator_fitness_exercise_path(exercise), class: "underline text-sm" %>																<%= link_to 'edit', edit_operator_fitness_exercise_path(exercise), class: "underline text-sm" %>
+								</div>
+							</td>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
+			<% end %>
+		</div>
+	</div>
+</div>
+

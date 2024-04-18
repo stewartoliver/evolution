@@ -1,0 +1,28 @@
+<div class="flex p-5">
+	<div class="flex flex-col gap-4 rounded-md p-5 border border-gray-300">
+		<div class="flex justify-between pb-2 gap-8 border-b border-gray-300">
+			<div class="text-lg font-bold uppercase text-sky-900">
+				Edit Routine
+			</div>
+			<div class="flex gap-2 items-center">
+				<div class="">
+					<%= link_to "New", new_fitness_routine_path, class: "underline text-gray-500" %>
+				</div>
+			</div>
+		</div>
+		<%= form_for([:fitness, @routine]) do |form| %>
+		<div class="flex flex-col gap-4">
+			<div>
+				<%= form.label :name, 'Routine Name', class: "text-sm font-medium text-gray-700" %>
+				<%= form.text_field :name, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" %>
+			</div>
+			<div id="routine-form-container" data-routine-exercises="<%= @routine.routine_exercises.to_json(include: :routine_sets) %>">
+			</div>
+		</div>
+		<div class="flex justify-end">
+			<%= form.submit "Update", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500" %>
+		</div>
+	</div>
+	<% end %>
+</div>
+</div>

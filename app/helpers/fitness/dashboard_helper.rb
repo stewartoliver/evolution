@@ -1,0 +1,2 @@
+module Fitness::DashboardHelper
+end
