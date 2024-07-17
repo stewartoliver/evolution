@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   root "pages#index"
+  get 'how-it-works', to: 'pages#how_it_works'
+  get 'about-us', to: 'pages#about_us'
+  get 'features', to: 'pages#features'
 
   namespace :operator do
     get 'dashboard', to: 'dashboard#index'
@@ -21,11 +24,21 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :finances do
+    get 'dashboard', to: 'dashboard#index'
+    resources :accounts
+  end
+
   namespace :fitness do
     get 'dashboard', to: 'dashboard#index'
     resources :exercises
     resources :routines
     resources :logs
+  end
+
+  namespace :goals do
+    get 'dashboard', to: 'goals#dashboard'
+    resources :goals, path: '/'
   end
   
 end

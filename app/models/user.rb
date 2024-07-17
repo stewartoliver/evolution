@@ -6,4 +6,5 @@ class User < ApplicationRecord
 
   has_many :routines
   has_many :fitness_log_entries
+  has_many :goals
 end

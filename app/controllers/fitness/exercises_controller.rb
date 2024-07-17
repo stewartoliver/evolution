@@ -5,7 +5,10 @@ module Fitness
 
     def index
       @exercises = Exercise.all
-      render json: @exercises
+      respond_to do |format|
+        format.html
+        format.json { render json: @exercises }
+      end
     end
 
     def new

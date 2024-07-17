@@ -6,15 +6,15 @@ const HelloWorld = () => (
   <TypeAnimation
     cursor={true}
     sequence={[
-      'Transform Your Life.',
+      'Transform your Life.',
       2000, // Wait 1 second
       '',
       500, // Wait 1 second
-      'Achieve Your Fitness Goals.',
+      'Achieve your fitness goals.',
       2000, // Wait 1 second
       '',
       500, // Wait another second
-      'Join Evolve Today.',
+      'Join Evolve today.',
       2000, // Wait another second
     ]}
     wrapper="div"

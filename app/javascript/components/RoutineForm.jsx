@@ -4,16 +4,28 @@ function RoutineForm() {
   const [exercises, setExercises] = useState([]);
   const [routineExercises, setRoutineExercises] = useState([]);
 
-  useEffect(() => {
-    fetch('/fitness/exercises')
-      .then((response) => response.json())
-      .then((data) => setExercises(data))
-      .catch((error) => console.error('Error fetching exercises:', error));
-
-    const container = document.getElementById('routine-form-container');
+useEffect(() => {
+    fetch('/fitness/exercises', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => setExercises(data))
+    .catch(error => console.error('Error fetching exercisA-+      2221W3Q+   const container = document.getElementById('routine-form-container');
     if (container && container.dataset.routineExercises) {
-      const initialData = JSON.parse(container.dataset.routineExercises);
-      setRoutineExercises(initialData);
+      try {
+        const initialData = JSON.parse(container.dataset.routineExercises);
+        setRoutineExercises(initialData);
+      } catch (parseError) {
+        console.error('Error parsing initial data:', parseError);
+        setRoutineExercises([{ exercise_id: '', routine_sets: [{ reps: '', weight: '' }] }]);
+      }
     } else {
       setRoutineExercises([{ exercise_id: '', routine_sets: [{ reps: '', weight: '' }] }]);
     }
@@ -53,7 +65,7 @@ function RoutineForm() {
           </div>
           <div className="flex flex-col gap-3 p-3 bg-sky-500/20 rounded-b-md border-gray-300 border-b border-x text-sm">
             <input
-              type="hidden"
+              type="hidden"3
               name={`routine[routine_exercises_attributes][${exerciseIndex}][id]`}
               value={exercise.id || ''}
             />

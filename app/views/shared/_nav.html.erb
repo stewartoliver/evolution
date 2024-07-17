@@ -1,8 +1,49 @@
-<div class="flex items-center justify-between gap-5 p-5 bg-gray-200">
-	<div>
-		Home
+<div class="flex justify-between items-center gap-5 border-b border-gray-300 px-5 py-1 shadow-sm">
+	<div class="flex gap-5 items-center">
+		<div class="text-sm text-sky-900">
+			<%= link_to 'Evolve', root_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		</div>
+		<div class="text-sm py-2 font-medium text-gray-500">
+			|
+		</div>
+		<div>
+			<%= link_to "Home", root_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		</div>
+		<div>
+			<%= link_to "Features", features_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		</div>
+		<div>
+			<%= link_to "How it works", how_it_works_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		</div>
+		<div>
+			<%= link_to "About us", about_us_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		</div>
 	</div>
-	<div>
-		<%= link_to "Log in", new_user_session_path %>
+	<div class="flex items-center gap-5">
+		<% if current_user&.operator? %>
+		<div class="text-sm text-sky-900">
+			<%= link_to 'Operator', operator_dashboard_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		</div>
+		<div class="text-sm py-2 font-medium text-gray-500 text-sm py-2 font-bold text-sky-900 uppercase">
+			|
+		</div>
+		<% end %>
+		<% if current_user.present? %>
+		<%= link_to "My Evolution", fitness_dashboard_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		<%= link_to 'Logout', destroy_user_session_path, method: :delete, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		<% else %>
+		<div>
+			<%= link_to "Log in", new_user_session_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+		</div>
+		<% end %>
 	</div>
 </div>
+
+<script>
+	const menuButton = document.getElementById('menu-button');
+	const menuDropdown = document.getElementById('menu-dropdown');
+
+	menuButton.addEventListener('click', () => {
+		menuDropdown.classList.toggle('hidden');
+	});
+</script>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_15_101402) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_22_081737) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -68,6 +68,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_15_101402) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["fitness_log_exercise_id"], name: "index_fitness_log_sets_on_fitness_log_exercise_id"
+  end
+
+  create_table "goals", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.integer "priority"
+    t.date "start_date"
+    t.date "end_date"
+    t.integer "progress", default: 0
+    t.string "tags", default: [], array: true
+    t.string "reminder_frequency"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_goals_on_user_id"
   end
 
   create_table "muscle_groups", force: :cascade do |t|
@@ -132,6 +148,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_15_101402) do
   add_foreign_key "fitness_log_exercises", "exercises"
   add_foreign_key "fitness_log_exercises", "fitness_log_entries"
   add_foreign_key "fitness_log_sets", "fitness_log_exercises"
+  add_foreign_key "goals", "users"
   add_foreign_key "routine_exercises", "exercises"
   add_foreign_key "routine_exercises", "routines"
   add_foreign_key "routine_sets", "routine_exercises"

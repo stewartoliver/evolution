@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './components/App';
 import RoutineForm from './components/RoutineForm';
 import LogForm from './components/LogForm';
+import "chartkick/chart.js"
 
 document.addEventListener('DOMContentLoaded', () => {
   const appRootElement = document.getElementById('root');

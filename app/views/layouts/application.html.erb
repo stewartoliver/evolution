@@ -5,13 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+  <style type="text/css">
+    @import url('https://fonts.googleapis.com/css2?family=Teachers:ital,wght@0,400..800;1,400..800&display=swap');
+    body {
+      font-family: 'Teachers', sans-serif;
+    }
+  </style>
   <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
 
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   <%= javascript_include_tag 'react_application', 'data-turbo-track': 'reload' %>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 antialiased">
   <% if request.path == '/' %>
   <%= render 'shared/nav' %>
   <% elsif request.path.start_with?('/operator') %>
