@@ -20,6 +20,15 @@
 			</div>
 			<div class="py-4">
 				<div class="font-bold text-sky-900 uppercase">
+					Tasks
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_goals_task_path %>
+					<%= link_to "explore. ", goals_tasks_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
 					Achievements
 				</div>
 				<div class="flex items-center gap-1 text-gray-500">
@@ -28,7 +37,9 @@
 			</div>
 		</div>
 	</div>
-	<div class="flex flex-col w-full bg-sky-900 text-white p-5">
+	<div class="flex flex-col w-full bg-sky-900 text-gray-200 p-5 gap-5 h-screen">
+		<% current_user.goals.each do |goal| %>
 
+		<% end %>
 	</div>
 </div>

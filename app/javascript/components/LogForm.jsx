@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 function LogForm() {
   const [exercises, setExercises] = useState([]);
   const [fitnessLogExercises, setFitnessLogExercises] = useState([]);

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_22_081737) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_24_013413) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,15 +74,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_22_081737) do
     t.bigint "user_id", null: false
     t.string "title", null: false
     t.text "description"
-    t.integer "priority"
     t.date "start_date"
     t.date "end_date"
-    t.integer "progress", default: 0
-    t.string "tags", default: [], array: true
-    t.string "reminder_frequency"
-    t.text "notes"
+    t.integer "progress", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_favorite", default: false
+    t.string "status", default: "not started"
+    t.bigint "parent_goal_id"
+    t.index ["parent_goal_id"], name: "index_goals_on_parent_goal_id"
     t.index ["user_id"], name: "index_goals_on_user_id"
   end
 
@@ -128,6 +128,25 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_22_081737) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.bigint "goal_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.datetime "due_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "priority"
+    t.datetime "completed_at"
+    t.integer "assigned_to"
+    t.decimal "estimated_time"
+    t.decimal "actual_time"
+    t.string "tags"
+    t.boolean "is_recurring"
+    t.string "recurrence_interval"
+    t.index ["goal_id"], name: "index_tasks_on_goal_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -148,8 +167,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_22_081737) do
   add_foreign_key "fitness_log_exercises", "exercises"
   add_foreign_key "fitness_log_exercises", "fitness_log_entries"
   add_foreign_key "fitness_log_sets", "fitness_log_exercises"
+  add_foreign_key "goals", "goals", column: "parent_goal_id"
   add_foreign_key "goals", "users"
   add_foreign_key "routine_exercises", "exercises"
   add_foreign_key "routine_exercises", "routines"
   add_foreign_key "routine_sets", "routine_exercises"
+  add_foreign_key "tasks", "goals"
 end

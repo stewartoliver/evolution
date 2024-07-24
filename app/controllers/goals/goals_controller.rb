@@ -1,7 +1,7 @@
 module Goals
   class GoalsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_goal, only: [:show, :edit, :update]
+    before_action :set_goal, only: [:show, :edit, :update, :make_task]
 
 
     def dashboard
@@ -17,8 +17,8 @@ module Goals
     end
 
     def update
-      if @goal.save
-        redirect_to goals_goals_path, notice: 'Goal was successfully updated.'
+      if @goal.update(goal_params)
+        redirect_to goals_goal_path(@goal), notice: 'Goal was successfully updated.'
       else
         render :edit
       end
@@ -41,13 +41,26 @@ module Goals
       end
     end
 
+    def make_task
+      @task = @goal.tasks.build(task_params)
+      if @task.save
+        redirect_to goals_goal_path(@goal), notice: 'Task was successfully added.'
+      else
+        redirect_to goals_goal_path(@goal), notice: 'Task failed to be added. Please try again.'
+      end
+    end
+
     private
     def set_goal
       @goal = Goal.find(params[:id])
     end
 
     def goal_params
-      params.require(:goal).permit(:title, :description, :start_date, :end_date, :notes)
+      params.require(:goal).permit(:title, :description, :start_date, :end_date)
+    end
+
+    def task_params
+      params.require(:task).permit(:title, :description, :due_date)
     end
   end
 end
