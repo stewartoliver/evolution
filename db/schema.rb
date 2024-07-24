@@ -10,9 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_24_013413) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "account_name"
+    t.string "account_type"
+    t.decimal "balance", precision: 15, scale: 2
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "budgets", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "category"
+    t.decimal "amount", precision: 15, scale: 2
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_budgets_on_user_id"
+  end
 
   create_table "exercise_types", force: :cascade do |t|
     t.string "name"
@@ -31,6 +52,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_013413) do
     t.bigint "muscle_group_id", null: false
     t.index ["exercise_type_id"], name: "index_exercises_on_exercise_type_id"
     t.index ["muscle_group_id"], name: "index_exercises_on_muscle_group_id"
+  end
+
+  create_table "expenses", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.decimal "amount", precision: 15, scale: 2
+    t.string "category"
+    t.string "description"
+    t.datetime "date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_expenses_on_account_id"
   end
 
   create_table "fitness_log_entries", force: :cascade do |t|
@@ -84,6 +116,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_013413) do
     t.bigint "parent_goal_id"
     t.index ["parent_goal_id"], name: "index_goals_on_parent_goal_id"
     t.index ["user_id"], name: "index_goals_on_user_id"
+  end
+
+  create_table "incomes", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.decimal "amount", precision: 15, scale: 2
+    t.string "source"
+    t.datetime "date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_incomes_on_account_id"
   end
 
   create_table "muscle_groups", force: :cascade do |t|
@@ -147,6 +189,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_013413) do
     t.index ["goal_id"], name: "index_tasks_on_goal_id"
   end
 
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "transaction_type"
+    t.decimal "amount", precision: 15, scale: 2
+    t.string "description"
+    t.datetime "date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_transactions_on_account_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -160,8 +213,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_013413) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "accounts", "users"
+  add_foreign_key "budgets", "users"
   add_foreign_key "exercises", "exercise_types"
   add_foreign_key "exercises", "muscle_groups"
+  add_foreign_key "expenses", "accounts"
   add_foreign_key "fitness_log_entries", "routines"
   add_foreign_key "fitness_log_entries", "users"
   add_foreign_key "fitness_log_exercises", "exercises"
@@ -169,8 +225,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_013413) do
   add_foreign_key "fitness_log_sets", "fitness_log_exercises"
   add_foreign_key "goals", "goals", column: "parent_goal_id"
   add_foreign_key "goals", "users"
+  add_foreign_key "incomes", "accounts"
   add_foreign_key "routine_exercises", "exercises"
   add_foreign_key "routine_exercises", "routines"
   add_foreign_key "routine_sets", "routine_exercises"
   add_foreign_key "tasks", "goals"
+  add_foreign_key "transactions", "accounts"
 end

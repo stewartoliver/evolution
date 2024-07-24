@@ -2,16 +2,16 @@
 	<div class="flex flex-col gap-4 rounded-md p-8 w-4/5 border border-gray-300">
 		<div class="flex justify-between pb-4 border-b border-gray-300">
 			<div class="text-lg font-bold uppercase text-sky-900">
-				All Accounts
+				All expenses
 			</div>
 			<div class="flex gap-2 items-center">
 				<div class="">
-					<%= link_to "New", new_finances_account_path, class: "underline text-gray-500" %>
+					<%= link_to "New", new_finances_expense_path, class: "underline text-gray-500" %>
 				</div>
 			</div>
 		</div>
 		<div class="flex gap-4">
-			<% if @accounts.exists? %>
+			<% if @expenses.present? %>
 			<div class="overflow-x-auto w-full">
 				<table class="w-full text-left text-sm">
 					<thead class="border-b font-medium">
@@ -23,26 +23,26 @@
 						</tr>
 					</thead>
 					<tbody>
-						<% @accounts.each do |account| %>
+						<% @expenses.each do |expense| %>
 						<tr class="hover:bg-sky-500/20 border-b text-gray-500">
-							<td class="px-6 py-4"><span class="select-all"><%= account.id %></span></td>
+							<td class="px-6 py-4"><span class="select-all"><%= expense.id %></span></td>
 							<td class="px-6 py-4">
 								<div class="flex flex-col">
 									<div>
-										<%= account.account_name.capitalize %>
+										<%= expense.category.capitalize %>
 									</div>
 									<div class="leading-tight text-xs">
-										<%= account.account_type.capitalize %>
+										<%= expense.account.account_name.capitalize %>
 									</div>
 								</div>
 							</td>
 							<td class="px-6 py-4 w-full">
-								$<%= account.balance %>
+								$<%= expense.amount %>
 							</td>
 							<td class="px-6 py-4">
 								<div class="flex items-center gap-4">
-									<%= link_to 'show', finances_account_path(account), class: "underline text-sm" %>
-									<%= link_to 'edit', edit_finances_account_path(account), class: "underline text-sm" %>
+									<%= link_to 'show', finances_expense_path(expense), class: "underline text-sm" %>
+									<%= link_to 'edit', edit_finances_expense_path(expense), class: "underline text-sm" %>
 								</div>
 							</td>
 						</tr>

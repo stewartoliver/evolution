@@ -27,6 +27,10 @@ Rails.application.routes.draw do
   namespace :finances do
     get 'dashboard', to: 'dashboard#index'
     resources :accounts
+    resources :transactions
+    resources :incomes
+    resources :expenses
+    resources :budgets
   end
 
   namespace :fitness do

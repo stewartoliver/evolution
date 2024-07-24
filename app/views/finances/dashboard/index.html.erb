@@ -1,3 +1,72 @@
-<div>
-	Dashboard
+<div class="flex flex-col lg:flex-row">
+	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
+		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
+		<div class="flex flex-col tracking-tight leading-tight">
+			<div class="text-2xl font-bold uppercase text-sky-900">
+				Finances Dashboard
+			</div>
+			<div class="text-gray-500 text-sm">
+				/finances /dashboard
+			</div>
+		</div>
+		<div class="flex flex-col divide-y divide-gray-200">
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Accounts
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_finances_account_path %>
+					<%= link_to "explore. ", finances_accounts_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Transactions
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_finances_transaction_path %>
+					<%= link_to "explore. ", finances_transactions_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Budgets
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_finances_budget_path %>
+					<%= link_to "explore. ", finances_budgets_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Incomes
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_finances_income_path %>
+					<%= link_to "explore. ", finances_incomes_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Expenses
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_finances_expense_path %>
+					<%= link_to "explore. ", finances_expenses_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
+					Goals
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_finances_account_path %>
+					<%= link_to "explore. ", finances_accounts_path %>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="flex flex-col w-full bg-sky-900 text-white p-5 h-screen">
+
+	</div>
 </div>

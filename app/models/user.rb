@@ -4,6 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  has_many :accounts
   has_many :routines
   has_many :fitness_log_entries
   has_many :goals

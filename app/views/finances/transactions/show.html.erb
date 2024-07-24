@@ -3,27 +3,27 @@
 		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
 		<div class="flex flex-col tracking-tight leading-tight">
 			<div class="text-2xl font-bold uppercase text-sky-900">
-				<%= @account.account_name %>
+				Showing Transaction
 			</div>
 			<div class="text-gray-500 text-sm">
-				/finances /accounts / <%= @account.id %>
+				/finances /transactions / <%= @transaction.id %>
 			</div>
 		</div>
 		<div class="flex flex-col gap-2">
 			<div>
 				<div class="text-gray-700 font-medium text-sm">
-					Account Type:
+					Transaction Type:
 				</div>
 				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					<%= @account.account_type %>
+					<%= @transaction.transaction_type %>
 				</div>
 			</div>
 			<div>
 				<div class="text-gray-700 font-medium text-sm">
-					Balance:
+					Amount:
 				</div>
 				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					$<%= @account.balance %> 
+					$<%= @transaction.amount %> 
 				</div>
 			</div>
 			<div>
@@ -31,11 +31,11 @@
 					Last update:
 				</div>
 				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					<%= @account.updated_at.strftime("%-d %B %Y") %> 
+					<%= @transaction.updated_at.strftime("%-d %B %Y") %> 
 				</div>
 			</div>
 			<div class="flex justify-end">
-				<%= link_to "Edit", edit_finances_account_path(@account), class: "sky-btn" %>
+				<%= link_to "Edit", edit_finances_transaction_path(@transaction), class: "sky-btn" %>
 			</div>
 		</div>
 	</div>
