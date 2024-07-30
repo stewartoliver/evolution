@@ -11,5 +11,8 @@
     .sky-btn {
     @apply px-4 py-2 bg-sky-800 text-stone-200 font-semibold rounded-lg hover:cursor-pointer hover:bg-sky-900;
   }
+    .sky-badge {
+    @apply px-3 py-1 bg-sky-500 text-stone-200 font-semibold rounded-md hover:cursor-pointer hover:bg-sky-600;
+  }
 }
 

@@ -3,19 +3,51 @@
 		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
 		<div class="flex flex-col tracking-tight leading-tight">
 			<div class="text-2xl font-bold uppercase text-sky-900">
-				Showing expense
+				Showing <%= @expense.name.capitalize %>
 			</div>
 			<div class="text-gray-500 text-sm">
 				/finances /expenses / <%= @expense.id %>
 			</div>
 		</div>
 		<div class="flex flex-col gap-2">
-			<div>
+			<%= render 'shared/frontend_flash_messages', object: @expense %>
+			<div class="w-1/2 pr-2">
 				<div class="text-gray-700 font-medium text-sm">
-					Category:
+					Frequency:
 				</div>
 				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					<%= @expense.category %>
+					<% if @expense.frequency.present? %> 
+					<%= @expense.frequency.capitalize %> on <%= @expense.day_of_week.present? ? Date::DAYNAMES[@expense.day_of_week] : 'N/A' %>s
+					<% end %>
+				</div>
+			</div>
+			<div class="flex items-start gap-4">
+				<div class="w-full">
+					<div class="text-gray-700 font-medium text-sm">
+						Initial Payment Date:
+					</div>
+					<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
+						<%= @expense.date.strftime("%a, %-d %B %Y") %> 
+					</div>
+				</div>
+				<div class="w-full">
+					<div class="text-gray-700 font-medium text-sm">
+						Next Payment Date:
+					</div>
+					<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
+						<%= @expense.next_occurrence.strftime("%a, %-d %B %Y") %> 
+					</div>
+				</div>
+			</div>
+			<div>
+				<div class="text-gray-700 font-medium text-sm">
+					Account Name:
+				</div>
+				<div class="flex items-center justify-between text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
+					<%= @expense.account.account_name.capitalize %> 
+					<div>
+						<%= link_to "Show", finances_account_path(@expense.account.id), class: "sky-badge" %>
+					</div>
 				</div>
 			</div>
 			<div>
@@ -23,7 +55,16 @@
 					Amount:
 				</div>
 				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					$<%= @expense.amount %> 
+					<%= number_to_currency @expense.amount %> 
+				</div>
+			</div>
+			<div class="w-full">
+				<div class="text-gray-700 font-medium text-sm">
+					Category:
+				</div>
+				<div class="flex gap-2 text-gray-500 bg-white border-gray-300 border rounded-md px-2 py-2 text-sm w-full">
+					<div class="w-1 h-fill rounded-full <%= category_color_mapping[@expense.category.name.downcase] %>"></div>
+					<%= @expense.category.name.capitalize %>
 				</div>
 			</div>
 			<div>

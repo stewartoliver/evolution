@@ -6,26 +6,65 @@
 				Edit Expense
 			</div>
 			<div class="text-gray-500 text-sm">
-				/finances /expenses /new
+				/finances /expenses /edit
 			</div>
 		</div>
 		<%= form_for([:finances, @expense]) do |form| %>
 		<div class="flex flex-col gap-2">
+			<%= render 'shared/frontend_flash_messages', object: @expense %>
+			<div class="flex items-start gap-4">
+				<div class="w-min">
+					<%= form.label :date, class: "text-sm font-medium text-gray-700" %>
+					<%= form.date_field :date, value: @expense.date.strftime("%Y-%m-%d"), class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" %>
+				</div>
+				<div>
+					<%= form.label :frequency, class: "text-sm font-medium text-gray-700" %>
+					<%= form.select :frequency, options_for_select([["Daily", "daily"], ["Weekly", "weekly"], ["Monthly", "monthly"], ["Yearly", "yearly"]], selected: @expense.frequency), { prompt: "Select frequency" }, { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" } %>
+				</div>
+				<div class="flex flex-col">
+					<%= form.label :recurring, class: "text-sm font-medium text-gray-700" %>
+					<%= form.check_box :recurring, class: "rounded border-gray-300 text-sky-600 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm" %>
+				</div>
+			</div>
 			<div>
 				<%= form.label :account_id, "Select Account", class: "text-sm font-medium text-gray-700" %>
 				<%= form.collection_select :account_id, current_user.accounts, :id, :account_name, {}, {class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500"} %>
 			</div>
 			<div>
-				<%= form.label :category, class: "text-sm font-medium text-gray-700" %>
-				<%= form.text_field :category, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+				<%= form.label :name, class: "text-sm font-medium text-gray-700" %>
+				<%= form.text_field :name, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+			</div>
+			<div>
+				<%= form.label :description, class: "text-sm font-medium text-gray-700" %>
+				<%= form.text_field :description, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
 			</div>
 			<div>
 				<%= form.label :amount, class: "text-sm font-medium text-gray-700" %>
-				<%= form.number_field :amount, step: "0.01", class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+				<%= form.number_field :amount, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
 			</div>
 			<div>
-				<%= form.label :date, class: "text-sm font-medium text-gray-700" %>
-				<%= form.date_field :date, value: Time.current.to_date.strftime("%Y-%m-%d"), class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" %>
+				<%= form.label :store_id, "Store", class: "text-sm font-medium text-gray-700" %>
+				<%= form.collection_select :store_id, current_user.stores, :id, :name, { prompt: "Select a store" }, {class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500"} %>
+			</div>
+			<div class="flex items-start gap-4">
+				<div>
+					<%= form.label :category_id, "Select Category", class: "text-sm font-medium text-gray-700" %>
+					<%= form.collection_select :category_id, Category.where(category_type: 'expense'), :id, :name, { prompt: "Select a category" }, {class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500"} %>
+				</div>
+				<div>
+					<%= form.label :sub_category, "Sub-Category", class: "text-sm font-medium text-gray-700" %>
+					<%= form.text_field :sub_category, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+				</div>
+			</div>
+			<div class="flex items-start gap-4">
+				<div>
+					<%= form.label :day_of_week, "Day of Week", class: "text-sm font-medium text-gray-700" %>
+					<%= form.select :day_of_week, options_for_select(Date::DAYNAMES.each_with_index.map { |day, i| [day, i] }), { prompt: "Select day" }, {class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500"} %>
+				</div>
+				<div>
+					<%= form.label :day_of_month, "Day of Month", class: "text-sm font-medium text-gray-700" %>
+					<%= form.number_field :day_of_month, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+				</div>
 			</div>
 			<div class="flex justify-end">
 				<%= form.submit "Update", class: "sky-btn" %>

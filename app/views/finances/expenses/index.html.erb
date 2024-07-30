@@ -20,6 +20,7 @@
 							<th class="px-6 py-4"></th>
 							<th class="px-6 py-4"></th>
 							<th class="px-6 py-4"></th>
+							<th class="px-6 py-4"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -27,9 +28,12 @@
 						<tr class="hover:bg-sky-500/20 border-b text-gray-500">
 							<td class="px-6 py-4"><span class="select-all"><%= expense.id %></span></td>
 							<td class="px-6 py-4">
+								<div class="w-1 h-full rounded-full <%= category_color_mapping[expense.category.name.downcase] %>"></div>
+							</td>
+							<td class="px-6 py-4">
 								<div class="flex flex-col">
 									<div>
-										<%= expense.category.capitalize %>
+										<%= expense.category.name.capitalize %>
 									</div>
 									<div class="leading-tight text-xs">
 										<%= expense.account.account_name.capitalize %>
@@ -54,4 +58,3 @@
 		</div>
 	</div>
 </div>
-

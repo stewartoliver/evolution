@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_30_032136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,6 +35,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
     t.index ["user_id"], name: "index_budgets_on_user_id"
   end
 
+  create_table "categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "category_type", default: "expense", null: false
+  end
+
   create_table "exercise_types", force: :cascade do |t|
     t.string "name"
     t.string "color"
@@ -57,12 +64,26 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
   create_table "expenses", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.decimal "amount", precision: 15, scale: 2
-    t.string "category"
+    t.string "sub_category"
     t.string "description"
     t.datetime "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "recurring", default: false
+    t.string "frequency"
+    t.date "next_occurrence"
+    t.date "end_date"
+    t.integer "category_id"
+    t.bigint "store_id"
+    t.integer "custom_frequency"
+    t.string "frequency_unit"
+    t.integer "day_of_week"
+    t.integer "day_of_month"
+    t.integer "user_id"
+    t.string "name"
     t.index ["account_id"], name: "index_expenses_on_account_id"
+    t.index ["store_id"], name: "index_expenses_on_store_id"
+    t.index ["user_id"], name: "index_expenses_on_user_id"
   end
 
   create_table "fitness_log_entries", force: :cascade do |t|
@@ -170,6 +191,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "stores", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "chain_name"
+    t.json "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.bigint "goal_id", null: false
     t.string "title", null: false
@@ -200,6 +229,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
     t.index ["account_id"], name: "index_transactions_on_account_id"
   end
 
+  create_table "user_stores", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "store_id", null: false
+    t.string "custom_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_user_stores_on_store_id"
+    t.index ["user_id"], name: "index_user_stores_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -218,6 +257,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
   add_foreign_key "exercises", "exercise_types"
   add_foreign_key "exercises", "muscle_groups"
   add_foreign_key "expenses", "accounts"
+  add_foreign_key "expenses", "categories"
+  add_foreign_key "expenses", "stores"
   add_foreign_key "fitness_log_entries", "routines"
   add_foreign_key "fitness_log_entries", "users"
   add_foreign_key "fitness_log_exercises", "exercises"
@@ -231,4 +272,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_034415) do
   add_foreign_key "routine_sets", "routine_exercises"
   add_foreign_key "tasks", "goals"
   add_foreign_key "transactions", "accounts"
+  add_foreign_key "user_stores", "stores"
+  add_foreign_key "user_stores", "users"
 end
