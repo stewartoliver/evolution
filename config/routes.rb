@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   end
 
   namespace :goals do
-    get 'dashboard', to: 'goals#dashboard'
+    get 'dashboard', to: 'dashboard#index'
     resources :goals, path: '/' do
       post 'make_task', on: :member
     end
