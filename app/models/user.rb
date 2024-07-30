@@ -5,10 +5,13 @@ class User < ApplicationRecord
   :recoverable, :rememberable, :validatable
 
   has_many :accounts
-  has_many :routines
-  has_many :fitness_log_entries
-  has_many :goals
   has_many :user_stores
   has_many :stores, through: :user_stores
   has_many :expenses
+
+  has_many :routines
+  has_many :fitness_log_entries
+
+  has_many :goals
+  has_many :tasks, through: :goals
 end

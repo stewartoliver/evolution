@@ -17,7 +17,7 @@ const Board = ({ goalId }) => {
   const [currentTask, setCurrentTask] = useState(null);
 
   useEffect(() => {
-    fetch(`/goals/tasks/filter_by_goal?goal_id=${goalId}`)
+    fetch(`/objectives/tasks/filter_by_goal?goal_id=${goalId}`)
       .then(response => response.json())
       .then(data => {
         const taskMap = {};
@@ -76,7 +76,7 @@ const Board = ({ goalId }) => {
       });
 
       // Update task status in the backend
-      fetch(`/goals/tasks/${draggableId}`, {
+      fetch(`/objectives/tasks/${draggableId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ const Board = ({ goalId }) => {
   };
 
   const handleDelete = (taskId) => {
-    fetch(`/goals/tasks/${taskId}`, {
+    fetch(`/objectives/tasks/${taskId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ const Board = ({ goalId }) => {
   const handleAddTask = (status) => {
     const title = prompt('Enter task title');
     if (title) {
-      fetch(`/goals/tasks`, {
+      fetch(`/objectives/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ const Board = ({ goalId }) => {
 
   const handleSaveTask = (updatedTask) => {
     // Update task in the backend
-    fetch(`/goals/tasks/${updatedTask.id}`, {
+    fetch(`/objectives/tasks/${updatedTask.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

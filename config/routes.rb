@@ -40,13 +40,13 @@ Rails.application.routes.draw do
     resources :logs
   end
 
-  namespace :goals do
+  namespace :objectives do
     get 'dashboard', to: 'dashboard#index'
-    resources :goals, path: '/' do
+    resources :goals do
       post 'make_task', on: :member
     end
-    get 'tasks/filter_by_goal', to: 'tasks#filter_by_goal', as: 'filter_by_goal_tasks'
     resources :tasks
+    get 'tasks/filter_by_goal', to: 'tasks#filter_by_goal', as: 'filter_by_goal_tasks'
   end
 
 end

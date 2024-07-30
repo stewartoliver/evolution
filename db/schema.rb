@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_30_032136) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_30_124836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -215,6 +215,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_30_032136) do
     t.string "tags"
     t.boolean "is_recurring"
     t.string "recurrence_interval"
+    t.integer "user_id"
     t.index ["goal_id"], name: "index_tasks_on_goal_id"
   end
 

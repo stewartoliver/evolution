@@ -1,4 +1,4 @@
-module Goals
+module Objectives
   class GoalsController < ApplicationController
     before_action :authenticate_user!
     before_action :set_goal, only: [:show, :edit, :update, :make_task]
@@ -18,7 +18,7 @@ module Goals
 
     def update
       if @goal.update(goal_params)
-        redirect_to goals_goal_path(@goal), notice: 'Goal was successfully updated.'
+        redirect_to objectives_goal_path(@goal), notice: 'Goal was successfully updated.'
       else
         render :edit
       end
@@ -35,7 +35,7 @@ module Goals
     def create
       @goal = current_user.goals.build(goal_params)
       if @goal.save
-        redirect_to goals_goals_path, notice: 'Goal was successfully created.'
+        redirect_to objectives_goals_path, notice: 'Goal was successfully created.'
       else
         render :new
       end
@@ -44,9 +44,9 @@ module Goals
     def make_task
       @task = @goal.tasks.build(task_params)
       if @task.save
-        redirect_to goals_goal_path(@goal), notice: 'Task was successfully added.'
+        redirect_to objectives_goal_path(@goal), notice: 'Task was successfully added.'
       else
-        redirect_to goals_goal_path(@goal), notice: 'Task failed to be added. Please try again.'
+        redirect_to objectives_goal_path(@goal), notice: 'Task failed to be added. Please try again.'
       end
     end
 

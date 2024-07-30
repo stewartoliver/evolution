@@ -2,10 +2,10 @@
 	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
 		<div class="flex flex-col tracking-tight leading-tight">
 			<div class="text-2xl font-bold uppercase text-sky-900">
-				Goals Dashboard
+				Objectives Dashboard
 			</div>
 			<div class="text-gray-500 text-sm">
-				/goals /dashboard
+				/objectives /dashboard
 			</div>
 		</div>
 		<div class="flex flex-col divide-y divide-gray-200">
@@ -14,8 +14,8 @@
 					Goals
 				</div>
 				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_goals_goal_path %>
-					<%= link_to "explore. ", goals_goals_path %>
+					<%= link_to "create, ", new_objectives_goal_path %>
+					<%= link_to "explore. ", objectives_goals_path %>
 				</div>
 			</div>
 			<div class="py-4">
@@ -23,8 +23,8 @@
 					Tasks
 				</div>
 				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_goals_task_path %>
-					<%= link_to "explore. ", goals_tasks_path %>
+					<%= link_to "create, ", new_objectives_task_path %>
+					<%= link_to "explore. ", objectives_tasks_path %>
 				</div>
 			</div>
 			<div class="py-4">
@@ -38,8 +38,6 @@
 		</div>
 	</div>
 	<div class="flex flex-col w-full bg-sky-900 text-gray-200 p-5 gap-5 h-screen">
-		<% current_user.goals.each do |goal| %>
-
-		<% end %>
+		
 	</div>
 </div>
