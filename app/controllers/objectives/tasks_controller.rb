@@ -39,7 +39,6 @@ module Objectives
 
     def show
       @task = Task.find(params[:id])
-      render json: @task
     end
 
     private

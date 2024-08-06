@@ -1,1 +1,45 @@
-show
+<div class="flex flex-col lg:flex-row">
+	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
+		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
+		<div class="flex flex-col tracking-tight leading-tight">
+			<div class="text-xl font-bold uppercase text-sky-900">
+				<%= @task.title %>
+			</div>
+			<div class="text-gray-500 text-sm">
+				/tasks / <%= @task.id %>
+			</div>
+		</div>
+		<div class="flex flex-col gap-2">
+			<div>
+				<div class="text-gray-700 font-medium text-sm">
+					Description:
+				</div>
+				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
+					<%= @task.description.presence || 'N/A' %>
+				</div>
+			</div>
+			<div>
+				<div class="text-gray-700 font-medium text-sm">
+					Due date:
+				</div>
+				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
+					<%= @task&.due_date&.strftime("%-d %B %Y").presence || 'N/A' %>
+
+				</div>
+			</div>
+			<div>
+				<div class="text-gray-700 font-medium text-sm">
+					Status:
+				</div>
+				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
+					<%= @task.status.gsub('_', ' ').capitalize %> 
+				</div>
+			</div>
+			<div class="flex justify-end">
+				<%= link_to "Edit", edit_objectives_task_path(@task), class: "sky-btn" %>
+			</div>
+		</div>
+	</div>
+	<div class="flex flex-col w-full bg-sky-900 text-stone-200 p-5 h-screen">
+	</div>
+</div>
