@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_30_124836) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_07_061516) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_30_124836) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "achievements", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "goal_id", null: false
+    t.string "description"
+    t.datetime "achieved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_id"], name: "index_achievements_on_goal_id"
+    t.index ["user_id"], name: "index_achievements_on_user_id"
   end
 
   create_table "budgets", force: :cascade do |t|
@@ -135,6 +146,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_30_124836) do
     t.boolean "is_favorite", default: false
     t.string "status", default: "not started"
     t.bigint "parent_goal_id"
+    t.datetime "completed_at"
+    t.integer "generation", default: 0
     t.index ["parent_goal_id"], name: "index_goals_on_parent_goal_id"
     t.index ["user_id"], name: "index_goals_on_user_id"
   end
@@ -254,6 +267,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_30_124836) do
   end
 
   add_foreign_key "accounts", "users"
+  add_foreign_key "achievements", "goals"
+  add_foreign_key "achievements", "users"
   add_foreign_key "budgets", "users"
   add_foreign_key "exercises", "exercise_types"
   add_foreign_key "exercises", "muscle_groups"

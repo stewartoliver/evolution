@@ -6,10 +6,10 @@
 				Edit Goal
 			</div>
 			<div class="text-gray-500 text-sm">
-				/goals /new
+				/objectives /goals /new
 			</div>
 		</div>
-		<%= form_for([:goals, @goal]) do |form| %>
+		<%= form_for([:objectives, @goal]) do |form| %>
 		<div class="flex flex-col gap-2">
 			<div>
 				<%= form.label :title, class: "text-sm font-medium text-gray-700" %>
@@ -17,7 +17,7 @@
 			</div>
 			<div>
 				<%= form.label :description, class: "text-sm font-medium text-gray-700" %>
-				<%= form.text_area :description, rows: 4, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500 resize-y focus:border" %>
+				<%= form.text_area :description, rows: 3, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500 resize-y focus:border" %>
 			</div>
 			<div class="flex items-center gap-2">
 				<div class="w-full">
@@ -29,7 +29,11 @@
 					<%= form.date_field :end_date, value:  @goal.end_date, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
 				</div>
 			</div>
-			<div class="flex justify-center">
+			<div>
+				<%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
+				<%= form.collection_select :status, Goal.statuses.keys.map { |status| [status.humanize, status] }, :second, :first, { prompt: "Select a status" }, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" %>
+			</div>
+			<div class="flex justify-end">
 				<%= form.submit "Update", class: "sky-btn" %>
 			</div>
 		</div>

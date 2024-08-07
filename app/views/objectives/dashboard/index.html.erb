@@ -38,6 +38,63 @@
 		</div>
 	</div>
 	<div class="flex flex-col w-full bg-sky-900 text-gray-200 p-5 gap-5 h-screen">
-		
+		<div class="flex flex-col w-1/2 gap-5">
+			<div class="flex flex-col gap-3 p-3 rounded-md bg-sky-800">
+				<% @overview_goals.each do |goal| %>
+				<div class="flex flex-col gap-1 bg-gray-100 rounded-md px-2 py-1 text-sky-900 tracking-tight leading-tight">
+					<div class="flex justify-between items-center">
+						<div class="flex flex-col tracking-tight leading-tight">
+							<div class="text-xl font-medium">
+								<%= goal.title %>
+							</div>
+							<div class="text-sm font-medium text-gray-500">
+								<%= goal.description %>
+							</div>
+						</div>
+						<div>
+							<%= link_to 'Open', objectives_goal_path(goal.id), class: "sky-badge" %>
+						</div>
+					</div>
+					<div class="w-full bg-gray-300 rounded-full h-2">
+						<div class="bg-sky-500 h-2 rounded-full" style="width: <%= goal.progress %>%;" title="<%= goal.progress %>% Complete"></div>
+					</div>
+				</div>
+				<% end %>
+			</div>
+			<div class="flex flex-col gap-3 p-3 rounded-md bg-sky-800">
+				<% @overview_tasks.each do |task| %>
+				<div class="flex flex-col gap-1 bg-gray-100 rounded-md px-2 py-1 text-sky-900 tracking-tight leading-tight">
+					<div class="flex justify-between items-center">
+						<div class="flex flex-col tracking-tight leading-tight">
+							<div class="text-xl font-medium">
+								<%= truncate(task.title, length: 65) %>
+							</div>
+							<div class="flex flex-col text-xs font-medium text-gray-500">
+								<div class="flex items-center gap-1">
+									<div class="text-gray-700 uppercase">
+										G:
+									</div>
+									<div>
+										<%= task.goal.title %>
+									</div>
+								</div>
+								<div class="flex items-center gap-1">
+									<div class="text-gray-700 uppercase">
+										S:
+									</div>
+									<div>
+										<%= task.status.capitalize.gsub('_', ' ') %>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div>
+							<%= link_to 'Open', objectives_task_path(task.id), class: "sky-badge" %>
+						</div>
+					</div>
+				</div>
+				<% end %>
+			</div>
+		</div>
 	</div>
 </div>

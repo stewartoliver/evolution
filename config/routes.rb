@@ -43,10 +43,15 @@ Rails.application.routes.draw do
   namespace :objectives do
     get 'dashboard', to: 'dashboard#index'
     resources :goals do
-      post 'make_task', on: :member
+      member do
+        post 'make_task'
+        patch 'complete'
+        get 'new_child', to: 'goals#new_child'
+        post 'create_child', to: 'goals#create_child'
+      end
     end
-    resources :tasks
     get 'tasks/filter_by_goal', to: 'tasks#filter_by_goal', as: 'filter_by_goal_tasks'
+    resources :tasks
   end
 
 end

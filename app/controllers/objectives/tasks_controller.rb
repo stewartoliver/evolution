@@ -39,6 +39,11 @@ module Objectives
 
     def show
       @task = Task.find(params[:id])
+
+      respond_to do |format|
+        format.html # renders the default HTML view (show.html.erb)
+        format.json { render json: @task } # renders the task as JSON
+      end
     end
 
     private
