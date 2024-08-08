@@ -1,7 +1,7 @@
 module Objectives
   class GoalsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_goal, only: [:show, :edit, :update, :make_task, :complete, :new_child, :create_child]
+    before_action :set_goal, only: [:show, :edit, :update, :make_task, :complete, :new_child, :create_child, :toggle_favourite]
 
     def dashboard
       @goals = Goal.all
@@ -51,11 +51,19 @@ module Objectives
     end
 
     def complete
-      if @goal.complete!
-        redirect_back fallback_location: objectives_goal_path(@goal), notice: 'Goal was successfully completed.'
+      @goal.tasks.remaining.update_all(status: 2)
+
+      if @goal.update(completed_at: Datetime.now)
+        render json: { message: 'Goal successfully completed.' }
       else
-        redirect_back fallback_location: objectives_goal_path(@goal), alert: 'Failed to complete the goal. Please try again.'
+        render json: { error: 'Failed to complete the goal.' }, status: :unprocessable_entity
       end
+    end
+
+    def remaining_tasks
+      @goal = Goal.find(params[:id])
+      @remaining_tasks = @goal.tasks.remaining
+      render json: @remaining_tasks
     end
 
     def new_child
@@ -70,6 +78,13 @@ module Objectives
       else
         render :new_child
       end
+    end
+
+    def toggle_favourite
+      @goal.update(is_favourite: !@goal.is_favourite)
+      render json: { is_favourite: @goal.is_favourite }
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: 'Goal not found' }, status: :not_found
     end
 
     private

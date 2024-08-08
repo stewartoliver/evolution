@@ -3,24 +3,27 @@ class Goal < ApplicationRecord
   has_many :sub_goals, class_name: "Goal", foreign_key: "parent_goal_id", dependent: :destroy
   belongs_to :parent_goal, class_name: "Goal", optional: true
   has_many :tasks, dependent: :destroy
+  has_many :achievements, dependent: :destroy
 
   attribute :completed_at, :datetime
   attribute :generation, :integer, default: 0
 
-  enum status: {
-    not_started: 'not_started',
-    in_progress: 'in_progress',
-    completed: 'completed',
-    on_hold: 'on_hold',
-    cancelled: 'cancelled'
-  }
-
+  enum status: {not_started: 'not_started', in_progress: 'in_progress', completed: 'completed', on_hold: 'on_hold', cancelled: 'cancelled' }
+  
   # Mark the goal as complete
   def complete!
     self.completed_at = Time.current # Set the completed_at to the current time
     update_progress
     save! # Ensure the changes are saved
     create_achievement if create_achievement? # Optionally create an achievement
+  end
+
+  def complete?
+    completed_at.present?
+  end
+
+  def incomplete_tasks?
+    tasks.where('status < ?', 2).any?
   end
 
   # Complete current goal and create a child goal

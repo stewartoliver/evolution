@@ -1,5 +1,3 @@
-// app/javascript/application.js
-
 import "@hotwired/turbo-rails"; // Handles navigation and form submissions
 import Rails from "@rails/ujs";  // Handles non-GET requests in links/forms
 import React from 'react';
@@ -8,8 +6,12 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import App from './components/App';
 import RoutineForm from './components/RoutineForm';
 import LogForm from './components/LogForm';
-import "chartkick/chart.js";
 import Board from './components/Board'; // Ensure the correct path is used here
+import TasksChart from './components/TasksChart'; // Import the new TasksChart component
+import HeartIcon from './components/HeartIcon'; // Import the HeartIcon component
+import CompleteGoalButton from './components/CompleteGoalButton'; // Import the CompleteGoalButton component
+
+import "chartkick/chart.js"; // Import chart.js for Chartkick
 
 // Initialize Rails UJS
 Rails.start();
@@ -59,6 +61,29 @@ const initializeReactComponents = () => {
         <Board goalId={goalId} />
       </Router>
     );
+  }
+
+  // Tasks chart component
+  const tasksChartElement = document.getElementById('tasks-chart-container');
+  if (tasksChartElement) {
+    const chartRoot = createRoot(tasksChartElement);
+    chartRoot.render(<TasksChart />);
+  }
+
+  // Heart icon component
+  document.querySelectorAll('.heart-icon').forEach(div => {
+    const goalId = parseInt(div.getAttribute('data-goal-id'), 10);
+    const initialFavourite = div.getAttribute('data-initial-favourite') === 'true';
+    const root = createRoot(div);
+    root.render(<HeartIcon goalId={goalId} initialFavourite={initialFavourite} />);
+  });
+
+  // Complete goal button component
+  const completeGoalButtonElement = document.getElementById('complete-goal-button');
+  if (completeGoalButtonElement) {
+    const goalId = parseInt(completeGoalButtonElement.getAttribute('data-goal-id'), 10);
+    const root = createRoot(completeGoalButtonElement);
+    root.render(<CompleteGoalButton goalId={goalId} />);
   }
 };
 

@@ -48,10 +48,19 @@ Rails.application.routes.draw do
         patch 'complete'
         get 'new_child', to: 'goals#new_child'
         post 'create_child', to: 'goals#create_child'
+        post 'toggle_favourite'
+        get 'remaining_tasks'
       end
     end
     get 'tasks/filter_by_goal', to: 'tasks#filter_by_goal', as: 'filter_by_goal_tasks'
     resources :tasks
+    resources :achievements
+  end
+
+  namespace :api do
+    namespace :v1 do
+      get 'tasks_completed_per_day', to: 'tasks#completed_per_day'
+    end
   end
 
 end
