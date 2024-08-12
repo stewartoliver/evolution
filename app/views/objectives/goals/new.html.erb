@@ -11,6 +11,10 @@
 		<%= form_for([:objectives, @goal]) do |form| %>
 		<div class="flex flex-col gap-2">
 			<div>
+				<%= form.label :goal_type_id, class: "text-sm font-medium text-gray-700" %>
+				<%= form.collection_select :goal_type_id, GoalType.all, :id, :name, {}, { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" } %>
+			</div>
+			<div>
 				<%= form.label :title, class: "text-sm font-medium text-gray-700" %>
 				<%= form.text_field :title, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
 			</div>

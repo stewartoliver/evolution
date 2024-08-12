@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  exercise: MyString
+  duration: 1
+  date: 2024-08-08 23:34:48
+  goal: one
+  goal_type: Goal
+
+two:
+  exercise: MyString
+  duration: 1
+  date: 2024-08-08 23:34:48
+  goal: two
+  goal_type: Goal

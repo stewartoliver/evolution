@@ -1,12 +1,29 @@
 class Goal < ApplicationRecord
   belongs_to :user
-  has_many :sub_goals, class_name: "Goal", foreign_key: "parent_goal_id", dependent: :destroy
+  belongs_to :goal_type, optional: true
   belongs_to :parent_goal, class_name: "Goal", optional: true
+
+  has_one :fitness_goal, as: :goal, dependent: :destroy
+  has_one :finance_goal, as: :goal, dependent: :destroy
+  has_one :diet_goal, as: :goal, dependent: :destroy
+  has_one :weight_goal, as: :goal, dependent: :destroy
+  has_one :health_goal, as: :goal, dependent: :destroy
+
+  has_many :sub_goals, class_name: "Goal", foreign_key: "parent_goal_id", dependent: :destroy
   has_many :tasks, dependent: :destroy
   has_many :achievements, dependent: :destroy
+  has_many :milestones, dependent: :destroy
+
 
   attribute :completed_at, :datetime
   attribute :generation, :integer, default: 0
+  accepts_nested_attributes_for :fitness_goal
+  accepts_nested_attributes_for :finance_goal
+  accepts_nested_attributes_for :diet_goal
+  accepts_nested_attributes_for :weight_goal
+  accepts_nested_attributes_for :health_goal
+  accepts_nested_attributes_for :milestones, allow_destroy: true
+
 
   enum status: {not_started: 'not_started', in_progress: 'in_progress', completed: 'completed', on_hold: 'on_hold', cancelled: 'cancelled' }
   
@@ -22,8 +39,12 @@ class Goal < ApplicationRecord
     completed_at.present?
   end
 
+  def overdue?
+    end_date < Time.current
+  end
+
   def incomplete_tasks?
-    tasks.where('status < ?', 2).any?
+    tasks.where.not('status < ?', 2).any?
   end
 
   # Complete current goal and create a child goal

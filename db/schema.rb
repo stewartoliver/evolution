@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_09_063923) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,6 +51,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "category_type", default: "expense", null: false
+  end
+
+  create_table "diet_goals", force: :cascade do |t|
+    t.integer "calories"
+    t.datetime "date"
+    t.string "goal_type", null: false
+    t.bigint "goal_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_type", "goal_id"], name: "index_diet_goals_on_goal"
   end
 
   create_table "exercise_types", force: :cascade do |t|
@@ -97,6 +107,33 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
     t.index ["user_id"], name: "index_expenses_on_user_id"
   end
 
+  create_table "finance_goals", force: :cascade do |t|
+    t.decimal "amount"
+    t.datetime "date"
+    t.integer "bank_account_id"
+    t.string "goal_type", null: false
+    t.bigint "goal_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_type", "goal_id"], name: "index_finance_goals_on_goal"
+  end
+
+  create_table "fitness_goals", force: :cascade do |t|
+    t.integer "duration"
+    t.datetime "date"
+    t.bigint "goal_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "exercise_id"
+    t.string "intensity"
+    t.string "frequency"
+    t.integer "sets"
+    t.integer "reps"
+    t.decimal "distance", precision: 10, scale: 2
+    t.integer "calories_burned"
+    t.string "goal_type"
+  end
+
   create_table "fitness_log_entries", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.date "date", null: false
@@ -134,6 +171,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
     t.index ["fitness_log_exercise_id"], name: "index_fitness_log_sets_on_fitness_log_exercise_id"
   end
 
+  create_table "goal_types", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "color"
+  end
+
   create_table "goals", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title", null: false
@@ -148,8 +193,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
     t.bigint "parent_goal_id"
     t.datetime "completed_at"
     t.integer "generation", default: 0
+    t.bigint "goal_type_id"
+    t.index ["goal_type_id"], name: "index_goals_on_goal_type_id"
     t.index ["parent_goal_id"], name: "index_goals_on_parent_goal_id"
     t.index ["user_id"], name: "index_goals_on_user_id"
+  end
+
+  create_table "health_goals", force: :cascade do |t|
+    t.text "description"
+    t.datetime "date"
+    t.string "goal_type", null: false
+    t.bigint "goal_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_type", "goal_id"], name: "index_health_goals_on_goal"
   end
 
   create_table "incomes", force: :cascade do |t|
@@ -160,6 +217,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_incomes_on_account_id"
+  end
+
+  create_table "milestones", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.integer "target_value"
+    t.integer "achieved_value"
+    t.bigint "goal_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_id"], name: "index_milestones_on_goal_id"
   end
 
   create_table "muscle_groups", force: :cascade do |t|
@@ -253,6 +321,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
     t.index ["user_id"], name: "index_user_stores_on_user_id"
   end
 
+  create_table "user_weight_histories", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "weight", precision: 5, scale: 2
+    t.datetime "recorded_at", null: false
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_weight_histories_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -262,8 +340,33 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "operator", default: false
+    t.decimal "current_weight", precision: 7, scale: 2
+    t.string "first_name"
+    t.string "last_name"
+    t.date "date_of_birth"
+    t.decimal "height", precision: 7, scale: 2
+    t.string "gender"
+    t.integer "activity_level", default: 0
+    t.decimal "current_calorie_intake", precision: 7, scale: 2
+    t.decimal "target_calorie_intake", precision: 7, scale: 2
+    t.decimal "bmi", precision: 5, scale: 2
+    t.decimal "bmr", precision: 5, scale: 2
+    t.decimal "body_fat_percentage", precision: 5, scale: 2
+    t.decimal "goal_weight", precision: 7, scale: 2
+    t.string "preferred_units", default: "metric"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "weight_goals", force: :cascade do |t|
+    t.decimal "target_weight"
+    t.decimal "current_weight"
+    t.datetime "date"
+    t.string "goal_type", null: false
+    t.bigint "goal_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_type", "goal_id"], name: "index_weight_goals_on_goal"
   end
 
   add_foreign_key "accounts", "users"
@@ -280,9 +383,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
   add_foreign_key "fitness_log_exercises", "exercises"
   add_foreign_key "fitness_log_exercises", "fitness_log_entries"
   add_foreign_key "fitness_log_sets", "fitness_log_exercises"
+  add_foreign_key "goals", "goal_types"
   add_foreign_key "goals", "goals", column: "parent_goal_id"
   add_foreign_key "goals", "users"
   add_foreign_key "incomes", "accounts"
+  add_foreign_key "milestones", "goals"
   add_foreign_key "routine_exercises", "exercises"
   add_foreign_key "routine_exercises", "routines"
   add_foreign_key "routine_sets", "routine_exercises"
@@ -290,4 +395,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_08_062819) do
   add_foreign_key "transactions", "accounts"
   add_foreign_key "user_stores", "stores"
   add_foreign_key "user_stores", "users"
+  add_foreign_key "user_weight_histories", "users"
 end

@@ -15,4 +15,12 @@ class User < ApplicationRecord
   has_many :goals
   has_many :tasks, through: :goals
   has_many :achievements, through: :goals
+  has_many :user_weight_histories, dependent: :destroy
+
+  def update_weight(new_weight, note = nil)
+    transaction do
+      self.update!(current_weight: new_weight)
+      self.user_weight_histories.create!(weight: new_weight, recorded_at: Time.current, note: note)
+    end
+  end
 end

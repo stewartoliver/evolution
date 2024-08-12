@@ -6,11 +6,15 @@
 				Edit Goal
 			</div>
 			<div class="text-gray-500 text-sm">
-				/objectives /goals /new
+				/objectives /goals /edit
 			</div>
 		</div>
 		<%= form_for([:objectives, @goal]) do |form| %>
 		<div class="flex flex-col gap-2">
+			<div>
+				<%= form.label :goal_type_id, class: "text-sm font-medium text-gray-700" %>
+				<%= form.collection_select :goal_type_id, GoalType.all, :id, :name, {}, { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" } %>
+			</div>
 			<div>
 				<%= form.label :title, class: "text-sm font-medium text-gray-700" %>
 				<%= form.text_field :title, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
@@ -26,12 +30,12 @@
 				</div>
 				<div class="w-full">
 					<%= form.label :end_date, class: "text-sm font-medium text-gray-700" %>
-					<%= form.date_field :end_date, value:  @goal.end_date, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+					<%= form.date_field :end_date, value: @goal.end_date, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
 				</div>
 			</div>
 			<div>
 				<%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
-				<%= form.collection_select :status, Goal.statuses.keys.map { |status| [status.humanize, status] }, :second, :first, { prompt: "Select a status" }, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" %>
+				<%= form.collection_select :status, Goal.statuses.keys.map { |status| [status.humanize, status] }, :second, :first, { prompt: "Select a status" }, { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" } %>
 			</div>
 			<div class="flex justify-end">
 				<%= form.submit "Update", class: "sky-btn" %>
@@ -40,6 +44,49 @@
 		<% end %>
 	</div>
 	<div class="flex flex-col w-full bg-sky-900 text-white p-5 h-screen">
-
+		<%= form_with(model: @fitness_goal, url: objectives_goal_fitness_goals_path(@goal), local: true) do |form| %>
+		<div class="flex flex-col gap-2 p-3 rounded-lg bg-sky-800 w-1/2">
+			<div>
+				<%= form.label :exercise_id, class: "block text-sm font-medium text-white" %>
+				<%= form.collection_select :exercise_id, Exercise.all, :id, :name, { prompt: "Select Exercise" }, { class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" } %>
+			</div>
+			<div>
+				<%= form.label :intensity, class: "text-sm font-medium text-white" %>
+				<%= form.text_field :intensity, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+			</div>
+			<div>
+				<%= form.label :frequency, class: "text-sm font-medium text-white" %>
+				<%= form.text_field :frequency, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+			</div>
+			<div class="flex items-center gap-2">
+				<div class="w-full">
+					<%= form.label :sets, class: "text-sm font-medium text-white" %>
+					<%= form.number_field :sets, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+				</div>
+				<div class="w-full">
+					<%= form.label :reps, class: "text-sm font-medium text-white" %>
+					<%= form.number_field :reps, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+				</div>
+			</div>
+			<div>
+				<%= form.label :distance, class: "text-sm font-medium text-white" %>
+				<%= form.number_field :distance, step: 0.01, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+			</div>
+			<div>
+				<%= form.label :calories_burned, class: "text-sm font-medium text-white" %>
+				<%= form.number_field :calories_burned, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+			</div>
+			<div>
+				<%= form.label :duration, class: "text-sm font-medium text-white" %>
+				<%= form.number_field :duration, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
+			</div>
+			<div>
+				<%= form.hidden_field :goal_id, value: @goal.id %>
+			</div>
+			<div class="flex justify-end">
+				<%= form.submit "Save Fitness Goal", class:"sky-badge" %>
+			</div>
+		</div>
+		<% end %>
 	</div>
 </div>

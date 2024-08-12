@@ -14,6 +14,15 @@ Rails.application.routes.draw do
   get 'about-us', to: 'pages#about_us'
   get 'features', to: 'pages#features'
 
+  resources :users, only: [] do
+    resources :user_weight_histories, only: [:index, :new, :create, :edit, :update, :destroy]
+  end
+
+  devise_scope :user do
+    get 'profile', to: 'users/registrations#show', as: :user_profile
+    get 'profile/edit', to: 'users/registrations#edit', as: :edit_user_profile
+  end
+
   namespace :operator do
     get 'dashboard', to: 'dashboard#index'
 
@@ -43,6 +52,7 @@ Rails.application.routes.draw do
   namespace :objectives do
     get 'dashboard', to: 'dashboard#index'
     resources :goals do
+      resources :fitness_goals, only: [:create, :update, :destroy]
       member do
         post 'make_task'
         patch 'complete'
@@ -52,6 +62,8 @@ Rails.application.routes.draw do
         get 'remaining_tasks'
       end
     end
+    resources :finance_goals
+    resources :diet_goals
     get 'tasks/filter_by_goal', to: 'tasks#filter_by_goal', as: 'filter_by_goal_tasks'
     resources :tasks
     resources :achievements

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  description: MyText
+  date: 2024-08-08 23:34:54
+  goal: one
+  goal_type: Goal
+
+two:
+  description: MyText
+  date: 2024-08-08 23:34:54
+  goal: two
+  goal_type: Goal

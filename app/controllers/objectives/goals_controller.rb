@@ -12,7 +12,7 @@ module Objectives
     end
 
     def edit
-
+      @fitness_goal = @goal.fitness_goal || @goal.build_fitness_goal
     end
 
     def update
@@ -93,7 +93,7 @@ module Objectives
     end
 
     def goal_params
-      params.require(:goal).permit(:title, :description, :start_date, :end_date, :status)
+      params.require(:goal).permit(:title, :description, :start_date, :end_date, :status, :goal_type_id)
     end
 
     def task_params
