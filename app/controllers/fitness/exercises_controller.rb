@@ -3,13 +3,14 @@ module Fitness
     before_action :authenticate_user!
     before_action :set_exercise, only: [:show, :edit, :update]
 
-    def index
-      @exercises = Exercise.all
-      respond_to do |format|
-        format.html
-        format.json { render json: @exercises }
-      end
-    end
+   def index
+  @exercises = Exercise.includes(:exercise_type, :muscle_group).all
+
+  respond_to do |format|
+    format.html # Renders the standard HTML index page (index.html.erb)
+    format.json { render json: @exercises.to_json(include: [:exercise_type, :muscle_group]) }
+  end
+end
 
     def new
       @exercise = Exercise.new
@@ -30,15 +31,18 @@ module Fitness
     end
 
     def update
-      @exercise = Exercise.find(exercise_params[:id])
-      if @exercise.save
-        redirect_to fitness_exercises_path, notice: 'Exercise was successfully created.'
+      if @exercise.update(exercise_params)
+        redirect_to fitness_exercises_path, notice: 'Exercise was successfully updated.'
       else
-        render :new
+        render :edit
       end
     end
 
     def show
+      respond_to do |format|
+        format.html
+        format.json { render json: @exercise }
+      end
     end
 
     private

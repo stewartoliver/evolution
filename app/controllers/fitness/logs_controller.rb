@@ -47,7 +47,13 @@ module Fitness
     end
 
     def log_params
-      params.require(:fitness_log_entry).permit(:date, :time, :notes, fitness_log_exercises_attributes: [:id, :exercise_id, fitness_log_sets_attributes: [:id, :reps, :weight]])
+      params.require(:fitness_log_entry).permit(:date, :time, :notes, 
+        fitness_log_exercises_attributes: [
+          :id, :exercise_id, :_destroy,
+          fitness_log_sets_attributes: [:id, :reps, :weight, :duration, :distance, :intensity, :style, :_destroy]
+        ]
+        )
     end
+
   end
 end

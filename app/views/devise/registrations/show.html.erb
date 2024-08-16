@@ -2,7 +2,7 @@
 	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
 		<div class="flex flex-col tracking-tight leading-tight">
 			<div class="text-2xl font-bold uppercase text-sky-900">
-				Evolution Profile Dashboard
+				<%= @user.full_name %>'s profile
 			</div>
 			<div class="text-gray-500 text-sm">
 				/profile
@@ -17,7 +17,38 @@
 					<%= @user.email %>
 				</div>
 			</div>
-
+			<div>
+				<div class="text-gray-700 font-medium text-sm">
+					Date of birth:
+				</div>
+				<div class="text-gray-500 text-sm">
+					<%= @user.date_of_birth.strftime('%d %B %Y') %>
+				</div>
+			</div>
+			<div>
+				<div class="text-gray-700 font-medium text-sm">
+					Gender:
+				</div>
+				<div class="text-gray-500 text-sm">
+					<%= @user.gender.capitalize %>
+				</div>
+			</div>
+			<div>
+				<div class="flex items-center gap-1">
+					<div class="text-gray-700 font-medium text-sm">
+						Height:
+					</div>
+					<div class="text-sm text-gray-400 italic">
+						(Preferred units set as <%= @user.preferred_units %>)
+					</div>
+				</div>
+				<div class="text-gray-500 text-sm">
+					<%= @user.height %> <%= @user.measurement_unit %>
+				</div>
+			</div>
+			<div class="flex justify-end">
+				<%= link_to 'Edit', edit_user_profile_path, class: "sky-btn" %>
+			</div>
 		</div>
 	</div>
 	<div class="flex flex-col w-full bg-sky-900 text-white p-5 h-screen">

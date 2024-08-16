@@ -56,6 +56,9 @@
   </div>
   <% if current_user&.operator? %>
   <div class="flex justify-end items-center gap-5 w-full">
+    <div class="text-sm text-sky-900">
+      <%= link_to 'Profile', user_profile_path, class: "text-sm py-2 font-bold text-sky-900 uppercase" %>
+    </div>
     <div class="text-sm py-2 font-medium text-gray-500">
       |
     </div>
