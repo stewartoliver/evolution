@@ -39,6 +39,10 @@ gem 'groupdate'
 
 gem 'rails-ujs'
 
+gem 'smarter_csv'
+
+gem 'sidekiq'
+
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"

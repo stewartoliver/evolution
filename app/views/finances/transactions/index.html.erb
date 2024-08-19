@@ -1,3 +1,30 @@
-<div>
-	Index
+<%= form_with url: import_finances_transactions_path, method: :post, local: true, multipart: true do |f| %>
+<div class="flex flex-col gap-5 p-5">
+
+	<div class="flex flex-col gap-1 whitespace-nowrap w-min">
+		<%= f.label :account_id, "Select Account", class: "text-sm font-medium text-gray-700" %>
+		<%= f.collection_select :account_id, current_user.accounts, :id, :account_name, { prompt: "Choose an account" }, { class: "min-w-52 w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" } %>
+	</div>
+	<div class="flex flex-col gap-1">
+		<%= f.label :file, "Upload CSV", class: "text-sm font-medium text-gray-700" %>
+		<div class="relative">
+			<input id="file-upload" name="file" type="file" class="hidden">
+			<label for="file-upload" class="cursor-pointer inline-block rounded-md border border-gray-300 shadow-sm py-2 px-4 bg-white text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+				Choose File
+			</label>
+			<span id="file-name" class="ml-3 text-gray-500"></span>
+		</div>
+	</div>
+	<div>
+		<%= f.submit "Upload CSV", class: "sky-btn" %>
+	</div>
 </div>
+
+<!-- Script to Display Selected File Name -->
+<script>
+	document.getElementById('file-upload').addEventListener('change', function() {
+		const fileName = this.files[0].name;
+		document.getElementById('file-name').textContent = fileName;
+	});
+</script>
+<% end %>

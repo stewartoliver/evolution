@@ -3,8 +3,7 @@ module Finances
     before_action :set_transaction, only: [:show, :edit, :update, :destroy]
 
     def index
-      @account = Account.find(params[:account_id])
-      @transactions = @account.transactions
+      @transactions = Transaction.all
     end
 
     def show
@@ -36,7 +35,31 @@ module Finances
 
     def destroy
       @transaction.destroy
-      redirect_to finances_transactions_path(@transaction), notice: 'Transaction was successfully destroyed.'
+      redirect_to finances_transactions_path, notice: 'Transaction was successfully destroyed.'
+    end
+
+    def import
+      if params[:file].present? && params[:account_id].present?
+        file_path = Rails.root.join('tmp', "#{SecureRandom.hex}_#{params[:file].original_filename}")
+        
+        begin
+          Rails.logger.info "Starting file upload: #{file_path}"
+          File.open(file_path, 'wb') do |file|
+            file.write(params[:file].read)
+          end
+
+          Rails.logger.info "File uploaded successfully: #{file_path}"
+          CsvImportJob.perform_async(file_path.to_s, current_user.id, params[:account_id])
+          Rails.logger.info "CSV import job scheduled for user #{current_user.id} and account #{params[:account_id]}"
+
+          redirect_to finances_transactions_path, notice: "CSV is being processed. You will be notified once it's done."
+        rescue => e
+          Rails.logger.error "Error during file upload or job scheduling: #{e.message}"
+          redirect_to finances_transactions_path, alert: "There was an error processing your request. Please try again."
+        end
+      else
+        redirect_to finances_transactions_path, alert: "Please select an account and upload a file."
+      end
     end
 
     private

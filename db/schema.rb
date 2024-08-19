@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_12_134038) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_17_073537) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -33,6 +33,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_12_134038) do
     t.datetime "updated_at", null: false
     t.index ["goal_id"], name: "index_achievements_on_goal_id"
     t.index ["user_id"], name: "index_achievements_on_user_id"
+  end
+
+  create_table "bank_statement_imports", force: :cascade do |t|
+    t.string "transaction_type"
+    t.string "details"
+    t.string "particulars"
+    t.string "code"
+    t.string "reference"
+    t.decimal "amount", precision: 15, scale: 2
+    t.date "transaction_date"
+    t.decimal "foreign_currency_amount", precision: 15, scale: 2
+    t.decimal "conversion_charge", precision: 15, scale: 2
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_bank_statement_imports_on_user_id"
   end
 
   create_table "budgets", force: :cascade do |t|
@@ -116,6 +132,32 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_12_134038) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["goal_type", "goal_id"], name: "index_finance_goals_on_goal"
+  end
+
+  create_table "financial_stores", id: :bigint, default: -> { "nextval('stores_id_seq'::regclass)" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "chain_name"
+    t.json "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "default_financial_category"
+  end
+
+  create_table "financial_tags", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_financial_tags_on_user_id"
+  end
+
+  create_table "financial_transaction_taggings", force: :cascade do |t|
+    t.bigint "financial_transaction_id", null: false
+    t.bigint "financial_tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["financial_tag_id"], name: "index_financial_transaction_taggings_on_tag_id"
+    t.index ["financial_transaction_id"], name: "index_financial_transaction_taggings_on_transaction_id"
   end
 
   create_table "fitness_goals", force: :cascade do |t|
@@ -272,14 +314,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_12_134038) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "stores", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "chain_name"
-    t.json "metadata"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "tasks", force: :cascade do |t|
     t.bigint "goal_id", null: false
     t.string "title", null: false
@@ -308,7 +342,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_12_134038) do
     t.datetime "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "store_name"
+    t.bigint "financial_store_id"
+    t.bigint "bank_statement_import_id"
+    t.bigint "user_id", null: false
     t.index ["account_id"], name: "index_transactions_on_account_id"
+    t.index ["bank_statement_import_id"], name: "index_transactions_on_bank_statement_import_id"
+    t.index ["financial_store_id"], name: "index_transactions_on_financial_store_id"
+    t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
   create_table "user_stores", force: :cascade do |t|
@@ -378,7 +419,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_12_134038) do
   add_foreign_key "exercises", "muscle_groups"
   add_foreign_key "expenses", "accounts"
   add_foreign_key "expenses", "categories"
-  add_foreign_key "expenses", "stores"
+  add_foreign_key "expenses", "financial_stores", column: "store_id"
   add_foreign_key "fitness_log_entries", "routines"
   add_foreign_key "fitness_log_entries", "users"
   add_foreign_key "fitness_log_exercises", "exercises"
@@ -394,7 +435,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_12_134038) do
   add_foreign_key "routine_sets", "routine_exercises"
   add_foreign_key "tasks", "goals"
   add_foreign_key "transactions", "accounts"
-  add_foreign_key "user_stores", "stores"
+  add_foreign_key "transactions", "users"
+  add_foreign_key "user_stores", "financial_stores", column: "store_id"
   add_foreign_key "user_stores", "users"
   add_foreign_key "user_weight_histories", "users"
 end

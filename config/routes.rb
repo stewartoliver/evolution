@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users, path: '', path_names: { sign_in: 'sign-in', sign_out: 'sign-out', sign_up: 'sign-up' }, controllers: { registrations: 'users/registrations', sessions: 'users/sessions' }
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -36,7 +38,11 @@ Rails.application.routes.draw do
   namespace :finances do
     get 'dashboard', to: 'dashboard#index'
     resources :accounts
-    resources :transactions
+    resources :transactions do
+      collection do
+        post :import
+      end
+    end    
     resources :incomes
     resources :expenses
     resources :budgets

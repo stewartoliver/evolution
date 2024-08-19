@@ -1,5 +1,5 @@
 # app/models/store.rb
-class Store < ApplicationRecord
+class FinancialStore < ApplicationRecord
   has_many :user_stores
   has_many :users, through: :user_stores
   has_many :expenses
