@@ -1,20 +1,64 @@
 import "@hotwired/turbo-rails"; // Handles navigation and form submissions
 import Rails from "@rails/ujs";  // Handles non-GET requests in links/forms
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './components/App';
 import RoutineForm from './components/RoutineForm';
 import LogForm from './components/LogForm';
-import Board from './components/Board'; // Ensure the correct path is used here
-import TasksChart from './components/TasksChart'; // Import the new TasksChart component
-import HeartIcon from './components/HeartIcon'; // Import the HeartIcon component
-import CompleteGoalButton from './components/CompleteGoalButton'; // Import the CompleteGoalButton component
+import Board from './components/Board'; 
+import TasksChart from './components/TasksChart';
+import HeartIcon from './components/HeartIcon';
+import CompleteGoalButton from './components/CompleteGoalButton';
+import EditTaskForm from './components/EditTaskForm'; 
+import Modal from './components/Modal'; // Ensure the correct path
 
 import "chartkick/chart.js"; // Import chart.js for Chartkick
 
 // Initialize Rails UJS
 Rails.start();
+
+// Function to toggle tasks visibility
+function toggleTasks(goalId) {
+  const tasksElement = document.getElementById(`tasks-${goalId}`);
+  tasksElement.classList.toggle('hidden');
+}
+
+// Function to open the edit task modal
+function openEditTaskModal(taskId, title, description, status) {
+    const task = { id: taskId, title, description, status };
+
+    const modalContainer = document.getElementById('edit-task-form-container');
+    if (modalContainer) {
+        ReactDOM.render(
+            <Modal show={true} onClose={closeEditTaskModal}>
+                <EditTaskForm task={task} onSave={handleSave} />
+            </Modal>,
+            modalContainer
+        );
+    }
+}
+
+// Function to close the edit task modal
+function closeEditTaskModal() {
+    const modalContainer = document.getElementById('edit-task-form-container');
+    if (modalContainer) {
+        ReactDOM.unmountComponentAtNode(modalContainer);
+    }
+}
+
+// Function to handle task save and close modal
+function handleSave(updatedTask) {
+    console.log('Task saved:', updatedTask);
+    closeEditTaskModal();
+    // Additional logic to update the task in your state or backend
+}
+
+// Make these functions globally accessible if needed
+window.toggleTasks = toggleTasks;
+window.openEditTaskModal = openEditTaskModal;
+window.closeEditTaskModal = closeEditTaskModal;
 
 // Function to initialize React components
 const initializeReactComponents = () => {

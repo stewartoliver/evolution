@@ -42,10 +42,7 @@ const EditTaskForm = ({ task, onSave }) => {
         />
       </div>
       <div className="flex justify-end">
-        <button
-          type="submit"
-          className="sky-btn"
-        >
+        <button type="submit" className="sky-btn">
           Save
         </button>
       </div>

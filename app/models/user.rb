@@ -61,7 +61,7 @@ class User < ApplicationRecord
   end
 
   def weight_unit
-    preferred_units == 'imperial' ? 'lbs' : 'kgs'
+    preferred_units == 'imperial' ? 'lb' : 'kg'
   end
 
   # Calculate the user's age based on date_of_birth
