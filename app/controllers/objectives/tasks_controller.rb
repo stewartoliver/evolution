@@ -49,7 +49,7 @@ module Objectives
     private
 
     def task_params
-      params.require(:task).permit(:status, :title, :description, :due_date, :goal_id)
+      params.require(:task).permit(:status, :title, :description, :due_date, :goal_id, :priority, :assigned_to, :estimated_time, :actual_time, :tags, :is_recurring, :recurrence_interval)
     end
   end
 end
