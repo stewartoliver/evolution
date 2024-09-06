@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_17_073537) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_05_094445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -241,6 +241,30 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_17_073537) do
     t.index ["user_id"], name: "index_goals_on_user_id"
   end
 
+  create_table "habit_logs", force: :cascade do |t|
+    t.bigint "habit_id", null: false
+    t.date "date", null: false
+    t.integer "occurrences", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["habit_id"], name: "index_habit_logs_on_habit_id"
+  end
+
+  create_table "habits", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "goal_id"
+    t.bigint "task_id"
+    t.string "name", null: false
+    t.text "description"
+    t.string "frequency", null: false
+    t.integer "target_occurrences"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_id"], name: "index_habits_on_goal_id"
+    t.index ["task_id"], name: "index_habits_on_task_id"
+    t.index ["user_id"], name: "index_habits_on_user_id"
+  end
+
   create_table "health_goals", force: :cascade do |t|
     t.text "description"
     t.datetime "date"
@@ -428,6 +452,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_17_073537) do
   add_foreign_key "goals", "goal_types"
   add_foreign_key "goals", "goals", column: "parent_goal_id"
   add_foreign_key "goals", "users"
+  add_foreign_key "habit_logs", "habits"
+  add_foreign_key "habits", "goals"
+  add_foreign_key "habits", "tasks"
+  add_foreign_key "habits", "users"
   add_foreign_key "incomes", "accounts"
   add_foreign_key "milestones", "goals"
   add_foreign_key "routine_exercises", "exercises"

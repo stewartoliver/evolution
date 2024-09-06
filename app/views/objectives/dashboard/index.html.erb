@@ -11,6 +11,15 @@
 		<div class="flex flex-col divide-y divide-gray-200">
 			<div class="py-4">
 				<div class="font-bold text-sky-900 uppercase">
+					Habits
+				</div>
+				<div class="flex items-center gap-1 text-gray-500">
+					<%= link_to "create, ", new_objectives_habit_path %>
+					<%= link_to "explore. ", objectives_habits_path %>
+				</div>
+			</div>
+			<div class="py-4">
+				<div class="font-bold text-sky-900 uppercase">
 					Goals
 				</div>
 				<div class="flex items-center gap-1 text-gray-500">
@@ -98,40 +107,6 @@
 			</div>
 			<div id="edit-task-form-container"></div>
 			<% end %>
-			<div class="flex flex-col gap-3 p-3 rounded-md bg-sky-800 shadow-xl">
-				<% @overview_tasks.each do |task| %>
-				<div class="flex flex-col gap-1 bg-gray-100 rounded-md px-2 py-1 text-sky-900 tracking-tight leading-tight shadow-xl">
-					<div class="flex justify-between items-center">
-						<div class="flex flex-col tracking-tight leading-tight">
-							<div class="text-xl font-medium">
-								<%= truncate(task.title, length: 65) %>
-							</div>
-							<div class="flex flex-col text-xs font-medium text-gray-500">
-								<div class="flex items-center gap-1">
-									<div class="text-gray-700 uppercase">
-										G:
-									</div>
-									<div>
-										<%= task.goal.title %>
-									</div>
-								</div>
-								<div class="flex items-center gap-1">
-									<div class="text-gray-700 uppercase">
-										S:
-									</div>
-									<div>
-										<%= task.status.capitalize.gsub('_', ' ') %>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div>
-							<%= link_to 'Open', objectives_task_path(task.id), class: "sky-badge" %>
-						</div>
-					</div>
-				</div>
-				<% end %>
-			</div>
 		</div>
 	</div>
 </div>

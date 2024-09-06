@@ -1,5 +1,5 @@
-import "@hotwired/turbo-rails"; // Handles navigation and form submissions
-import Rails from "@rails/ujs";  // Handles non-GET requests in links/forms
+import "@hotwired/turbo-rails";
+import Rails from "@rails/ujs";
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -13,77 +13,53 @@ import CompleteGoalButton from './components/CompleteGoalButton';
 import EditTaskForm from './components/EditTaskForm';
 import Modal from './components/Modal';
 import GoalProgress from './components/GoalProgress';
-import "./components/tasks";  // Or "./controllers/tasks" depending on where you place it
+import "./components/Task";
+import HabitLogForm from './components/HabitLogForm';
 
+import 'chart.js/auto';
+import 'chartkick/chart.js';
 
-import "chartkick/chart.js"; // Import chart.js for Chartkick
-
-// Initialize Rails UJS
 Rails.start();
 
-// Function to initialize React components
-const initializeReactComponents = () => {
-  // Main app component
-  const appRootElement = document.getElementById('root');
-  if (appRootElement) {
-    const root = createRoot(appRootElement);
+const renderComponent = (elementId, Component, props = {}) => {
+  const element = document.getElementById(elementId);
+  if (element) {
+    const root = createRoot(element);
     root.render(
       <Router>
-        <App />
-      </Router>
+        <Component {...props} />
+      </Router>  /
     );
   }
+};
 
-  // Routine form component
-  const routineFormElement = document.getElementById('routine-form-container');
-  if (routineFormElement) {
-    const routineFormRoot = createRoot(routineFormElement);
-    routineFormRoot.render(
-      <Router>
-        <RoutineForm />
-      </Router>
-    );
-  }
+const initializeReactComponents = () => {
+  renderComponent('root', App);
+  renderComponent('routine-form-container', RoutineForm);
 
-  // Log form component
   const logFormElement = document.getElementById('log-form-container');
   if (logFormElement) {
-    const logFormRoot = createRoot(logFormElement);
-    logFormRoot.render(
-      <Router>
-        <LogForm />
-      </Router>
-    );
+    const logData = logFormElement.getAttribute('data-log-data');
+    const initialExercises = logData ? JSON.parse(logData).fitness_log_exercises : [];
+    const isEditPage = logFormElement.getAttribute('data-is-edit') === 'true';
+    renderComponent('log-form-container', LogForm, { initialExercises, isEditPage });
   }
 
-  // Board component
   const boardRootElement = document.getElementById('board-root');
   if (boardRootElement) {
     const goalId = boardRootElement.getAttribute('data-goal-id');
-    const root = createRoot(boardRootElement);
-    root.render(
-      <Router>
-        <Board goalId={goalId} />
-      </Router>
-    );
+    renderComponent('board-root', Board, { goalId });
   }
 
-  // Tasks chart component
-  const tasksChartElement = document.getElementById('tasks-chart-container');
-  if (tasksChartElement) {
-    const chartRoot = createRoot(tasksChartElement);
-    chartRoot.render(<TasksChart />);
-  }
+  renderComponent('tasks-chart-container', TasksChart);
 
-  // Heart icon component
-  document.querySelectorAll('.heart-icon').forEach(div => {
+  document.querySelectorAll('.heart-icon').forEach((div) => {
     const goalId = parseInt(div.getAttribute('data-goal-id'), 10);
     const initialFavourite = div.getAttribute('data-initial-favourite') === 'true';
     const root = createRoot(div);
     root.render(<HeartIcon goalId={goalId} initialFavourite={initialFavourite} />);
   });
 
-  // Complete goal button component
   const completeGoalButtonElement = document.getElementById('complete-goal-button');
   if (completeGoalButtonElement) {
     const goalId = parseInt(completeGoalButtonElement.getAttribute('data-goal-id'), 10);
@@ -91,63 +67,85 @@ const initializeReactComponents = () => {
     root.render(<CompleteGoalButton goalId={goalId} />);
   }
 
-  // Goal progress component
   document.querySelectorAll('.goal-progress').forEach((div) => {
     const progress = parseInt(div.getAttribute('data-progress'), 10);
     const root = createRoot(div);
     root.render(<GoalProgress progress={progress} />);
   });
+
+  document.querySelectorAll('.habit-log-form').forEach((div) => {
+    const habitId = div.getAttribute('data-habit-id');
+    const habitName = div.getAttribute('data-habit-name');
+    if (habitId && habitName) {
+      const root = createRoot(div);
+      root.render(<HabitLogForm habitId={habitId} habitName={habitName} />);
+    } else {
+      console.error('Missing habitId or habitName. Cannot render HabitLogForm.');
+    }
+  });
 };
 
-// Function to toggle tasks visibility
-function toggleTasks(goalId) {
+const toggleTasks = (goalId) => {
   const tasksElement = document.getElementById(`tasks-${goalId}`);
-  tasksElement.classList.toggle('hidden');
-}
+  tasksElement?.classList.toggle('hidden');
+};
 
-// Function to open the edit task modal
-function openEditTaskModal(taskId, title, description, status) {
-  const task = { id: taskId, title, description, status };
+let modalRoot = null;
 
+const openEditTaskModal = (task) => {
   const modalContainer = document.getElementById('edit-task-form-container');
-  if (modalContainer) {
-    const root = createRoot(modalContainer);  // Updated to use createRoot
-    root.render(
-      <Modal show={true} onClose={closeEditTaskModal}>
-        <EditTaskForm task={task} onSave={handleSave} />
-      </Modal>
-    );
+  if (!modalRoot) {
+    modalRoot = createRoot(modalContainer);
   }
-}
+  modalRoot.render(
+    <Modal show={true} onClose={closeEditTaskModal}>
+      <EditTaskForm task={task} onSave={handleSave} />
+    </Modal> /
+  );
+};
 
-// Function to close the edit task modal
-function closeEditTaskModal() {
-  const modalContainer = document.getElementById('edit-task-form-container');
-  if (modalContainer) {
-    const root = createRoot(modalContainer);  // Updated to use createRoot
-    root.unmount();
-  }
-}
+const closeEditTaskModal = () => {
+  modalRoot?.unmount();
+  modalRoot = null;
+};
 
-// Function to handle task save and close modal
-function handleSave(updatedTask) {
-  console.log('Task saved:', updatedTask);
-  closeEditTaskModal();
-  // Additional logic to update the task in your state or backend
-}
+const handleSave = (updatedTask) => {
+  saveTask(updatedTask)
+    .then(() => {
+      closeEditTaskModal();
+      window.location.reload();
+    })
+    .catch((error) => {
+      console.error('Failed to save task:', error);
+    });
+};
 
-// Make these functions globally accessible if needed
-window.toggleTasks = toggleTasks;
-window.openEditTaskModal = openEditTaskModal;
-window.closeEditTaskModal = closeEditTaskModal;
+const saveTask = (task) => {
+  return fetch(`objectives/tasks/${task.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(task),
+  }).then(response => response.json());
+};
 
-// Function to initialize navigation dropdowns
 const initializeNavDropdowns = () => {
   const dropdowns = [
     { button: 'finances-menu-button', dropdown: 'finances-menu-dropdown' },
     { button: 'fitness-menu-button', dropdown: 'fitness-menu-dropdown' },
     { button: 'goals-menu-button', dropdown: 'goals-menu-dropdown' },
   ];
+
+  const closeOtherDropdowns = (currentDropdown) => {
+    dropdowns.forEach(({ dropdown }) => {
+      const menuDropdown = document.getElementById(dropdown);
+      if (menuDropdown && menuDropdown !== currentDropdown) {
+        menuDropdown.classList.add('hidden');
+        menuDropdown.previousElementSibling?.setAttribute('aria-expanded', 'false');
+      }
+    });
+  };
 
   dropdowns.forEach(({ button, dropdown }) => {
     const menuButton = document.getElementById(button);
@@ -157,12 +155,11 @@ const initializeNavDropdowns = () => {
       menuButton.addEventListener('click', () => {
         menuDropdown.classList.toggle('hidden');
         menuButton.setAttribute('aria-expanded', !menuDropdown.classList.contains('hidden'));
-        closeOtherDropdowns(dropdowns, menuDropdown);
+        closeOtherDropdowns(menuDropdown);
       });
     }
   });
 
-  // Close dropdowns when clicking outside
   document.addEventListener('click', (event) => {
     dropdowns.forEach(({ button, dropdown }) => {
       const menuButton = document.getElementById(button);
@@ -174,20 +171,13 @@ const initializeNavDropdowns = () => {
       }
     });
   });
-
-  function closeOtherDropdowns(dropdowns, currentDropdown) {
-    dropdowns.forEach(({ dropdown }) => {
-      const menuDropdown = document.getElementById(dropdown);
-      if (menuDropdown && menuDropdown !== currentDropdown) {
-        menuDropdown.classList.add('hidden');
-        menuDropdown.previousElementSibling.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
 };
 
-// Initialize components and navigation on turbo:load
 document.addEventListener('turbo:load', () => {
   initializeReactComponents();
   initializeNavDropdowns();
 });
+
+window.toggleTasks = toggleTasks;
+window.openEditTaskModal = openEditTaskModal;
+window.closeEditTaskModal = closeEditTaskModal;

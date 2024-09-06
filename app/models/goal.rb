@@ -8,6 +8,7 @@ class Goal < ApplicationRecord
   has_one :diet_goal, as: :goal, dependent: :destroy
   has_one :weight_goal, as: :goal, dependent: :destroy
   has_one :health_goal, as: :goal, dependent: :destroy
+  has_many :habits, dependent: :destroy  # A goal can have multiple habits
 
   has_many :sub_goals, class_name: "Goal", foreign_key: "parent_goal_id", dependent: :destroy
   has_many :tasks, dependent: :destroy

@@ -131,40 +131,5 @@
 				</div>
 			</div>
 		</div>
-		<% if FitnessLogEntry.entries_this_week(current_user).present? %>
-		<div class="flex flex-col p-2 bg-sky-800 w-96 border-sky-950 border">
-			<div  class="px-1 text-xl font-bold uppercase text-white">
-				Exercises Per Day
-			</div>
-			<div>
-				<%= bar_chart FitnessLogEntry.entries_this_week(current_user).joins(:fitness_log_exercises).group_by_day_of_week(:date, format: "%a").count('fitness_log_exercises.id'),
-              colors: ["#1E3A8A"],  # Color for the bars
-              library: {
-              	scales: {
-              		y: {
-              			ticks: { color: "#FFFFFF", beginAtZero: true },
-              			grid: { color: "rgba(255, 255, 255, 0.1)" }
-              		},
-              		x: {
-              			ticks: { color: "#FFFFFF" },
-              			grid: { color: "rgba(255, 255, 255, 0.1)" }
-              		}
-              	},
-              	plugins: {
-              		legend: {
-                          labels: { color: "#FFFFFF" }  # Sets the legend text to white
-                        }
-                      },
-                      elements: {
-                      	bar: { borderColor: "#FFFFFF", borderWidth: 2 }
-                      },
-                      animation: { duration: 500 }
-                    } %>
-
-
-
-                  </div>
-                </div>
-                <% end %>
-              </div>
-            </div>
+	</div>
+</div>

@@ -57,6 +57,12 @@ Rails.application.routes.draw do
 
   namespace :objectives do
     get 'dashboard', to: 'dashboard#index'
+    resources :habits do
+      member do
+        get 'today_occurrences'
+      end
+      resources :habit_logs, only: [:create]
+    end
     resources :goals do
       resources :fitness_goals, only: [:create, :update, :destroy]
       member do

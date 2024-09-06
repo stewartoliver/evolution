@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :expenses
   has_many :routines
   has_many :fitness_log_entries
+  has_many :habits, dependent: :destroy
   has_many :goals
   has_many :tasks, through: :goals
   has_many :achievements, through: :goals

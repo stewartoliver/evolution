@@ -6,7 +6,7 @@
 
 @layer components {
   .sky-input {
-    @apply flex flex-col tracking-tight leading-tight rounded-md bg-sky-100 px-4 py-2 rounded-lg;
+    @apply w-full rounded-md border border-gray-300 focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500;
   }
     .sky-btn {
     @apply px-4 py-2 bg-sky-800 text-stone-200 font-semibold rounded-lg hover:cursor-pointer hover:bg-sky-900;

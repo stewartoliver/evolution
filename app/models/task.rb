@@ -1,6 +1,7 @@
 class Task < ApplicationRecord
   belongs_to :goal
   belongs_to :user
+  has_many :habits, dependent: :destroy
 
   validates :title, presence: true
   validates :status, presence: true

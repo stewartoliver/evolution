@@ -1,3 +1,41 @@
-<div>
-	Edit
+<%= form_for([:fitness, @log], url: fitness_logs_path) do |form| %>
+<div class="flex flex-col lg:flex-row">
+  <div class="flex flex-col gap-5 lg:w-1/3 p-5">
+    <div class="flex flex-col tracking-tight leading-tight">
+      <div class="text-2xl font-bold uppercase text-sky-900">
+        Edit fitness log
+      </div>
+      <div class="text-gray-500 text-sm">
+        /fitness /log /edit
+      </div>
+    </div>
+    <div class="flex flex-col gap-5">
+      <div class="flex items-center gap-4">
+        <div class="flex flex-col">
+          <%= form.label :date, "Date", class: "text-sm font-medium text-gray-700" %>
+          <%= form.date_field :date, value: @log.date ? @log.date.strftime("%Y-%m-%d") : Time.current.to_date, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" %>
+        </div>
+        <div class="flex flex-col">
+          <%= form.label :time, "Time", class: "text-sm font-medium text-gray-700" %>
+          <%= form.time_field :time, step: 60, value: @log.time ? @log.time.strftime("%H:%M") : Time.current.strftime("%H:%M"), class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500" %>
+        </div>
+      </div>
+      <div class="flex flex-col">
+        <%= form.label :notes, "Notes", class: "text-sm font-medium text-gray-700" %>
+        <%= form.text_area :notes, rows: 4, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500 resize-y" %>
+      </div>
+      <div class="flex justify-end">
+        <%= form.submit "Update", class: "sky-btn" %>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col w-full bg-sky-900 text-white p-5 min-h-screen">
+    <div class="flex flex-col gap-4">
+      <div id="log-form-container" 
+           data-log-data="<%= @log.to_json(include: { fitness_log_exercises: { include: :fitness_log_sets } }) %>" 
+           data-is-edit="true">
+      </div>
+    </div>
+  </div>
 </div>
+<% end %>

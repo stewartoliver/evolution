@@ -1,0 +1,38 @@
+<div class="flex flex-col lg:flex-row">
+	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
+		<div class="flex flex-col tracking-tight leading-tight">
+			<div class="text-2xl font-bold uppercase text-sky-900">
+				Edit Habit
+			</div>
+			<div class="text-gray-500 text-sm">
+				/habits /edit
+			</div>
+		</div>
+		<%= form_for([:objectives, @habit]) do |form| %>
+		<div class="flex flex-col gap-2">
+			<div>
+				<%= form.label :name, class: "text-sm font-medium text-gray-700" %>
+				<%= form.text_field :name, class: "sky-input" %>
+			</div>
+			<div>
+				<%= form.label :description, class: "text-sm font-medium text-gray-700" %>
+				<%= form.text_area :description, rows: 4, class: "sky-input resize-y" %>
+			</div>
+			<div>
+				<%= form.label :frequency, class: "text-sm font-medium text-gray-700" %>
+				<%= form.select :frequency, ['Daily', 'Weekly', 'Monthly'], {}, class: "sky-input" %>
+			</div>
+			<div>
+				<%= form.label :target_occurrences, class: "text-sm font-medium text-gray-700" %>
+				<%= form.number_field :target_occurrences, class: "sky-input" %>
+			</div>
+			<div class="flex justify-end">
+				<%= form.submit "Update", class: "sky-btn" %>
+			</div>
+		</div>
+		<% end %>
+	</div>
+	<div class="flex flex-col w-full bg-sky-900 text-white p-5 h-screen">
+
+	</div>
+</div>

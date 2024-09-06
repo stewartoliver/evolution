@@ -1,7 +1,7 @@
 module Fitness
   class LogsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_log, only: [:edit, :update, :show, :destroy]
+    before_action :set_log, only: [:update, :show, :destroy]
 
     def index
       @logs = FitnessLogEntry.all
@@ -22,6 +22,7 @@ module Fitness
     end
 
     def edit
+      @log = FitnessLogEntry.includes(fitness_log_exercises: :fitness_log_sets).find(params[:id])
     end
 
     def update
@@ -47,13 +48,7 @@ module Fitness
     end
 
     def log_params
-      params.require(:fitness_log_entry).permit(:date, :time, :notes, 
-        fitness_log_exercises_attributes: [
-          :id, :exercise_id, :_destroy,
-          fitness_log_sets_attributes: [:id, :reps, :weight, :duration, :distance, :intensity, :style, :_destroy]
-        ]
-        )
+      params.require(:fitness_log_entry).permit(:date, :time, :notes, fitness_log_exercises_attributes: [:id, :exercise_id, :_destroy, fitness_log_sets_attributes: [:id, :reps, :weight, :duration, :distance, :intensity, :style, :_destroy]])
     end
-
   end
 end

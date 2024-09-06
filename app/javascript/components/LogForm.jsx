@@ -1,51 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import ExerciseSearch from './ExerciseSearch';
 
-function LogForm() {
+function LogForm({ initialExercises = [], isEditPage = false }) {
   const [fitnessLogExercises, setFitnessLogExercises] = useState([]);
+  const [showExerciseSearch, setShowExerciseSearch] = useState(!isEditPage);
 
   useEffect(() => {
-    // Initialize fitness log exercises state with one exercise and an empty set
-    setFitnessLogExercises([{ 
-      exercise_id: '', 
-      exercise_name: '', 
-      exercise_type_id: '', 
-      fitness_log_sets: [{ reps: '', weight: '' }], 
-      isSelected: false, 
-      collapsed: false  // Track collapsed state directly within each exercise
-    }]);
-  }, []);
+    console.log('Initial Exercises:', initialExercises);
+    console.log('Is Edit Page:', isEditPage);
+
+    if (isEditPage && initialExercises.length > 0) {
+      // If it's the edit page, use the provided initial exercises
+      const formattedExercises = initialExercises.map(exercise => ({
+        exercise_id: exercise.id,  // Adjust according to your data structure
+        exercise_name: exercise.exercise_name,  // Adjust according to your data structure
+        exercise_type_id: exercise.exercise_type_id,
+        fitness_log_sets: exercise.fitness_log_sets.map(set => ({
+          reps: set.reps,
+          weight: set.weight,
+          duration: set.duration,
+          distance: set.distance,
+          style: set.style,
+          intensity: set.intensity,
+        })),
+        isSelected: true,
+        collapsed: false,
+      }));
+      setFitnessLogExercises(formattedExercises);
+    } else {
+      // If it's the new page or no exercises are provided
+      setFitnessLogExercises([{
+        exercise_id: '',
+        exercise_name: '',
+        exercise_type_id: '',
+        fitness_log_sets: [{ reps: '', weight: '' }],
+        isSelected: false,
+        collapsed: false,
+      }]);
+      setShowExerciseSearch(true);
+    }
+  }, [initialExercises, isEditPage]);
 
   const addExercise = () => {
-    // Only add a new exercise if the last one is selected
     if (fitnessLogExercises[fitnessLogExercises.length - 1]?.isSelected) {
-      setFitnessLogExercises((prevExercises) => [
+      setFitnessLogExercises(prevExercises => [
         ...prevExercises,
-        { 
-          exercise_id: '', 
-          exercise_name: '', 
-          exercise_type_id: '', 
-          fitness_log_sets: [{ reps: '', weight: '' }], 
-          isSelected: false, 
-          collapsed: false  // Initialize collapsed state to false for new exercises
+        {
+          exercise_id: '',
+          exercise_name: '',
+          exercise_type_id: '',
+          fitness_log_sets: [{ reps: '', weight: '' }],
+          isSelected: false,
+          collapsed: false,
         },
       ]);
+      setShowExerciseSearch(true);
     }
   };
 
   const handleExerciseSelect = (exercise, exerciseIndex) => {
-    setFitnessLogExercises((prevExercises) => {
+    setFitnessLogExercises(prevExercises => {
       const updatedExercises = [...prevExercises];
-      updatedExercises[exerciseIndex].exercise_id = exercise.id;
-      updatedExercises[exerciseIndex].exercise_name = exercise.name; // Store the exercise name to display
-      updatedExercises[exerciseIndex].exercise_type_id = exercise.exercise_type_id;
-      updatedExercises[exerciseIndex].isSelected = true; // Mark this exercise as selected
+      updatedExercises[exerciseIndex] = {
+        ...updatedExercises[exerciseIndex],
+        exercise_id: exercise.id,
+        exercise_name: exercise.name,
+        exercise_type_id: exercise.exercise_type_id,
+        isSelected: true,
+      };
       return updatedExercises;
     });
+    setShowExerciseSearch(false);
   };
 
   const addSet = (exerciseIndex) => {
-    setFitnessLogExercises((prevExercises) => {
+    setFitnessLogExercises(prevExercises => {
       const updatedExercises = [...prevExercises];
       updatedExercises[exerciseIndex].fitness_log_sets.push({ reps: '', weight: '' });
       return updatedExercises;
@@ -53,7 +82,7 @@ function LogForm() {
   };
 
   const toggleCollapse = (exerciseIndex) => {
-    setFitnessLogExercises((prevExercises) => {
+    setFitnessLogExercises(prevExercises => {
       const updatedExercises = [...prevExercises];
       updatedExercises[exerciseIndex].collapsed = !updatedExercises[exerciseIndex].collapsed;
       return updatedExercises;
@@ -61,7 +90,7 @@ function LogForm() {
   };
 
   const handleChange = (e, exerciseIndex, setIndex, field) => {
-    setFitnessLogExercises((prevExercises) => {
+    setFitnessLogExercises(prevExercises => {
       const updatedExercises = [...prevExercises];
       updatedExercises[exerciseIndex].fitness_log_sets[setIndex][field] = e.target.value;
       return updatedExercises;
@@ -71,6 +100,7 @@ function LogForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', fitnessLogExercises);
+    // Add your form submission logic here (e.g., API call)
   };
 
   const getTableHeaders = (exerciseTypeId) => {
@@ -211,7 +241,7 @@ function LogForm() {
             </div>
           </div>
           <div className="flex flex-col gap-3 p-3 bg-sky-800 rounded-b-md text-sm whitespace-nowrap">
-            {!exercise.isSelected && exerciseIndex === fitnessLogExercises.length - 1 ? (
+            {!exercise.isSelected && showExerciseSearch ? (
               <ExerciseSearch onSelectExercise={(exercise) => handleExerciseSelect(exercise, exerciseIndex)} />
             ) : (
               <div className="text-lg font-medium text-gray-200">
