@@ -59,6 +59,7 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'dashboard#index'
     resources :habits do
       member do
+        get :details
         get 'today_occurrences'
       end
       resources :habit_logs, only: [:create]

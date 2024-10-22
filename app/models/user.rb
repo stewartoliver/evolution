@@ -2,6 +2,10 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
   :recoverable, :rememberable, :validatable
 
   # Associations
@@ -23,11 +27,28 @@ class User < ApplicationRecord
 
   # Methods
 
-  # Updates the current weight and logs the change in user_weight_histories
-  def update_weight(new_weight, note = nil)
-    transaction do
-      update!(current_weight: new_weight)
-      user_weight_histories.create!(weight: new_weight, recorded_at: Time.current, note: note)
+  def update_weight(new_weight)
+    user_weight_histories.create!(weight: new_weight, recorded_at: Time.current)
+  end
+
+  def weight_change_this_month
+    # Get the first and the most recent weight logs for the current month
+    first_weight = user_weight_histories.where('recorded_at >= ?', Time.current.beginning_of_month).order(:recorded_at).first
+    last_weight = user_weight_histories.where('recorded_at >= ?', Time.current.beginning_of_month).order(:recorded_at).last
+
+    # Ensure both first and last weights are present
+    return "No weight logs for this month" if first_weight.nil? || last_weight.nil?
+
+    # Calculate the weight difference
+    weight_diff = last_weight.weight - first_weight.weight
+
+    # Return the result as a string
+    if weight_diff.zero?
+      "No weight change this month"
+    elsif weight_diff.positive?
+      "+#{weight_diff.round(1)}kg this month"
+    else
+      "#{weight_diff.round(1)}kg this month"
     end
   end
 

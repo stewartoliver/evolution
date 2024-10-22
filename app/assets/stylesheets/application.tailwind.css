@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 
-
 @layer components {
   .sky-input {
     @apply w-full rounded-md border border-gray-300 focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500;

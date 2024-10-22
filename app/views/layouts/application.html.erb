@@ -1,22 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Evolution</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <style type="text/css">
-    @import url('https://fonts.googleapis.com/css2?family=Teachers:ital,wght@0,400..800;1,400..800&display=swap');
-    body {
-      font-family: 'Teachers', sans-serif;
-    }
-  </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Teachers:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
   <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+
+  <script>
+    (function() {
+      try {
+        const storedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (storedTheme === 'dark' || (storedTheme === null && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {
+        console.error('Error setting theme:', e);
+      }
+    })();
+  </script>
+
   <link rel="icon" href="<%= asset_path 'evolve_logo.svg' %>" type="image/svg+xml">
+  
   <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   <%= javascript_include_tag 'react_application', 'data-turbo-track': 'reload' %>
 </head>
-<body class="bg-gray-50 antialiased">
+<body class="bg-background text-text dark:bg-background-dark dark:text-text-dark antialiased transition-colors duration-300">
   <% if request.path == '/' %>
   <%= render 'shared/nav' %>
   <% elsif request.path.start_with?('/operator') %>
@@ -24,6 +39,7 @@
   <% else %>
   <%= render 'shared/frontend_nav' %>
   <% end %>
+  
   <main>
     <%= yield %>
   </main>

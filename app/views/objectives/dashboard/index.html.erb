@@ -1,112 +1,200 @@
 <div class="flex flex-col lg:flex-row">
-	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
+	<aside class="flex flex-col gap-5 lg:w-1/3 p-5 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 		<div class="flex flex-col tracking-tight leading-tight">
-			<div class="text-2xl font-bold uppercase text-sky-900">
+			<div class="text-2xl font-bold uppercase text-primary-500">
 				Objectives Dashboard
 			</div>
-			<div class="text-gray-500 text-sm">
+			<div class="text-text-sub text-sm">
 				/objectives /dashboard
 			</div>
 		</div>
-		<div class="flex flex-col divide-y divide-gray-200">
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Habits
+		<div class="flex flex-col divide-y divide-border-light dark:divide-border-dark">
+			<% sections = [
+				{ title: 'Habits', actions: ['New', 'Browse'], new_path: new_objectives_habit_path, browse_path: objectives_habits_path },
+				{ title: 'Goals', actions: ['New', 'Browse'], new_path: new_objectives_goal_path, browse_path: objectives_goals_path },
+				{ title: 'Tasks', actions: ['New', 'Browse'], new_path: new_objectives_task_path, browse_path: objectives_tasks_path },
+				{ title: 'Achievements', actions: ['Browse'], browse_path: objectives_achievements_path }
+				] %>
+
+				<% sections.each_with_index do |section, index| %>
+				<div class="pb-4 pt-4 <%= 'last:border-b-0' if index == sections.length - 1 %>">
+					<h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">
+						<%= section[:title] %>
+					</h3>
+					<div class="flex space-x-2">
+						<% if section[:actions].include?('New') %>
+						<%= link_to section[:new_path], class: "flex items-center px-3 py-1 text-sm text-white bg-primary-500 rounded hover:bg-primary-600 transition-colors" do %>
+						<!-- Plus Icon -->
+						<svg class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="12" y1="5" x2="12" y2="19"></line>
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+						</svg>
+						New
+						<% end %>
+						<% end %>
+						<% if section[:actions].include?('Browse') %>
+						<%= link_to section[:browse_path], class: "flex items-center px-3 py-1 text-sm text-primary-500 bg-primary-100 rounded hover:bg-primary-200 transition-colors" do %>
+						<!-- Compass Icon -->
+						<svg class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<polygon points="16 8 12 12 8 16 12 12 16 8"></polygon>
+						</svg>
+						Browse
+						<% end %>
+						<% end %>
+					</div>
 				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_objectives_habit_path %>
-					<%= link_to "explore. ", objectives_habits_path %>
-				</div>
+				<% end %>
 			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Goals
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_objectives_goal_path %>
-					<%= link_to "explore. ", objectives_goals_path %>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Tasks
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_objectives_task_path %>
-					<%= link_to "explore. ", objectives_tasks_path %>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Achievements
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "explore. ", objectives_achievements_path %>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="flex flex-col w-full bg-sky-900 text-gray-200 p-5 gap-5 min-h-screen">
-		<div class="flex flex-col w-1/2 gap-5">
+		</aside>
+		<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 			<% if @favourite_goals.present? %>
-			<div class="flex flex-col gap-4 p-5 bg-gray-50 rounded-lg shadow-xl">
-				<div class="text-2xl font-bold text-sky-900">
-					Favorite Goals
+			<section class="space-y-6">
+				<!-- Section Header -->
+				<div class="flex items-center justify-between">
+					<h2 class="text-3xl font-bold">
+						Favorite Goals
+					</h2>
 				</div>
-				<% @favourite_goals.each do |goal| %>
-				<div class="flex flex-col gap-2 p-3 bg-gray-200 rounded-md shadow-lg border border-gray-100 hover:border-sky-500">
-					<div class="flex justify-between items-start">
-						<div class="flex flex-col leading-tight">
-							<div class="text-xl font-bold text-gray-700">
-								<%= goal.title %>
+				<div class="space-y-4">
+					<% @favourite_goals.each do |goal| %>
+					<div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+						<!-- Card Header -->
+						<div class="flex items-start justify-between p-4 border-b border-border-light dark:border-border-dark">
+							<div>
+								<h3 class="text-xl font-semibold text-text-light dark:text-text-dark">
+									<%= goal.title %>
+								</h3>
+								<p class="text-sm text-text-sub dark:text-text-sub-dark">
+									<%= goal.description %>
+								</p>
 							</div>
-							<div class="text-gray-500 text-sm">
-								<%= goal.description %>
-							</div>
-						</div>
-						<div class="flex gap-3 items-center text-gray-400">
-							<div data-goal-id="<%= goal.id %>" data-initial-favourite="<%= goal.is_favourite %>" class="heart-icon flex justify-end"></div>
-							<%= link_to objectives_goal_path(goal.id) do %>
-							<div class="text-gray-400 hover:text-gray-500">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+							<div class="flex items-center space-x-2">
+								<!-- Favorite Button -->
+								<button class="focus:outline-none" data-goal-id="<%= goal.id %>" data-initial-favourite="<%= goal.is_favourite %>" aria-label="Toggle Favorite">
+									<% if goal.is_favourite %>
+									<!-- Filled Heart Icon -->
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 hover:text-red-600 transition" fill="currentColor" viewBox="0 0 24 24">
+										<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3c3.08 0 5.5 2.42 5.5 5.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+									</svg>
+									<% else %>
+									<!-- Outline Heart Icon -->
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 hover:text-red-500 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3c3.08 0 5.5 2.42 5.5 5.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+									</svg>
+									<% end %>
+								</button>
+								<%= link_to objectives_goal_path(goal), class: "focus:outline-none" do %>
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6 text-primary-500 hover:text-primary-600 transition">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
 								</svg>
+								<% end %>
 							</div>
-							<% end %>
 						</div>
-					</div>
-					<div class="flex flex-col gap-4">
-						<div class="flex justify-between items-end">
-							<button type="button" class="flex items-center justify-center gap-1 font-medium bg-gray-300 hover:bg-gray-250 text-gray-500 text-xs px-3 py-1 rounded-md w-full whitespace-nowrap w-min" onclick="toggleTasks(<%= goal.id %>)">
+						<div class="p-4 space-y-4">
+							<div>
+								<div class="flex items-center justify-between mb-1">
+									<span class="text-sm font-medium text-primary-500">Progress</span>
+									<span class="text-sm font-medium text-text-sub dark:text-text-sub-dark"><%= goal.progress %>%</span>
+								</div>
+								<div class="w-full bg-border-light dark:bg-border-dark rounded-full h-2">
+									<div class="bg-primary-500 h-2 rounded-full" style="width: <%= goal.progress %>%"></div>
+								</div>
+							</div>
+							<button type="button" class="w-full px-4 py-2 text-sm font-medium text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-800 dark:hover:text-primary-400 dark:hover:bg-opacity-50 rounded-md transition" onclick="toggleTasks(<%= goal.id %>)">
 								View Tasks
-								<div>
-									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
-										<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-									</svg>
-								</div>
 							</button>
-							<div class="relative group hover:cursor-pointer">
-								<div class="goal-progress" data-progress="<%= goal.progress %>"></div>
-								<div class="absolute left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 text-xs text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-									<%= goal.tasks.where.not(status: 2).count %> tasks left
-								</div>
-							</div>
-						</div>
-						<div id="tasks-<%= goal.id %>" class="hidden">
-							<div class="flex flex-col gap-2">
+							<div id="tasks-<%= goal.id %>" class="hidden flex flex-col gap-1">
 								<% goal.tasks.where.not(status: 2).each do |task| %>
-								<div ondblclick="openEditTaskModal(<%= task.id %>, '<%= j task.title %>', '<%= j task.description %>', '<%= task.status %>')" class="hover:cursor-pointer text-gray-600 bg-gray-300 font-medium px-2 py-1 rounded-md text-sm">
-									<%= task.title %>
+								<div class="flex items-center justify-between mb-2">
+									<div class="text-sm text-text-light dark:text-text-dark">
+										<%= task.title %>
+									</div>
+									<button onclick="openEditTaskModal(<%= task.id %>, '<%= j task.title %>', '<%= j task.description %>', <%= task.status %>)" class="text-gray-400 hover:text-primary-500 transition focus:outline-none">
+										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+											<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+										</svg>
+									</button>
 								</div>
 								<% end %>
 							</div>
 						</div>
 					</div>
+					<% end %>
 				</div>
-				<% end %>
-			</div>
-			<div id="edit-task-form-container"></div>
+			</section>
 			<% end %>
-		</div>
+
+			<% if @overview_habits.present? %>
+			<section class="space-y-6 mt-12">
+				<div class="flex items-center justify-between">
+					<h2 class="text-3xl font-bold">
+						On-going Habits
+					</h2>
+				</div>
+				<div class="space-y-4">
+					<% @overview_habits.each do |habit| %>
+					<div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+						<!-- Card Header -->
+						<div class="flex items-start justify-between p-4 border-b border-border-light dark:border-border-dark">
+							<div>
+								<h3 class="text-xl font-semibold text-text-light dark:text-text-dark">
+									<%= habit.name %>
+								</h3>
+								<p class="text-sm text-text-sub dark:text-text-sub-dark">
+									<%= habit.description %>
+								</p>
+							</div>
+							<%= link_to objectives_habit_path(habit), class: "focus:outline-none" do %>
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6 text-primary-500 hover:text-primary-600 transition">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+							</svg>
+							<% end %>
+						</div>
+						<!-- Card Content -->
+						<div class="p-4 space-y-4">
+							<!-- Streak Info -->
+							<div class="flex items-center justify-between">
+								<span class="text-sm text-text-sub dark:text-text-sub-dark">Current Streak:</span>
+								<span class="text-sm font-medium text-primary-500">2 days</span>
+							</div>
+							<!-- Log Habit Button -->
+							<div class="flex justify-end">
+								<button class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition">
+									Log Habit
+								</button>
+							</div>
+						</div>
+					</div>
+					<% end %>
+				</div>
+			</section>
+			<% end %>
+			<div id="edit-task-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+				<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+					<h2 class="text-2xl font-bold mb-4 text-text-light dark:text-text-dark">Edit Task</h2>
+					<%= form_with(model: Task.new, url: "", local: true, id: "edit-task-form") do |form| %>
+					<%= hidden_field_tag :task_id, "" %>
+					<div class="mb-4">
+						<%= form.label :title, class: "block text-sm font-medium text-text-light dark:text-text-dark" %>
+						<%= form.text_field :title, id: "edit-task-title", class: "mt-1 block w-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:text-text-dark" %>
+					</div>
+					<div class="mb-4">
+						<%= form.label :description, class: "block text-sm font-medium text-text-light dark:text-text-dark" %>
+						<%= form.text_area :description, id: "edit-task-description", class: "mt-1 block w-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:text-text-dark", rows: 3 %>
+					</div>
+					<div class="mb-4">
+						<%= form.label :status, class: "block text-sm font-medium text-text-light dark:text-text-dark" %>
+						<%= form.select :status, Task.statuses.keys.map { |k| [k.humanize, k] }, {}, id: "edit-task-status", class: "mt-1 block w-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:text-text-dark" %>
+					</div>
+					<div class="flex justify-end gap-2">
+						<button type="button" id="close-modal" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200">
+							Cancel
+						</button>
+						<%= form.submit "Save", class: "px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors duration-200" %>
+					</div>
+					<% end %>
+				</div>
+			</div>
+		</main>
 	</div>
-</div>

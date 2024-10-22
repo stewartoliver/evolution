@@ -1,7 +1,7 @@
 module Objectives
   class HabitsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_habit, only: [:edit, :update, :show]
+    before_action :set_habit, only: [:edit, :update, :show, :details, :today_occurrences]
 
     def index
       @habits = current_user.habits
@@ -35,11 +35,14 @@ module Objectives
     end
 
     def today_occurrences
-      @habit = Habit.find(params[:id])
       today_logs = @habit.habit_logs.where(created_at: Time.zone.now.beginning_of_day..Time.zone.now.end_of_day)
       total_occurrences = today_logs.sum(:occurrences)
 
       render json: { occurrences: total_occurrences }
+    end
+
+    def details
+      render json: @habit
     end
 
     private
