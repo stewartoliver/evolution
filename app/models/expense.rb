@@ -3,7 +3,7 @@ class Expense < ApplicationRecord
   belongs_to :account
   belongs_to :user
   belongs_to :category, optional: true
-  belongs_to :store, optional: true
+  belongs_to :financial_store, optional: true
   belongs_to :user_store, optional: true
   belongs_to :user
 
@@ -24,6 +24,13 @@ class Expense < ApplicationRecord
 
     self.next_occurrence = calculate_next_occurrence
   end
+
+  scope :recurring, -> { where(recurring: true) }
+
+  scope :upcoming, ->(days = 14) { where(next_occurrence: Date.today..days.days.from_now) }
+
+  # Combined scope for recurring and upcoming expenses
+  scope :recurring_upcoming, ->(days = 14) { recurring.upcoming(days) }
 
   def calculate_next_occurrence
     case frequency

@@ -181,7 +181,7 @@ const Board = ({ goalId }) => {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="board grid grid-cols-3 gap-4">
+        <div className="board grid grid-cols-1 lg:grid-cols-3 gap-4">
           {Object.values(columns).map(column => (
             <Column
               key={column.id}

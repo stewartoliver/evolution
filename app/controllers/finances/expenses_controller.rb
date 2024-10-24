@@ -3,7 +3,7 @@ module Finances
     before_action :set_expense, only: [:show, :edit, :update, :destroy]
 
     def index
-      @expenses = current_user.expenses.includes(:store, :category)
+      @expenses = current_user.expenses
     end
 
     def new

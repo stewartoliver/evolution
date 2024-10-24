@@ -6,25 +6,25 @@ function ExerciseSearch({ onSelectExercise }) {
   const [filteredExercises, setFilteredExercises] = useState([]);
 
   useEffect(() => {
-  // Fetch exercises from the backend, explicitly requesting JSON
-  fetch('/fitness/exercises', {
-    headers: {
-      'Accept': 'application/json' // Ensure the server responds with JSON
-    }
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+    // Fetch exercises from the backend, explicitly requesting JSON
+    fetch('/fitness/exercises', {
+      headers: {
+        'Accept': 'application/json' // Ensure the server responds with JSON
       }
-      return response.json();
     })
-    .then((data) => {
-      console.log('Fetched exercises:', data); // Log the fetched exercises
-      setExercises(data);
-      setFilteredExercises(data); // Initially show all exercises
-    })
-    .catch((error) => console.error('Error fetching exercises:', error));
-}, []);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Fetched exercises:', data); // Log the fetched exercises
+        setExercises(data);
+        setFilteredExercises(data); // Initially show all exercises
+      })
+      .catch((error) => console.error('Error fetching exercises:', error));
+  }, []);
 
   useEffect(() => {
     // Filter exercises based on the search query
@@ -48,34 +48,51 @@ function ExerciseSearch({ onSelectExercise }) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4 relative w-full max-w-md mx-auto">
+      {/* Search Input */}
       <input
         type="text"
         placeholder="Search for an exercise..."
         value={searchQuery}
         onChange={handleSearchChange}
-        className="px-3 py-2 bg-gray-100 rounded-md w-full focus:ring-0 border-0 placeholder-gray-500 text-gray-500"
+        className="rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full lg:min-w-60 px-4 py-2"
       />
-      <div className="bg-sky-700">
-        {filteredExercises.length > 0 ? (
-          filteredExercises.map((exercise) => (
-            <div
-              key={exercise.id}
-              className="px-3 py-1 cursor-pointer text-gray-200 hover:bg-gray-100 hover:text-gray-500"
-              onClick={() => handleExerciseClick(exercise)}
-            >
-              <div className="text-lg font-medium">
-                {exercise.name || 'Unnamed Exercise'}
+
+      {/* Search Results */}
+      {searchQuery && (
+        filteredExercises.length > 0 ? (
+          <div className="absolute left-0 right-0 bg-background-input-light dark:bg-background-input-dark rounded-md shadow-lg mt-10 divide-y divide-gray-200 dark:divide-gray-700 overflow-hidden z-10">
+            {filteredExercises.map((exercise, index) => (
+              <div
+                key={exercise.id}
+                className={`px-4 py-2 cursor-pointer bg-background-input-light dark:bg-background-card-dark hover:bg-opacity-80 hover:dark:bg-opacity-80 text-text-light dark:text-text-dark first:rounded-t-md last:rounded-b-md`}
+                onClick={() => handleExerciseClick(exercise)}
+                aria-label={`Select ${exercise.name || 'Unnamed Exercise'}`}
+              >
+                {/* Exercise Name */}
+                <div className="text-lg font-medium">
+                  {exercise.name || 'Unnamed Exercise'}
+                </div>
+
+                {/* Exercise Details */}
+                <div className="flex flex-col gap-2 text-sm mt-1">
+                  <div>
+                    <span className="font-semibold">Muscle:</span> {exercise.muscle_group?.name || 'Unknown Muscle Group'}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Type:</span> {exercise.exercise_type?.name || 'Unknown Type'}
+                  </div>
+                </div>
               </div>
-              <div className="text-sm">
-                Type: {exercise.exercise_type?.name || 'Unknown Type'} | Muscle Group: {exercise.muscle_group?.name || 'Unknown Muscle Group'}
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
-          <div className="no-results p-2 text-gray-500">No exercises found.</div>
-        )}
-      </div>
+          // No Results Found
+          <div className="absolute left-0 right-0 bg-background-input-light dark:bg-background-input-dark rounded-md shadow-lg mt-1 p-4 text-text-light dark:text-text-dark">
+            No exercises found.
+          </div>
+        )
+      )}
     </div>
   );
 }

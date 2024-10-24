@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const EditTaskForm = ({ task, onSave }) => {
-  const [title, setTitle] = useState(task.title);
-  const [description, setDescription] = useState(task.description || '');
-  const [status, setStatus] = useState(task.status);
-  const [dueDate, setDueDate] = useState(task.due_date || '');
-  const [priority, setPriority] = useState(task.priority || '');
-  const [assignedTo, setAssignedTo] = useState(task.assigned_to || '');
-  const [estimatedTime, setEstimatedTime] = useState(task.estimated_time || '');
-  const [actualTime, setActualTime] = useState(task.actual_time || '');
-  const [tags, setTags] = useState(task.tags || '');
+  const [title, setTitle] = useState(task.title || "");
+  const [description, setDescription] = useState(task.description || "");
+  const [status, setStatus] = useState(task.status || "todo");
+  const [dueDate, setDueDate] = useState(task.due_date || "");
+  const [priority, setPriority] = useState(task.priority || "");
+  const [assignedTo, setAssignedTo] = useState(task.assigned_to || "");
+  const [estimatedTime, setEstimatedTime] = useState(task.estimated_time || "");
+  const [actualTime, setActualTime] = useState(task.actual_time || "");
+  const [tags, setTags] = useState(task.tags || "");
   const [isRecurring, setIsRecurring] = useState(task.is_recurring || false);
-  const [recurrenceInterval, setRecurrenceInterval] = useState(task.recurrence_interval || '');
+  const [recurrenceInterval, setRecurrenceInterval] = useState(
+    task.recurrence_interval || "",
+  );
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -32,128 +34,143 @@ const EditTaskForm = ({ task, onSave }) => {
   };
 
   const inputClass =
-    'rounded-md border bg-gray-100 border-gray-50 focus:border-sky-500 text-gray-500 font-medium text-sm focus:ring-0 w-full';
+    "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        {/* Task Details Section */}
-        <div className="flex flex-col gap-2 w-full md:flex-row md:gap-4">
-          <div className="flex flex-col gap-2 w-full md:w-2/3">
-            {/* Title */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Task Title:</label>
-              <textarea
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="rounded-md border bg-gray-100 border-gray-50 focus:border-sky-500 text-gray-500 font-medium text-xl focus:ring-0 w-full whitespace-pre-wrap resize-none"
-                rows={2}
-              />
-            </div>
-
-            {/* Description */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Description:</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className={`${inputClass} min-h-[100px]`}
-                rows={Math.max(description.split('\n').length, 2)}
-              />
-            </div>
+      {/* Task Details Section */}
+      <div className="flex flex-col gap-2 w-full md:flex-row md:gap-4">
+        <div className="flex flex-col gap-4 w-full md:w-2/3">
+          {/* Title */}
+          <div className="w-full">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="text-2xl text-text-light dark:text-text-dark border-x-0 border-t-0 border-b-2 border-background-input-light dark:border-background-input-dark focus:border-primary-500 focus:dark:border-primary-500 focus:border-b-2 focus:ring-0 focus:outline-none bg-background-card-light dark:bg-background-card-dark w-full whitespace-prewrap"/>
           </div>
 
-          {/* Task Settings Section */}
-          <div className="flex flex-col gap-2 w-full md:w-1/3">
-            {/* Status */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Status:</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className={inputClass}
-              >
-                <option value="todo">To Do</option>
-                <option value="in_progress">In Progress</option>
-                <option value="done">Done</option>
-              </select>
-            </div>
+          {/* Description */}
+          <div className="flex flex-col gap-1 w-full">
+            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+              Description:
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className={`${inputClass} min-h-[100px]`}
+              rows={Math.max(description.split("\n").length, 2)}
+            />
+          </div>
+        </div>
 
-            {/* Due Date */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Due Date:</label>
-              <input
-                type="datetime-local"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className={inputClass}
-              />
-            </div>
+        {/* Task Settings Section */}
+        <div className="flex flex-col gap-2 w-full md:w-1/3">
+          {/* Status */}
+          <div className="flex flex-col gap-1 w-full">
+            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+              Status:
+            </label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className={inputClass}
+            >
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
 
-            {/* Priority */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Priority:</label>
-              <input
-                type="number"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className={inputClass}
-              />
-            </div>
+          {/* Due Date */}
+          <div className="flex flex-col gap-1 w-full">
+            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+              Due Date:
+            </label>
+            <input
+              type="datetime-local"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
 
-            {/* Actual Time */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Actual Time (hours):</label>
-              <input
-                type="number"
-                step="0.01"
-                value={actualTime}
-                onChange={(e) => setActualTime(e.target.value)}
-                className={inputClass}
-              />
-            </div>
+          {/* Priority */}
+          <div className="flex flex-col gap-1 w-full">
+            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+              Priority:
+            </label>
+            <input
+              type="number"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className={inputClass}
+            />
+          </div>
 
-            {/* Tags */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Tags:</label>
+          {/* Actual Time */}
+          <div className="flex flex-col gap-1 w-full">
+            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+              Actual Time (hours):
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={actualTime}
+              onChange={(e) => setActualTime(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-col gap-1 w-full">
+            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+              Tags:
+            </label>
+            <input
+              type="text"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          {/* Is Recurring */}
+          <div className="w-full flex items-center gap-1">
+            <input
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="rounded-sm border-0 focus:border-0 shadow-sm focus:ring-0 text-primary-500 bg-background-input-light dark:bg-background-input-dark"
+            />
+            <label className="text-sm font-medium text-text-light dark:text-text-dark">
+              Is Recurring
+            </label>
+          </div>
+
+          {/* Recurrence Interval */}
+          {isRecurring && (
+            <div className="flex flex-col gap-1 w-full">
+              <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+                Recurrence Interval:
+              </label>
               <input
                 type="text"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
+                value={recurrenceInterval}
+                onChange={(e) => setRecurrenceInterval(e.target.value)}
                 className={inputClass}
               />
             </div>
-
-            {/* Is Recurring */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">Is Recurring:</label>
-              <input
-                type="checkbox"
-                checked={isRecurring}
-                onChange={(e) => setIsRecurring(e.target.checked)}
-                className="rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500"
-              />
-            </div>
-
-            {/* Recurrence Interval */}
-            {isRecurring && (
-              <div className="w-full">
-                <label className="block text-sm font-medium text-gray-700">Recurrence Interval:</label>
-                <input
-                  type="text"
-                  value={recurrenceInterval}
-                  onChange={(e) => setRecurrenceInterval(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <button type="submit" className="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-md">
+        <button
+          type="submit"
+          className="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition"
+        >
           Save
         </button>
       </div>

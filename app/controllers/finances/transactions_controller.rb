@@ -41,7 +41,7 @@ module Finances
     def import
       if params[:file].present? && params[:account_id].present?
         file_path = Rails.root.join('tmp', "#{SecureRandom.hex}_#{params[:file].original_filename}")
-        
+
         begin
           Rails.logger.info "Starting file upload: #{file_path}"
           File.open(file_path, 'wb') do |file|
@@ -49,8 +49,8 @@ module Finances
           end
 
           Rails.logger.info "File uploaded successfully: #{file_path}"
-          CsvImportJob.perform_async(file_path.to_s, current_user.id, params[:account_id])
-          Rails.logger.info "CSV import job scheduled for user #{current_user.id} and account #{params[:account_id]}"
+          CsvImportJob.perform_later(file_path.to_s, current_user.id, params[:account_id])
+          Rails.logger.info "CSV import job scheduled for user #{current_user.id}"
 
           redirect_to finances_transactions_path, notice: "CSV is being processed. You will be notified once it's done."
         rescue => e
@@ -60,6 +60,32 @@ module Finances
       else
         redirect_to finances_transactions_path, alert: "Please select an account and upload a file."
       end
+    end
+
+    def recategorize_all
+      @transactions = current_user.transactions
+
+      success_count = 0
+      failure_count = 0
+
+      @transactions.find_each do |transaction|
+        begin
+          TransactionCategorizer.new(transaction).categorize
+          transaction.save!
+          success_count += 1
+        rescue => e
+          Rails.logger.error "Failed to categorize Transaction ID #{transaction.id}: #{e.message}"
+          failure_count += 1
+        end
+      end
+
+      if failure_count > 0
+        flash[:alert] = "Recategorization completed with #{failure_count} failures."
+      else
+        flash[:notice] = "All transactions have been successfully recategorized."
+      end
+
+      redirect_to finances_transactions_path
     end
 
     private

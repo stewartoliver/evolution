@@ -1,48 +1,92 @@
 class CsvImportService
-  def initialize(csv_file, user, account)
+  def initialize(csv_file, user, account_id)
     @csv_file = csv_file
     @user = user
-    @account = account
+    @account_id = account_id
   end
 
-  def import_transactions
-    begin
-      Rails.logger.info "Starting CSV parsing"
-      SmarterCSV.process(@csv_file, chunk_size: 100, col_sep: ',', headers_in_file: true) do |chunk|
-        chunk.each do |row|
-          Rails.logger.info "Processing row: #{row.inspect}"
-          process_row(row)
-        end
-      end
-      Rails.logger.info "Completed CSV import successfully"
-    rescue => e
-      Rails.logger.error "CSV Import Error: #{e.message}"
-      raise "There was an issue with the CSV import. Please check the format and try again."
+  def import_bank_statements
+    Rails.logger.info "Starting CSV parsing"
+
+    options = {
+      chunk_size: 100,
+      col_sep: ',',
+      header_transformations: [
+        :downcase,
+        :symbolize,
+        lambda { |header| header.strip.gsub(' ', '_') }
+      ],
+      key_mapping: {
+        type: :transaction_type,
+        details: :details,
+        particulars: :particulars,
+        code: :code,
+        reference: :reference,
+        amount: :amount,
+        date: :transaction_date,
+        foreigncurrencyamount: :foreign_currency_amount,
+        conversioncharge: :conversion_charge
+      }
+    }
+
+    if headers_present?
+      options[:headers_in_file] = true
+    else
+      options[:headers_in_file] = false
+      options[:user_provided_headers] = [
+        'Type', 'Details', 'Particulars', 'Code', 'Reference',
+        'Amount', 'Date', 'ForeignCurrencyAmount', 'ConversionCharge'
+      ]
     end
+
+    SmarterCSV.process(@csv_file, options) do |chunk|
+      chunk.each do |row|
+        Rails.logger.info "Processing row: #{row.inspect}"
+        process_row(row)
+      end
+    end
+
+    Rails.logger.info "Completed CSV import successfully"
+  rescue => e
+    Rails.logger.error "CSV Import Error: #{e.message}"
+  ensure
+    File.delete(@csv_file) if File.exist?(@csv_file)
   end
 
   private
 
+  def headers_present?
+    first_line = File.open(@csv_file, &:readline).strip.downcase
+    first_line.start_with?('type,')
+  rescue EOFError
+    false
+  end
+
   def process_row(row)
-    financial_account = @user.accounts.find(params[:account_id])
-    financial_store = Transaction.match_store(row[:reference])
+    attributes = {
+      transaction_type: row[:transaction_type],
+      amount: row[:amount]&.to_d,
+      date: Date.strptime(row[:transaction_date], "%d/%m/%Y"),
+      user_id: @user.id,
+      account_id: @account_id,
+      description: build_description(row)
+    }
 
-    transaction = @user.transactions.create!(
-      account_id: financial_account.id,
-      transaction_type: row[:type],
-      amount: row[:amount].to_d,
-    description: row[:details], # Ensure this matches the column in your CSV
-    date: Date.strptime(row[:date], "%d/%m/%Y"),
-    financial_store: financial_store
-    )
+    transaction = Transaction.create!(attributes)
 
-    if transaction.persisted?
-      Rails.logger.info "Transaction saved: #{transaction.inspect}"
-    else
-      Rails.logger.error "Failed to save transaction: #{transaction.errors.full_messages.join(', ')}"
-    end
+    Rails.logger.info "Transaction saved: #{transaction.inspect}"
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error "Failed to save transaction for row #{row.inspect}: #{e.record.errors.full_messages.join(', ')}"
   rescue => e
-    Rails.logger.error "Error processing row: #{e.message}"
-    raise e
+    Rails.logger.error "Error processing row #{row.inspect}: #{e.message}"
+  end
+
+  def build_description(row)
+    parts = []
+    parts << row[:details] if row[:details].present?
+    parts << row[:particulars] if row[:particulars].present?
+    parts << row[:code] if row[:code].present?
+    parts << row[:reference] if row[:reference].present?
+    parts.join(' | ')
   end
 end

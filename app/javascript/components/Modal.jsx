@@ -7,9 +7,10 @@ const Modal = ({ show, onClose, children }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-      <div className="bg-gray-50 rounded-lg shadow-xl p-4 relative w-full max-w-5xl">
+      <div className="bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-xl p-4 relative w-full max-w-7xl">
+      <div className="flex justify-end w-full">
         <button
-          className="flex justify-end w-full text-gray-500 hover:text-red-500"
+          className="text-light dark:text-dark hover:text-red-500"
           onClick={onClose}
         >
           <svg
@@ -27,6 +28,7 @@ const Modal = ({ show, onClose, children }) => {
             />
           </svg>
         </button>
+        </div>
         {children}
       </div>
     </div>

@@ -11,6 +11,7 @@ class User < ApplicationRecord
   # Associations
   has_many :accounts
   has_many :transactions
+  has_many :bank_statement_imports, dependent: :destroy
   has_many :user_stores
   has_many :stores, through: :user_stores
   has_many :expenses

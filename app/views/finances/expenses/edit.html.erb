@@ -42,10 +42,6 @@
 				<%= form.label :amount, class: "text-sm font-medium text-gray-700" %>
 				<%= form.number_field :amount, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
 			</div>
-			<div>
-				<%= form.label :store_id, "Store", class: "text-sm font-medium text-gray-700" %>
-				<%= form.collection_select :store_id, current_user.stores, :id, :name, { prompt: "Select a store" }, {class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500"} %>
-			</div>
 			<div class="flex items-start gap-4">
 				<div>
 					<%= form.label :category_id, "Select Category", class: "text-sm font-medium text-gray-700" %>

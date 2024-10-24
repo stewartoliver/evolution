@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_05_094445) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_23_102530) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -370,8 +370,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_05_094445) do
     t.bigint "financial_store_id"
     t.bigint "bank_statement_import_id"
     t.bigint "user_id", null: false
+    t.bigint "category_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["bank_statement_import_id"], name: "index_transactions_on_bank_statement_import_id"
+    t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["financial_store_id"], name: "index_transactions_on_financial_store_id"
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
@@ -463,6 +465,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_05_094445) do
   add_foreign_key "routine_sets", "routine_exercises"
   add_foreign_key "tasks", "goals"
   add_foreign_key "transactions", "accounts"
+  add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
   add_foreign_key "user_stores", "financial_stores", column: "store_id"
   add_foreign_key "user_stores", "users"

@@ -1,72 +1,201 @@
 <div class="flex flex-col lg:flex-row">
-	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
-		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
+	<aside class="flex flex-col gap-5 lg:w-1/3 p-5 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 		<div class="flex flex-col tracking-tight leading-tight">
-			<div class="text-2xl font-bold uppercase text-sky-900">
-				Finances Dashboard
+			<div class="text-2xl font-bold uppercase text-primary-500">
+				Financial Dashboard
 			</div>
-			<div class="text-gray-500 text-sm">
+			<div class="text-text-sub text-sm">
 				/finances /dashboard
 			</div>
 		</div>
-		<div class="flex flex-col divide-y divide-gray-200">
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Accounts
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_finances_account_path %>
-					<%= link_to "explore. ", finances_accounts_path %>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Transactions
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_finances_transaction_path %>
-					<%= link_to "explore. ", finances_transactions_path %>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Budgets
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_finances_budget_path %>
-					<%= link_to "explore. ", finances_budgets_path %>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Incomes
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_finances_income_path %>
-					<%= link_to "explore. ", finances_incomes_path %>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Expenses
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_finances_expense_path %>
-					<%= link_to "explore. ", finances_expenses_path %>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="font-bold text-sky-900 uppercase">
-					Goals
-				</div>
-				<div class="flex items-center gap-1 text-gray-500">
-					<%= link_to "create, ", new_finances_account_path %>
-					<%= link_to "explore. ", finances_accounts_path %>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="flex flex-col w-full bg-sky-900 text-white p-5 h-screen">
+		<div class="flex flex-col divide-y divide-border-light dark:divide-border-dark">
+			<% sections = [
+				{ title: 'Accounts', actions: ['New', 'Browse'], new_path: new_finances_account_path, browse_path: finances_accounts_path },
+				{ title: 'Transactions', actions: ['New', 'Browse'], new_path: new_finances_transaction_path, browse_path: finances_transactions_path },
+				{ title: 'Budgets', actions: ['New', 'Browse'], new_path: new_finances_budget_path, browse_path: finances_budgets_path  },
+				{ title: 'Incomes', actions: ['New', 'Browse'], new_path: new_finances_income_path, browse_path: finances_incomes_path  },
+				{ title: 'Expenses', actions: ['New', 'Browse'], new_path: new_finances_expense_path, browse_path: finances_expenses_path  },
+				] %>
 
+				<% sections.each_with_index do |section, index| %>
+				<div class="pb-4 pt-4 <%= 'last:border-b-0' if index == sections.length - 1 %>">
+					<h3 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">
+						<%= section[:title] %>
+					</h3>
+					<div class="flex space-x-2">
+						<% if section[:actions].include?('New') %>
+						<%= link_to section[:new_path], class: "flex items-center px-3 py-1 text-sm text-white bg-primary-500 rounded hover:bg-primary-600 transition-colors" do %>
+						<!-- Plus Icon -->
+						<svg class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="12" y1="5" x2="12" y2="19"></line>
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+						</svg>
+						New
+						<% end %>
+						<% end %>
+						<% if section[:actions].include?('Browse') %>
+						<%= link_to section[:browse_path], class: "flex items-center px-3 py-1 text-sm text-primary-500 bg-primary-100 rounded hover:bg-primary-200 transition-colors" do %>
+						<!-- Browse Icon -->
+						<svg class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<polygon points="16 8 12 12 8 16 12 12 16 8"></polygon>
+						</svg>
+						Browse
+						<% end %>
+						<% end %>
+					</div>
+				</div>
+				<% end %>
+			</div>
+		</aside>
+		<main class="flex flex-col gap-6 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark w-full lg:w-2/3">
+			<section class="space-y-6">
+				<div class="flex items-center justify-between">
+					<h2 class="text-2xl font-bold text-primary-500">
+						Financial Accounts
+					</h2>
+				</div>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<% @user_financial_accounts.each do |account| %>
+					<div class="transaction-card bg-background-card-light dark:bg-background-card-dark rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+						<div class="flex items-start justify-between p-4 border-b border-border-light dark:border-border-dark">
+							<div>
+								<h3 class="text-2xl font-semibold text-text-light dark:text-text-dark">
+									<%= number_to_currency(account.balance) %>
+								</h3`>
+								<p class="text-sm text-text-sub dark:text-text-sub-dark">
+									<%= account.account_name %>
+								</p>
+							</div>
+							<%= link_to finances_account_path(account.id), class: "focus:outline-none" do %>
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6 text-primary-500 hover:text-primary-600 transition">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+							</svg>
+							<% end %>
+						</div>
+						<div class="p-4 space-y-4">
+							<div class="flex justify-between items-center">
+								<div class="text-sm font-medium text-primary-500"><%= account.account_type %></div>
+							</div>
+							<div class="flex justify-end">
+								<button class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition">
+									Update Balance
+								</button>
+							</div>
+						</div>
+					</div>
+					<% end %>
+				</div>
+			</section>
+			<section class="space-y-6">
+				<div class="flex items-center justify-between">
+					<h2 class="text-2xl font-bold text-primary-500">
+						Upcoming Expenses
+					</h2>
+				</div>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<% @user_upcoming_expenses.each do |expense| %>
+					<div class="transaction-card bg-background-card-light dark:bg-background-card-dark rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+						<!-- Header Section -->
+						<div class="flex items-start justify-between p-4 border-b border-border-light dark:border-border-dark">
+							<div>
+								<p class="text-sm text-text-sub dark:text-text-sub-dark mb-1">
+									<%= expense.name.capitalize %>
+								</p>
+								<h3 class="text-2xl font-semibold text-text-light dark:text-text-dark">
+									<%= number_to_currency(expense.amount) %>
+								</h3>
+							</div>
+							<%= link_to finances_expense_path(expense.id), class: "focus:outline-none", aria: { label: "View Account Details" } do %>
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6 text-primary-500 hover:text-primary-600 transition">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+							</svg>
+							<% end %>
+						</div>
+
+						<!-- Body Section -->
+						<div class="p-4 space-y-4">
+							<!-- First Row: Days Away and Due Date -->
+							<div class="flex justify-between items-center">
+								<div class="text-text-light dark:text-text-dark text-sm font-medium">
+									<%= (expense.next_occurrence.to_date - Date.current).to_i %> days away
+								</div>
+								<div class="text-text-light dark:text-text-dark text-sm font-medium">
+									<%= expense.next_occurrence.strftime("%a, %-d %B %Y") %>
+								</div>
+							</div>
+
+							<!-- Second Row: Account Name and Description -->
+							<div class="flex justify-between items-center">
+								<div class="text-text-light dark:text-text-dark text-sm font-medium">
+									<%= expense.account.account_name %>
+								</div>
+								<div class="text-sm font-medium text-primary-500">
+									<%= expense.description %>
+								</div>
+							</div>
+						</div>
+					</div>
+					<% end %>
+				</div>
+			</section>
+
+			<section class="space-y-6">
+				<div class="flex items-center justify-between">
+					<h2 class="text-2xl font-bold text-primary-500">
+						Recent Transactions
+					</h2>
+				</div>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<% @user_recent_transactions.each_with_index do |transaction, index| %>
+					<div class="transaction-card bg-background-card-light dark:bg-background-card-dark rounded-lg shadow hover:shadow-lg transition-shadow duration-200 <%= 'hidden' if index >= 6 %>">
+						<div class="flex items-start justify-between p-4 border-b border-border-light dark:border-border-dark">
+							<div>
+								<h3 class="text-2xl font-semibold text-text-light dark:text-text-dark">
+									<%= number_to_currency(transaction.amount) %>
+								</h3`>
+								<p class="text-sm text-text-sub dark:text-text-sub-dark">
+									<%= transaction.date.strftime("#{transaction.date.day.ordinalize} %B %Y") %>
+								</p>
+							</div>
+							<%= link_to finances_transaction_path(transaction.id), class: "focus:outline-none" do %>
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6 text-primary-500 hover:text-primary-600 transition">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+							</svg>
+							<% end %>
+						</div>
+						<div class="p-4 space-y-4">
+							<div class="flex justify-between items-center">
+								<div class="text-sm font-medium text-primary-500"><%= transaction.transaction_type %></div>
+								<div class="text-sm text-text-sub dark:text-text-sub-dark"><%= transaction.description %></div>			
+							</div>
+							<div class="flex justify-end">
+								<button class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition">
+									Log Repeat
+								</button>
+							</div>
+						</div>
+					</div>
+					<% end %>
+				</div>
+				<% if @user_recent_transactions.size > 6 %>
+				<div class="flex justify-center mt-4">
+					<button id="show-more-btn" class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition">
+						Show More
+					</button>
+				</div>
+				<script>
+					document.addEventListener('DOMContentLoaded', function() {
+						const showMoreBtn = document.getElementById('show-more-btn');
+						const hiddenCards = document.querySelectorAll('.transaction-card.hidden');
+
+						showMoreBtn.addEventListener('click', function() {
+							hiddenCards.forEach(card => card.classList.remove('hidden'));
+							showMoreBtn.style.display = 'none';
+						});
+					});
+				</script>
+				<% end %>
+			</section>
+		</main>
 	</div>
-</div>

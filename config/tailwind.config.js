@@ -29,18 +29,6 @@ module.exports = {
           800: "#1e40af",
           900: "#1e3a8a",
         },
-        background: {
-          light: "#F9FAFB",       // Light background
-          DEFAULT: "#FFFFFF",     // Default background
-          dark: "#1F2937",        // Dark background
-        },
-        text: {
-          light: "#1F2937",       // Light text
-          DEFAULT: "#111827",     // Default text
-          dark: "#F9FAFB",        // Dark text
-          sub: "#6B7280",         // Subtext Light
-          "sub-dark": "#D1D5DB",  // Subtext Dark
-        },
         secondary: {
           50: "#ecfdf5",
           100: "#d1fae5",
@@ -53,9 +41,33 @@ module.exports = {
           800: "#065f46",
           900: "#064e3b",
         },
+        background: {
+          light: "#F3F4F6",        // Light background adjusted to gray-100
+          DEFAULT: "#FAFAFA",      // Slightly off-white for default background
+          dark: "#1F2937",         // Dark background
+          "card-light": "#E5E7EB", // Light card background adjusted to gray-200
+          "card-dark": "#27303F",  // Dark card background (unchanged)
+          "input-light": "#E5E7EB", // Light input background adjusted to gray-200
+          "input-dark": "#374151",  // Dark input background (unchanged)
+        },
+        text: {
+          light: "#4B5563",         // Light text adjusted to gray-700
+          DEFAULT: "#111827",       // Default text (unchanged)
+          dark: "#F9FAFB",          // Dark text (unchanged)
+          sub: "#6B7280",            // Subtext Light (unchanged)
+          "sub-dark": "#D1D5DB",     // Subtext Dark (unchanged)
+        },
         border: {
-          light: "#E5E7EB", // Light border
-          dark: "#4B5563",  // Dark border
+          light: "#D1D5DB", // Light border adjusted to gray-300
+          dark: "#4B5563",  // Dark border (unchanged)
+        },
+        success: {
+          DEFAULT: "#10B981",     // Success color (unchanged)
+          dark: "#059669",        // Darker success color for hover (unchanged)
+        },
+        danger: {
+          DEFAULT: "#EF4444",     // Danger color (unchanged)
+          dark: "#DC2626",        // Darker danger color for hover (unchanged)
         },
       },
     },
