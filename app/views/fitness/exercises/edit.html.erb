@@ -1,38 +1,49 @@
-<div class="flex flex-col lg:flex-row">
-	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
-		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
-		<div class="flex flex-col tracking-tight leading-tight">
-			<div class="text-xl font-bold uppercase text-sky-900">
-				Edit Exercise
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+		<div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+			<!-- Header Section -->
+			<div class="flex justify-between items-center">
+				<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+				</svg>
+				Back
+				<% end %>
 			</div>
-			<div class="text-gray-500 text-sm">
-				/fitness /exercise /<%= @exercise.id %>
+			<div class="flex flex-col tracking-tight leading-tight">
+				<div class="text-4xl font-bold uppercase">
+					Edit Exercise
+				</div>
 			</div>
+			<%= form_for([:fitness, @exercise]) do |form| %>
+			<div class="flex flex-col gap-4">
+				<div>
+					<%= form.label :name, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<%= form.text_field :name, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+				</div>
+				<div>
+					<%= form.label :description, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<%= form.text_area :description, rows: 3, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="w-full">
+						<%= form.label :muscle_group_id, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= form.collection_select :muscle_group_id, MuscleGroup.all, :id, :name, { prompt: "Select a type" }, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+					<div class="w-full">
+						<%= form.label :exercise_type_id, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= form.collection_select :exercise_type_id, ExerciseType.all, :id, :name, { prompt: "Select a type" }, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex justify-end">
+					<%= form.submit "Update", class: "btn" %>
+				</div>
+			</div>
+			<% end %>
 		</div>
-		<%= form_for([:fitness, @exercise]) do |form| %>
-		<div class="flex flex-col gap-2">
-			<div>
-				<%= form.label :name, class: "text-sm font-medium text-gray-700" %>
-				<%= form.text_field :name, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
-			</div>
-			<div>
-				<%= form.label :muscle_group_id, class: "block text-sm font-medium text-gray-700" %>
-				<%= form.collection_select :muscle_group_id, MuscleGroup.all, :id, :name, { prompt: "Select a type" }, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
-			</div>
-			<div>
-				<%= form.label :exercise_type_id, "Exercise Type", class: "block text-sm font-medium text-gray-700" %>
-				<%= form.collection_select :exercise_type_id, ExerciseType.all, :id, :name, { prompt: "Select a type" }, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
-			</div>
-			<div>
-				<%= form.label :description, class: "block text-sm font-medium text-gray-700" %>
-				<%= form.text_area :description, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500", rows: 3 %>
-			</div>
-			<div class="flex justify-end">
-				<%= form.submit "Update", class: "sky-btn" %>
-			</div>
+
+		<!-- Board Section -->
+		<div class="flex flex-col w-full">
 		</div>
-		<% end %>
 	</div>
-	<div class="flex flex-col w-full bg-sky-900 text-stone-200 p-5 h-screen">
-	</div>
-</div>
+</main>

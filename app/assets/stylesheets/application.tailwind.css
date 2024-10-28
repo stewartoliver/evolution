@@ -7,17 +7,19 @@
   .sky-input {
     @apply w-full rounded-md border border-gray-300 focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500;
   }
-    .sky-btn {
+  .sky-btn {
     @apply px-4 py-2 bg-sky-800 text-stone-200 font-semibold rounded-lg hover:cursor-pointer hover:bg-sky-900;
   }
-    .sky-badge {
+  .sky-badge {
     @apply px-3 py-1 bg-sky-500 text-stone-200 font-semibold rounded-md hover:cursor-pointer hover:bg-sky-600;
   }
-     .complete-btn {
+  .complete-btn {
     @apply px-4 py-2 bg-red-700 text-stone-200 font-semibold rounded-lg hover:cursor-pointer hover:bg-red-800;
   }
-     .badge {
-    @apply px-3 py-1 font-semibold rounded-md h-min whitespace-nowrap;
+  .badge {
+    @apply inline-flex items-center px-2 py-1 bg-primary-500 hover:bg-primary-600 text-white text-xs font-medium rounded-md transition whitespace-nowrap;
+  }
+  .btn {
+    @apply inline-flex items-center px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition whitespace-nowrap;
   }
 }
-

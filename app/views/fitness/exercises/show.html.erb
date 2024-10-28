@@ -1,3 +1,50 @@
-<div>
-	Show
-</div>
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+		<div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+			<!-- Header Section -->
+			<div class="flex justify-between items-center">
+				<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+				</svg>
+				Back
+				<% end %>
+			</div>
+			<div class="flex flex-col tracking-tight leading-tight">
+				<div class="text-4xl font-bold uppercase">
+					<%= @exercise.name.capitalize %>
+				</div>
+				<div class="mt-1 px-2 py-1 rounded-md font-semibold uppercase <%= @exercise.exercise_type.color.gsub('text-', 'bg-') %> text-white text-xs tracking-wide w-min whitespace-nowrap">
+					<%= @exercise.exercise_type.name %>
+				</div>
+			</div>
+			<div class="flex flex-col gap-4">
+				<% if @exercise.description.present? %>
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Description:
+					</div>
+					<div class="text-sm">
+						<%= @exercise.description %>
+					</div>
+				</div>
+				<% end %>
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Muscle Group:
+					</div>
+					<div class="text-sm">
+						<%= @exercise.muscle_group.name %> 
+					</div>
+				</div>
+				<div class="flex justify-end">
+					<%= link_to "Edit", edit_fitness_exercise_path(@exercise), class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" %>
+				</div>
+			</div>
+		</div>
+
+		<!-- Board Section -->
+		<div class="flex flex-col w-full">
+		</div>
+	</div>
+</main>

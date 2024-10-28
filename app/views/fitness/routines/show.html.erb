@@ -1,54 +1,124 @@
-<div class="flex flex-col lg:flex-row">
-	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
-		<%= link_to 'Back', :back, class: "text-gray-500 underline tracking-wide underline-offset-1" %>
-		<div class="flex flex-col tracking-tight leading-tight">
-			<div class="text-2xl font-bold uppercase text-sky-900">
-				<%= @routine.name %>
-			</div>
-			<div class="text-gray-500 text-sm">
-				/fitness /routines
-			</div>
-		</div>
-		<div class="flex flex-col divide-y divide-gray-200">
-			<div class="py-4">
-				<div class="flex gap-1 items-center">
-					<div class="text-sky-900 text-xl font-semibold">
-						Total uses:
-					</div>
-					<div class="text-gray-500 text-xl">
-						0
-					</div>
-				</div>
-			</div>
-			<div class="py-4">
-				<div class="flex gap-1 items-center">
-					<div class="text-sky-900 text-xl font-semibold">
-						Recent changes:
-					</div>
-					<div class="text-gray-500 text-xl">
-						0
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="flex flex-col gap-5 w-full bg-sky-900 text-white p-5">
-		<table>
-			<tbody>
-				<% @routine.routine_exercises.each do |exercise| %>
-				<tr>
-					<td>
-						<%= exercise.exercise.name %>
-					</td>
-					<td>
-						
-					</td>
-					<td>
-						
-					</td>
-				</tr>
-				<% end %>
-			</tbody>
-		</table>
-	</div>
-</div>
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <!-- Sidebar Section -->
+    <div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md h-min">
+      <!-- Header Section -->
+      <div class="flex justify-between items-center">
+        <%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          Back
+        <% end %>
+      </div>
+      <div class="flex flex-col tracking-tight leading-tight">
+        <div class="text-3xl font-bold uppercase">
+          <%= @routine.name %>
+        </div>
+      </div>
+      <div class="flex flex-col gap-4">
+        <% if @routine.description.present? %>
+          <div class="flex flex-col gap-1">
+            <div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+              Description:
+            </div>
+            <div class="text-sm">
+              <%= @routine.description %>
+            </div>
+          </div>
+        <% end %>
+        <div class="flex flex-col gap-1">
+          <div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+            Last update:
+          </div>
+          <div class="text-sm">
+            <%= @routine.updated_at.strftime("%-d %B %Y") %>
+          </div>
+        </div>
+        <!-- Total Exercises -->
+        <div class="flex flex-col gap-1">
+          <div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+            Total Exercises:
+          </div>
+          <div class="text-sm">
+            <%= @routine.routine_exercises.count %>
+          </div>
+        </div>
+        <!-- Total Sets -->
+        <div class="flex flex-col gap-1">
+          <div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+            Total Sets:
+          </div>
+          <div class="text-sm">
+            <%= @routine.routine_exercises.sum { |re| re.routine_sets.count } %>
+          </div>
+        </div>
+        <!-- Additional stats can be added here -->
+        <div class="flex justify-end">
+          <%= link_to "Edit", edit_fitness_routine_path(@routine), class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="flex flex-col w-full">
+      <div class="space-y-6">
+        <% if @routine.routine_exercises.present? %>
+          <% @routine.routine_exercises.each_with_index do |exercise, index| %>
+            <div class="w-full max-w-2xl p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
+              <!-- Exercise Header -->
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 rounded-lg <%= exercise.exercise.exercise_type.color.gsub('text-', 'bg-') %>">
+                   <%= exercise.exercise.exercise_type.icon.html_safe %>
+                  </div>
+                  <div>
+                    <span class="text-lg font-medium">Exercise #<%= index + 1 %></span>
+                    <span class="block text-sm"><%= exercise.exercise.name %></span>
+                  </div>
+                </div>
+              </div>
+              <!-- Sets Table -->
+              <div class="bg-background-input-light dark:bg-background-input-dark rounded-lg p-4">
+                <table class="w-full table-auto">
+                  <thead>
+                    <tr class="text-sm font-medium">
+                      <th class="px-2 py-1 text-left">Set</th>
+                      <%# Determine fields based on exercise type %>
+                      <% fields = case exercise.exercise.exercise_type_id
+                        when 1 then ['Duration', 'Distance', 'Intensity']
+                        when 2 then ['Reps', 'Weight']
+                        when 3 then ['Duration', 'Style', 'Intensity']
+                        else []
+                      end %>
+                      <% fields.each do |field| %>
+                        <th class="px-2 py-1 text-left"><%= field %></th>
+                      <% end %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% exercise.routine_sets.each_with_index do |set, set_index| %>
+                      <tr class="border-t">
+                        <td class="px-2 py-1 font-medium"><%= set_index + 1 %></td>
+                        <% fields.each do |field| %>
+                          <% field_key = field.downcase %>
+                          <td class="px-2 py-1">
+                            <%= set.send(field_key) || '—' %>
+                          </td>
+                        <% end %>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center text-text-sub dark:text-text-sub-dark">
+            No exercises have been added to this routine yet.
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</main>
