@@ -1,14 +1,11 @@
-// app/javascript/application.js
-
-// Import necessary libraries and components
 import "@hotwired/turbo-rails";
 import Rails from "@rails/ujs";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "./components/App";
-import RoutineForm from "./components/RoutineForm";
-import LogForm from "./components/LogForm";
+import RoutineForm from "./components/RoutineForm/RoutineForm";
+import LogForm from "./components/LogForm/LogForm";
 import Board from "./components/Board";
 import TasksChart from "./components/TasksChart";
 import HeartIcon from "./components/HeartIcon";
@@ -40,7 +37,55 @@ const renderComponent = (elementId, Component, props = {}) => {
 // Initialize React components on page load
 const initializeReactComponents = () => {
   renderComponent("root", App);
-  renderComponent("routine-form-container", RoutineForm);
+
+  const routineFormElement = document.getElementById("routine-form-container");
+  if (routineFormElement) {
+    let initialExercises = [];
+    let isEditPage = false;
+
+    // Log raw attribute values for debugging
+    const initialExercisesAttr = routineFormElement.getAttribute(
+      "data-initial-exercises",
+    );
+    const isEditPageAttr = routineFormElement.getAttribute("data-is-edit-page");
+    console.log("Initial Exercises Attribute:", initialExercisesAttr);
+    console.log("Is Edit Page Attribute:", isEditPageAttr);
+
+    // Safely parse data-initial-exercises
+    if (initialExercisesAttr) {
+      try {
+        initialExercises = JSON.parse(initialExercisesAttr);
+        // Ensure it's an array
+        if (!Array.isArray(initialExercises)) {
+          console.error("data-initial-exercises should be an array.");
+          initialExercises = [];
+        }
+      } catch (error) {
+        console.error("Failed to parse data-initial-exercises:", error);
+        initialExercises = [];
+      }
+    }
+
+    // Safely parse data-is-edit-page
+    if (isEditPageAttr) {
+      try {
+        isEditPage = JSON.parse(isEditPageAttr);
+        // Ensure it's a boolean
+        if (typeof isEditPage !== "boolean") {
+          console.error("data-is-edit-page should be a boolean.");
+          isEditPage = false;
+        }
+      } catch (error) {
+        console.error("Failed to parse data-is-edit-page:", error);
+        isEditPage = false;
+      }
+    }
+
+    renderComponent("routine-form-container", RoutineForm, {
+      initialExercises,
+      isEditPage,
+    });
+  }
 
   const logFormElement = document.getElementById("log-form-container");
   if (logFormElement) {
@@ -164,7 +209,9 @@ const initializeNavDropdowns = () => {
       const menuDropdown = document.getElementById(dropdown);
       if (menuDropdown && menuDropdown !== currentDropdown) {
         menuDropdown.classList.add("hidden");
-        const relatedButton = dropdowns.find(d => d.dropdown === dropdown)?.button;
+        const relatedButton = dropdowns.find(
+          (d) => d.dropdown === dropdown,
+        )?.button;
         if (relatedButton) {
           const button = document.getElementById(relatedButton);
           button?.setAttribute("aria-expanded", "false");
@@ -187,7 +234,8 @@ const initializeNavDropdowns = () => {
 
     if (menuButton && menuDropdown) {
       menuButton.removeEventListener("click", menuButton.clickHandler);
-      menuButton.clickHandler = (event) => handleButtonClick(event, menuButton, menuDropdown);
+      menuButton.clickHandler = (event) =>
+        handleButtonClick(event, menuButton, menuDropdown);
       menuButton.addEventListener("click", menuButton.clickHandler);
     }
   };
@@ -217,7 +265,7 @@ const initializeNavDropdowns = () => {
 
 // Initialize Theme Management
 const initializeTheme = () => {
-  const themeToggleCheckbox = document.getElementById('theme-toggle');
+  const themeToggleCheckbox = document.getElementById("theme-toggle");
 
   if (!themeToggleCheckbox) {
     console.error("Theme toggle checkbox not found!");
@@ -230,12 +278,12 @@ const initializeTheme = () => {
    */
   const setTheme = (isDark) => {
     if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
       console.log("Dark mode enabled.");
     } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
       console.log("Light mode enabled.");
     }
   };
@@ -245,13 +293,15 @@ const initializeTheme = () => {
    * This function assumes that the inline script in the head has already set the correct theme class.
    */
   const initializeCheckbox = () => {
-    const storedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const storedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
 
     console.log("Stored theme:", storedTheme);
     console.log("System prefers dark:", prefersDark);
 
-    if (storedTheme === 'dark' || (storedTheme === null && prefersDark)) {
+    if (storedTheme === "dark" || (storedTheme === null && prefersDark)) {
       themeToggleCheckbox.checked = true;
       setTheme(true);
     } else {
@@ -263,7 +313,7 @@ const initializeTheme = () => {
   };
 
   // Listen for changes on the checkbox to toggle the theme
-  themeToggleCheckbox.addEventListener('change', (event) => {
+  themeToggleCheckbox.addEventListener("change", (event) => {
     setTheme(event.target.checked);
     console.log("Checkbox toggled:", event.target.checked);
   });
@@ -274,14 +324,17 @@ const initializeTheme = () => {
 
 // Synchronize theme across tabs
 const synchronizeThemeAcrossTabs = () => {
-  window.addEventListener('storage', (event) => {
-    if (event.key === 'theme') {
-      const isDark = event.newValue === 'dark';
-      document.documentElement.classList.toggle('dark', isDark);
-      const themeToggleCheckbox = document.getElementById('theme-toggle');
+  window.addEventListener("storage", (event) => {
+    if (event.key === "theme") {
+      const isDark = event.newValue === "dark";
+      document.documentElement.classList.toggle("dark", isDark);
+      const themeToggleCheckbox = document.getElementById("theme-toggle");
       if (themeToggleCheckbox) {
         themeToggleCheckbox.checked = isDark;
-        console.log("Theme synchronized across tabs:", isDark ? "Dark" : "Light");
+        console.log(
+          "Theme synchronized across tabs:",
+          isDark ? "Dark" : "Light",
+        );
       }
     }
   });

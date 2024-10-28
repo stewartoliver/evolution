@@ -5,7 +5,6 @@ class Expense < ApplicationRecord
   belongs_to :category, optional: true
   belongs_to :financial_store, optional: true
   belongs_to :user_store, optional: true
-  belongs_to :user
 
   validates :amount, presence: true, numericality: true
   validates :sub_category, presence: true

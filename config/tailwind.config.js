@@ -18,56 +18,56 @@ module.exports = {
       },
       colors: {
         primary: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3B82F6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
+          50: "#e0f2fe", // Lighter than before to increase contrast with 100
+          100: "#bae6fd", // More distinct from 50
+          200: "#7dd3fc",
+          300: "#38bdf8",
+          400: "#0ea5e9",
+          500: "#0284c7",
+          600: "#0369a1",
+          700: "#075985",
+          800: "#0c4a6e",
+          900: "#0a3653",
         },
         secondary: {
-          50: "#ecfdf5",
-          100: "#d1fae5",
-          200: "#a7f3d0",
-          300: "#6ee7b7",
-          400: "#34d399",
-          500: "#10B981",
-          600: "#059669",
-          700: "#047857",
-          800: "#065f46",
-          900: "#064e3b",
+          50: "#d1fae5", // Lighter and more distinct from 100
+          100: "#a7f3d0",
+          200: "#6ee7b7",
+          300: "#34d399",
+          400: "#10b981",
+          500: "#059669",
+          600: "#047857",
+          700: "#065f46",
+          800: "#064e3b",
+          900: "#032f2f",
         },
         background: {
-          light: "#F3F4F6",        // Light background adjusted to gray-100
-          DEFAULT: "#FAFAFA",      // Slightly off-white for default background
-          dark: "#1F2937",         // Dark background
-          "card-light": "#E5E7EB", // Light card background adjusted to gray-200
-          "card-dark": "#27303F",  // Dark card background (unchanged)
-          "input-light": "#E5E7EB", // Light input background adjusted to gray-200
-          "input-dark": "#374151",  // Dark input background (unchanged)
+          light: "#E5E7EB", // Darkened slightly for better contrast with DEFAULT
+          DEFAULT: "#FAFAFA", // Remains slightly off-white
+          dark: "#1F2937", // Dark background remains unchanged
+          "card-light": "#D1D5DB", // Darkened to gray-300 for better differentiation
+          "card-dark": "#27303F", // Dark card background remains unchanged
+          "input-light": "#D1D5DB", // Darkened to gray-300 for better differentiation
+          "input-dark": "#374151", // Dark input background remains unchanged
         },
         text: {
-          light: "#4B5563",         // Light text adjusted to gray-700
-          DEFAULT: "#111827",       // Default text (unchanged)
-          dark: "#F9FAFB",          // Dark text (unchanged)
-          sub: "#6B7280",            // Subtext Light (unchanged)
-          "sub-dark": "#D1D5DB",     // Subtext Dark (unchanged)
+          light: "#4B5563", // Light text remains unchanged
+          DEFAULT: "#111827", // Default text remains unchanged
+          dark: "#F9FAFB", // Dark text remains unchanged
+          sub: "#6B7280", // Subtext Light remains unchanged
+          "sub-dark": "#D1D5DB", // Subtext Dark remains unchanged
         },
         border: {
-          light: "#D1D5DB", // Light border adjusted to gray-300
-          dark: "#4B5563",  // Dark border (unchanged)
+          light: "#9CA3AF", // Increased contrast from gray-300 to gray-400
+          dark: "#4B5563", // Dark border remains unchanged
         },
         success: {
-          DEFAULT: "#10B981",     // Success color (unchanged)
-          dark: "#059669",        // Darker success color for hover (unchanged)
+          DEFAULT: "#10B981", // Success color remains unchanged
+          dark: "#059669", // Darker success color remains unchanged
         },
         danger: {
-          DEFAULT: "#EF4444",     // Danger color (unchanged)
-          dark: "#DC2626",        // Darker danger color for hover (unchanged)
+          DEFAULT: "#EF4444", // Danger color remains unchanged
+          dark: "#DC2626", // Darker danger color remains unchanged
         },
       },
     },
