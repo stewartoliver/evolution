@@ -19,7 +19,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # Method to permit parameters for updating the user account, excluding passwords
   def user_update_params
-    params.require(:user).permit(:email, :first_name, :last_name, :date_of_birth, :height, :gender, :activity_level, :current_weight, :goal_weight, :current_calorie_intake, :target_calorie_intake, :preferred_units)
+    params.require(:user).permit(
+      :email, :first_name, :last_name, :date_of_birth, :height, :gender, 
+      :activity_level, :current_weight, :goal_weight, :current_calorie_intake, 
+      :target_calorie_intake, :preferred_units, :current_weight,
+      # Financial preferences
+      :default_currency, :monthly_budget_target, :savings_target_percentage,
+      # Fitness preferences
+      :workout_days_per_week, :preferred_workout_time, :fitness_level, :injury_restrictions,
+      # Health and wellness
+      :medical_conditions, :allergies, :medications, :blood_type,
+      :emergency_contact_name, :emergency_contact_phone,
+      # Goals and preferences
+      :primary_fitness_goal, :primary_financial_goal, :time_zone, :language_preference,
+      notification_preferences: {}
+    )
   end
 
   # Log weight change if current_weight has changed
@@ -31,6 +45,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # Configure permitted parameters for Devise
   def configure_account_update_params
-    devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name, :date_of_birth, :height, :gender, :activity_level, :current_calorie_intake, :target_calorie_intake, :goal_weight, :preferred_units, :current_weight, :email])
+    devise_parameter_sanitizer.permit(:account_update, keys: user_update_params.keys)
   end
 end

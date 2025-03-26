@@ -12,9 +12,11 @@ module Finances
 
     def create
       @expense = current_user.expenses.new(expense_params)
+      @expense.sub_category = "Test"
       if @expense.save
         redirect_to finances_expenses_path, notice: 'Expense was successfully created.'
       else
+        Rails.logger.debug "Expense save failed: #{@expense.errors.full_messages}"
         render :new
       end
     end

@@ -1,40 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from './Column';
 import Modal from './Modal';
 import EditTaskForm from './EditTaskForm';
 
-const Board = ({ goalId }) => {
+const Board = ({ tasks, onEditClick }) => {
   const [columns, setColumns] = useState({
     todo: { id: 'todo', title: 'To Do', taskIds: [] },
     in_progress: { id: 'in_progress', title: 'In Progress', taskIds: [] },
     done: { id: 'done', title: 'Done', taskIds: [] },
   });
 
-  const [tasks, setTasks] = useState({});
+  const [taskMap, setTaskMap] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // New loading state
 
-  useEffect(() => {
-    fetch(`/objectives/tasks/filter_by_goal?goal_id=${goalId}`)
-      .then(response => response.json())
-      .then(data => {
-        const taskMap = {};
-        const newColumns = { ...columns };
-        data.forEach(task => {
-          taskMap[task.id] = task;
-          newColumns[task.status].taskIds.push(task.id);
-        });
-        setTasks(taskMap);
-        setColumns(newColumns);
-        setIsLoading(false); // Loading complete
-      })
-      .catch(error => {
-        console.error('Error fetching tasks:', error);
-        setIsLoading(false); // Loading failed
-      });
-  }, [goalId]);
+  // Initialize columns and taskMap when tasks change
+  React.useEffect(() => {
+    const newTaskMap = {};
+    const newColumns = {
+      todo: { id: 'todo', title: 'To Do', taskIds: [] },
+      in_progress: { id: 'in_progress', title: 'In Progress', taskIds: [] },
+      done: { id: 'done', title: 'Done', taskIds: [] },
+    };
+
+    tasks.forEach(task => {
+      newTaskMap[task.id] = task;
+      newColumns[task.status].taskIds.push(task.id);
+    });
+
+    setTaskMap(newTaskMap);
+    setColumns(newColumns);
+  }, [tasks]);
 
   const onDragEnd = (result) => {
     const { source, destination, draggableId } = result;
@@ -95,15 +92,15 @@ const Board = ({ goalId }) => {
     })
       .then(response => {
         if (response.ok) {
-          const newTasks = { ...tasks };
-          delete newTasks[taskId];
+          const newTaskMap = { ...taskMap };
+          delete newTaskMap[taskId];
 
           const newColumns = { ...columns };
           Object.keys(newColumns).forEach(key => {
             newColumns[key].taskIds = newColumns[key].taskIds.filter(id => id !== taskId);
           });
 
-          setTasks(newTasks);
+          setTaskMap(newTaskMap);
           setColumns(newColumns);
         }
       })
@@ -114,7 +111,7 @@ const Board = ({ goalId }) => {
     const title = prompt('Enter task title');
     if (title) {
       try {
-        const response = await fetch(`/objectives/goals/${goalId}/make_task`, {
+        const response = await fetch(`/objectives/goals/${tasks[0].goal_id}/make_task`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -134,20 +131,15 @@ const Board = ({ goalId }) => {
         }
 
         const newTask = await response.json();
-        const newTasks = { ...tasks, [newTask.id]: newTask };
+        const newTaskMap = { ...taskMap, [newTask.id]: newTask };
         const newColumns = { ...columns };
         newColumns[status].taskIds.push(newTask.id);
-        setTasks(newTasks);
+        setTaskMap(newTaskMap);
         setColumns(newColumns);
       } catch (error) {
         console.error('Error adding task:', error.message);
       }
     }
-  };
-
-  const handleEditClick = (task) => {
-    setCurrentTask(task);
-    setShowModal(true);
   };
 
   const handleCloseModal = () => {
@@ -166,17 +158,13 @@ const Board = ({ goalId }) => {
     })
       .then(response => response.json())
       .then(savedTask => {
-        const newTasks = { ...tasks, [savedTask.id]: savedTask };
-        setTasks(newTasks);
+        const newTaskMap = { ...taskMap, [savedTask.id]: savedTask };
+        setTaskMap(newTaskMap);
         setShowModal(false);
         setCurrentTask(null);
       })
       .catch(error => console.error('Error updating task:', error));
   };
-
-  if (isLoading) {
-    return <p>Loading tasks...</p>; // Loading state UI
-  }
 
   return (
     <>
@@ -186,10 +174,10 @@ const Board = ({ goalId }) => {
             <Column
               key={column.id}
               column={column}
-              tasks={column.taskIds.map(taskId => tasks[taskId])}
+              tasks={column.taskIds.map(taskId => taskMap[taskId])}
               handleDelete={handleDelete}
               handleAddTask={handleAddTask}
-              handleEditClick={handleEditClick}
+              handleEditClick={onEditClick}
             />
           ))}
         </div>

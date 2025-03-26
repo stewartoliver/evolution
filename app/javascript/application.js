@@ -1,5 +1,5 @@
 import "@hotwired/turbo-rails";
-import Rails from "@rails/ujs";
+import "./controllers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -15,28 +15,50 @@ import Modal from "./components/Modal";
 import GoalProgress from "./components/GoalProgress";
 import "./components/Task";
 import HabitLogForm from "./components/HabitLogForm";
+import ExerciseDirectory from "./components/CommonFitness/ExerciseDirectory";
+import GoalShow from "./components/GoalShow";
+import TransactionsTable from "./components/CommonFinancial/TransactionsTable";
+import { Chart } from 'chart.js/auto';
+import Chartkick from 'chartkick';
 
-import "chart.js/auto";
-import "chartkick/chart.js";
+// Keep track of mounted components
+const mountedComponents = new Map();
 
-Rails.start();
-
-// Function to render React components
-const renderComponent = (elementId, Component, props = {}) => {
+// Function to render a React component
+function renderComponent(Component, elementId, props = {}) {
+  console.log(`Attempting to render component: ${Component.name} with ID: ${elementId}`);
   const element = document.getElementById(elementId);
-  if (element) {
-    const root = createRoot(element);
-    root.render(
-      <Router>
-        <Component {...props} />
-      </Router>,
-    );
+  console.log('Element found:', element);
+  
+  if (!element) {
+    console.error(`Element with ID ${elementId} not found`);
+    return;
   }
-};
+
+  try {
+    // Unmount existing component if it exists
+    if (mountedComponents.has(elementId)) {
+      mountedComponents.get(elementId).unmount();
+      mountedComponents.delete(elementId);
+    }
+
+    // Create new root and render
+    const root = createRoot(element);
+    root.render(<Component {...props} />);
+    mountedComponents.set(elementId, root);
+    console.log(`Successfully rendered ${Component.name}`);
+  } catch (error) {
+    console.error(`Error rendering ${Component.name}:`, error);
+  }
+}
 
 // Initialize React components on page load
 const initializeReactComponents = () => {
-  renderComponent("root", App);
+  // Clean up any existing mounted components
+  mountedComponents.forEach((root, elementId) => {
+    root.unmount();
+    mountedComponents.delete(elementId);
+  });
 
   const routineFormElement = document.getElementById("routine-form-container");
   if (routineFormElement) {
@@ -68,84 +90,115 @@ const initializeReactComponents = () => {
 
     // Safely parse data-is-edit-page
     if (isEditPageAttr) {
-      try {
-        isEditPage = JSON.parse(isEditPageAttr);
-        // Ensure it's a boolean
-        if (typeof isEditPage !== "boolean") {
-          console.error("data-is-edit-page should be a boolean.");
-          isEditPage = false;
-        }
-      } catch (error) {
-        console.error("Failed to parse data-is-edit-page:", error);
-        isEditPage = false;
-      }
+      isEditPage = isEditPageAttr === "true";
     }
 
-    renderComponent("routine-form-container", RoutineForm, {
+    renderComponent(RoutineForm, "routine-form-container", {
       initialExercises,
-      isEditPage,
+      isEditPage
     });
   }
 
   const logFormElement = document.getElementById("log-form-container");
   if (logFormElement) {
-    const logData = logFormElement.getAttribute("data-log-data");
-    const initialExercises = logData
-      ? JSON.parse(logData).fitness_log_exercises
-      : [];
-    const isEditPage = logFormElement.getAttribute("data-is-edit") === "true";
-    renderComponent("log-form-container", LogForm, {
-      initialExercises,
-      isEditPage,
+    renderComponent(LogForm, "log-form-container");
+  }
+
+  const boardElement = document.getElementById("board-container");
+  if (boardElement) {
+    renderComponent(Board, "board-container");
+  }
+
+  const tasksChartElement = document.getElementById("tasks-chart-container");
+  if (tasksChartElement) {
+    renderComponent(TasksChart, "tasks-chart-container");
+  }
+
+  const heartIconElements = document.querySelectorAll(".heart-icon");
+  heartIconElements.forEach((element) => {
+    const goalId = parseInt(element.getAttribute("data-goal-id"), 10);
+    const initialFavourite = element.getAttribute("data-initial-favourite") === "true";
+    
+    // Create a unique ID if one doesn't exist
+    if (!element.id) {
+      element.id = `heart-icon-${goalId}`;
+    }
+    
+    renderComponent(HeartIcon, element.id, {
+      goalId,
+      initialFavourite
     });
+  });
+
+  const completeGoalButtonElements = document.querySelectorAll(".complete-goal-button");
+  completeGoalButtonElements.forEach((element) => {
+    const goalId = parseInt(element.getAttribute("data-goal-id"), 10);
+    renderComponent(CompleteGoalButton, element.id || `complete-goal-button-${goalId}`, {
+      goalId
+    });
+  });
+
+  const editTaskFormElements = document.querySelectorAll(".edit-task-form");
+  editTaskFormElements.forEach((element) => {
+    const taskId = parseInt(element.getAttribute("data-task-id"), 10);
+    renderComponent(EditTaskForm, element.id || `edit-task-form-${taskId}`, {
+      taskId
+    });
+  });
+
+  const modalElement = document.getElementById("modal-container");
+  if (modalElement) {
+    renderComponent(Modal, "modal-container");
+  }
+
+  const goalProgressElements = document.querySelectorAll(".goal-progress");
+  goalProgressElements.forEach((element) => {
+    const goalId = parseInt(element.getAttribute("data-goal-id"), 10);
+    const progress = parseInt(element.getAttribute("data-progress"), 10);
+    renderComponent(GoalProgress, element.id || `goal-progress-${goalId}`, {
+      goalId,
+      progress
+    });
+  });
+
+  const habitLogFormElements = document.querySelectorAll(".habit-log-form");
+  habitLogFormElements.forEach((element) => {
+    const habitId = parseInt(element.getAttribute("data-habit-id"), 10);
+    renderComponent(HabitLogForm, element.id || `habit-log-form-${habitId}`, {
+      habitId
+    });
+  });
+
+  const exerciseDirectoryElement = document.getElementById("exercise-directory-container");
+  if (exerciseDirectoryElement) {
+    renderComponent(ExerciseDirectory, "exercise-directory-container");
   }
 
   const boardRootElement = document.getElementById("board-root");
   if (boardRootElement) {
-    const goalId = boardRootElement.getAttribute("data-goal-id");
-    renderComponent("board-root", Board, { goalId });
+    const goalId = parseInt(boardRootElement.getAttribute("data-goal-id"), 10);
+    renderComponent(GoalShow, "board-root", {
+      goalId
+    });
   }
 
-  renderComponent("tasks-chart-container", TasksChart);
-
-  document.querySelectorAll(".heart-icon").forEach((div) => {
-    const goalId = parseInt(div.getAttribute("data-goal-id"), 10);
-    const initialFavourite =
-      div.getAttribute("data-initial-favourite") === "true";
-    const root = createRoot(div);
-    root.render(
-      <HeartIcon goalId={goalId} initialFavourite={initialFavourite} />,
-    );
-  });
-
-  const completeGoalButtonElement = document.getElementById(
-    "complete-goal-button",
-  );
-  if (completeGoalButtonElement) {
-    const goalId = parseInt(
-      completeGoalButtonElement.getAttribute("data-goal-id"),
-      10,
-    );
-    const root = createRoot(completeGoalButtonElement);
-    root.render(<CompleteGoalButton goalId={goalId} />);
+  const transactionsTableElement = document.getElementById("transactions-table-container");
+  if (transactionsTableElement) {
+    const initialTransactions = JSON.parse(transactionsTableElement.getAttribute("data-transactions") || "[]");
+    const accounts = JSON.parse(transactionsTableElement.getAttribute("data-accounts") || "[]");
+    
+    renderComponent(TransactionsTable, "transactions-table-container", {
+      initialTransactions,
+      accounts
+    });
   }
-
-  document.querySelectorAll(".goal-progress").forEach((div) => {
-    const progress = parseInt(div.getAttribute("data-progress"), 10);
-    const root = createRoot(div);
-    root.render(<GoalProgress progress={progress} />);
-  });
-
-  document.querySelectorAll(".habit-log-form").forEach((div) => {
-    const habitId = div.getAttribute("data-habit-id");
-    if (habitId) {
-      const root = createRoot(div);
-      root.render(<HabitLogForm habitId={habitId} />);
-    } else {
-      console.error("Missing habitId. Cannot render HabitLogForm.");
-    }
-  });
 };
+
+// Initialize components when the page loads
+document.addEventListener('DOMContentLoaded', initializeReactComponents);
+
+// Re-initialize components after Turbo navigation
+document.addEventListener('turbo:load', initializeReactComponents);
 
 // Function to toggle task visibility
 const toggleTasks = (goalId) => {
@@ -156,18 +209,22 @@ const toggleTasks = (goalId) => {
 // Modal management
 let modalRoot = null;
 
-const openEditTaskModal = (task) => {
+const openEditTaskModal = async (task) => {
   const modalContainer = document.getElementById("edit-task-form-container");
-  if (!modalRoot && modalContainer) {
+  if (!modalContainer) return;
+
+  if (!modalRoot) {
     modalRoot = createRoot(modalContainer);
   }
-  if (modalRoot) {
-    modalRoot.render(
-      <Modal show={true} onClose={closeEditTaskModal}>
-        <EditTaskForm task={task} onSave={handleSave} />
-      </Modal>,
-    );
-  }
+
+  const { default: Modal } = await import("./components/Modal");
+  const { default: EditTaskForm } = await import("./components/EditTaskForm");
+
+  modalRoot.render(
+    <Modal show={true} onClose={closeEditTaskModal}>
+      <EditTaskForm task={task} onSave={handleSave} />
+    </Modal>
+  );
 };
 
 const closeEditTaskModal = () => {
@@ -191,7 +248,7 @@ const saveTask = (task) => {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content, // Include CSRF token
+      "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
     },
     body: JSON.stringify(task),
   }).then((response) => response.json());
@@ -211,7 +268,7 @@ const initializeNavDropdowns = () => {
         menuDropdown.classList.add("hidden");
         const relatedButton = dropdowns.find(
           (d) => d.dropdown === dropdown,
-        )?.button;
+          )?.button;
         if (relatedButton) {
           const button = document.getElementById(relatedButton);
           button?.setAttribute("aria-expanded", "false");
@@ -235,7 +292,7 @@ const initializeNavDropdowns = () => {
     if (menuButton && menuDropdown) {
       menuButton.removeEventListener("click", menuButton.clickHandler);
       menuButton.clickHandler = (event) =>
-        handleButtonClick(event, menuButton, menuDropdown);
+      handleButtonClick(event, menuButton, menuDropdown);
       menuButton.addEventListener("click", menuButton.clickHandler);
     }
   };
@@ -254,11 +311,11 @@ const initializeNavDropdowns = () => {
         menuButton &&
         !menuButton.contains(event.target) &&
         !menuDropdown.contains(event.target)
-      ) {
+        ) {
         menuDropdown.classList.add("hidden");
-        menuButton.setAttribute("aria-expanded", "false");
-      }
-    });
+      menuButton.setAttribute("aria-expanded", "false");
+    }
+  });
   };
   document.addEventListener("click", document.closeDropdownsHandler);
 };
@@ -296,7 +353,7 @@ const initializeTheme = () => {
     const storedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)",
-    ).matches;
+      ).matches;
 
     console.log("Stored theme:", storedTheme);
     console.log("System prefers dark:", prefersDark);
@@ -334,7 +391,7 @@ const synchronizeThemeAcrossTabs = () => {
         console.log(
           "Theme synchronized across tabs:",
           isDark ? "Dark" : "Light",
-        );
+          );
       }
     }
   });

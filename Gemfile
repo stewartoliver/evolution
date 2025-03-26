@@ -47,6 +47,7 @@ gem 'smarter_csv'
 
 gem 'sidekiq'
 
+gem 'sendgrid-ruby'
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"

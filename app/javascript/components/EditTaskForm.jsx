@@ -52,10 +52,11 @@ const EditTaskForm = ({ task, onSave }) => {
 
           {/* Description */}
           <div className="flex flex-col gap-1 w-full">
-            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+            <label htmlFor="task-description" className="block text-sm font-medium text-text-light dark:text-text-dark">
               Description:
             </label>
             <textarea
+              id="task-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className={`${inputClass} min-h-[100px]`}
@@ -68,10 +69,11 @@ const EditTaskForm = ({ task, onSave }) => {
         <div className="flex flex-col gap-2 w-full md:w-1/3">
           {/* Status */}
           <div className="flex flex-col gap-1 w-full">
-            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+            <label htmlFor="task-status" className="block text-sm font-medium text-text-light dark:text-text-dark">
               Status:
             </label>
             <select
+              id="task-status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               className={inputClass}
@@ -84,10 +86,11 @@ const EditTaskForm = ({ task, onSave }) => {
 
           {/* Due Date */}
           <div className="flex flex-col gap-1 w-full">
-            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+            <label htmlFor="task-due-date" className="block text-sm font-medium text-text-light dark:text-text-dark">
               Due Date:
             </label>
             <input
+              id="task-due-date"
               type="datetime-local"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
@@ -97,10 +100,11 @@ const EditTaskForm = ({ task, onSave }) => {
 
           {/* Priority */}
           <div className="flex flex-col gap-1 w-full">
-            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+            <label htmlFor="task-priority" className="block text-sm font-medium text-text-light dark:text-text-dark">
               Priority:
             </label>
             <input
+              id="task-priority"
               type="number"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
@@ -110,10 +114,11 @@ const EditTaskForm = ({ task, onSave }) => {
 
           {/* Actual Time */}
           <div className="flex flex-col gap-1 w-full">
-            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+            <label htmlFor="task-actual-time" className="block text-sm font-medium text-text-light dark:text-text-dark">
               Actual Time (hours):
             </label>
             <input
+              id="task-actual-time"
               type="number"
               step="0.01"
               value={actualTime}
@@ -124,10 +129,11 @@ const EditTaskForm = ({ task, onSave }) => {
 
           {/* Tags */}
           <div className="flex flex-col gap-1 w-full">
-            <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+            <label htmlFor="task-tags" className="block text-sm font-medium text-text-light dark:text-text-dark">
               Tags:
             </label>
             <input
+              id="task-tags"
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
@@ -138,12 +144,13 @@ const EditTaskForm = ({ task, onSave }) => {
           {/* Is Recurring */}
           <div className="w-full flex items-center gap-1">
             <input
+              id="task-is-recurring"
               type="checkbox"
               checked={isRecurring}
               onChange={(e) => setIsRecurring(e.target.checked)}
               className="rounded-sm border-0 focus:border-0 shadow-sm focus:ring-0 text-primary-500 bg-background-input-light dark:bg-background-input-dark"
             />
-            <label className="text-sm font-medium text-text-light dark:text-text-dark">
+            <label htmlFor="task-is-recurring" className="text-sm font-medium text-text-light dark:text-text-dark">
               Is Recurring
             </label>
           </div>
@@ -151,10 +158,11 @@ const EditTaskForm = ({ task, onSave }) => {
           {/* Recurrence Interval */}
           {isRecurring && (
             <div className="flex flex-col gap-1 w-full">
-              <label className="block text-sm font-medium text-text-light dark:text-text-dark">
+              <label htmlFor="task-recurrence-interval" className="block text-sm font-medium text-text-light dark:text-text-dark">
                 Recurrence Interval:
               </label>
               <input
+                id="task-recurrence-interval"
                 type="text"
                 value={recurrenceInterval}
                 onChange={(e) => setRecurrenceInterval(e.target.value)}

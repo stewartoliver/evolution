@@ -66,7 +66,7 @@ const HabitLogForm = ({ habitId }) => {
 
   return (
     <div className="max-w-xs">
-      <div className="flex flex-col gap-3 p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:border-sky-500 transition-all duration-300">
+      <div className="flex flex-col gap-3 p-4 bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium rounded-lg shadow-md border transition-all duration-300">
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-gray-700">{occurrences}</span>
           <div className="flex gap-2">

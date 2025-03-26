@@ -1,7 +1,9 @@
 <main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
 		<div class="flex flex-col gap-4 lg:gap-6 lg:w-1/3">
+			<!-- Left sidebar content remains the same -->
 			<div class="flex flex-col gap-6 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<!-- Header with Back Button -->
 				<div class="flex justify-between items-center">
 					<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
@@ -9,115 +11,340 @@
 					</svg>
 					Back
 					<% end %>
+					<h2 class="text-lg font-semibold text-text-light dark:text-text-dark">Account Overview</h2>
 				</div>
-				<div class="flex flex-col tracking-tight leading-tight">
-					<div class="text-3xl font-bold uppercase">
-						Transaction index
+
+				<!-- Account Balance Summary -->
+				<div class="bg-background-input-light dark:bg-background-input-dark p-4 rounded-lg">
+					<div class="text-xs font-base uppercase text-text-light dark:text-text-dark">
+						Current Balance
+					</div>
+					<div class="text-7xl text-text-light dark:text-text-dark">
+						<% if @selected_account_id.present? %>
+						<% account = current_user.accounts.find(@selected_account_id) %>
+						<% amount = number_to_currency(account.transactions.sum(:amount)) %>
+						<% else %>
+						<% amount = number_to_currency(current_user.transactions.sum(:amount)) %>
+						<% end %>
+						<% whole, decimal = amount.split('.') %>
+						<%= whole %><span class="text-3xl"><%= ".#{decimal}" if decimal %></span>
+					</div>
+					<div class="text-sm mt-2 text-text-light dark:text-text-dark opacity-80">
+						<% if @selected_account_id.present? %>
+						<% account = current_user.accounts.find(@selected_account_id) %>
+						Showing transactions for: <%= account.account_name %>
+						<% else %>
+						Showing transactions for all accounts
+						<% end %>
 					</div>
 				</div>
-				<%= form_with url: import_finances_transactions_path, method: :post, local: true, multipart: true do |f| %>
-				<div class="flex flex-col lg:flex-row gap-4">
 
-					<!-- CSV Upload Form -->
-					<div class="w-full">
-						<div class="flex flex-col gap-4">
+				<!-- CSV Import Section -->
+				<div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+					<div class="flex items-center gap-2 mb-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-primary-500">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+						</svg>
+						<h3 class="font-medium text-text-light dark:text-text-dark">Import Bank Transactions</h3>
+					</div>
 
-							<!-- Error and Success Messages -->
-							<% if flash[:alert] %>
-							<div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
-								<%= flash[:alert] %>
+					<!-- CSV Format Guide -->
+					<div class="mt-2 mb-4 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+						<div class="flex items-center gap-1 mb-1">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+							<span class="font-medium">CSV Format Guide</span>
+						</div>
+						<p>Your CSV file should include columns for date, description, amount, and transaction type.</p>
+						<p class="mt-1">Example: <code>2025-03-01,Coffee Shop,-4.50,expense</code></p>
+					</div>
+
+					<%= form_with url: import_finances_transactions_path, method: :post, local: true, multipart: true do |f| %>
+					<!-- Error and Success Messages -->
+					<% if flash[:alert] %>
+					<div class="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+						<%= flash[:alert] %>
+					</div>
+					<% elsif flash[:notice] %>
+					<div class="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
+						<%= flash[:notice] %>
+					</div>
+					<% end %>
+
+					<div class="flex flex-col items-start gap-4">
+						<!-- Account Selection -->
+						<div class="flex flex-col gap-2">
+							<label class="text-sm font-medium text-gray-700 dark:text-gray-300">Select Destination Account</label>
+							<%= f.collection_select :account_id, 
+							current_user.accounts, 
+							:id, 
+							:account_name, 
+							{ prompt: "Choose an account" }, 
+							{ 
+								class: "rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-200 w-full" 
+								} 
+							%>
+							<div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+								Transactions will be imported to the selected account
 							</div>
-							<% elsif flash[:notice] %>
-							<div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
-								<%= flash[:notice] %>
-							</div>
-							<% end %>
-
-							<!-- Account Selection -->
-							<div class="flex flex-col gap-1">
-								<%= f.label :account_id, "Select Account", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
-								<%= f.collection_select :account_id, current_user.accounts, :id, :account_name, { prompt: "Choose an account" }, { class: "min-w-52 w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-500 dark:bg-gray-700 dark:text-gray-300" } %>
-							</div>
-
-							<!-- File Upload -->
-							<div class="flex flex-col gap-1">
-								<%= f.label :file, "Upload CSV", class: "text-sm font-medium text-gray-700 dark:text-gray-300" %>
-								<div class="relative">
-									<input id="file-upload" name="file" type="file" class="hidden">
-									<label for="file-upload" class="cursor-pointer inline-block rounded-md border border-gray-300 dark:border-gray-600 shadow-sm py-2 px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
-										Choose File
+						</div>
+						<!-- File Upload -->
+						<div class="flex flex-col gap-2">
+							<label class="text-sm font-medium text-gray-700 dark:text-gray-300">Select CSV File</label>
+							<div class="flex items-center gap-2">
+								<div class="relative flex items-center">
+									<input id="file-upload" name="file" type="file" accept=".csv" class="hidden">
+									<label for="file-upload" class="cursor-pointer flex items-center justify-center w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm py-2 px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+										</svg>
+										Select CSV File
 									</label>
-									<span id="file-name" class="ml-3 text-gray-500 dark:text-gray-300"></span>
+								</div>
+								<div id="file-info" class="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+									</svg>
+									<span id="file-name">No file selected</span>
+								</div>    	
+							</div>
+						</div>
+					</div>
+
+					<!-- Upload Button -->
+					<div class="flex justify-end mt-4">
+						<%= f.submit "Import Transactions", class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition shadow-sm" %>
+					</div>
+					<% end %>
+				</div>
+			</div>
+			<div class="flex flex-col gap-6 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex justify-between items-center">
+					<h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Financial Summary</h3>
+					<div class="text-xs text-gray-500 dark:text-gray-400">
+						<% if @selected_account_id.present? %>
+						<% account = current_user.accounts.find(@selected_account_id) %>
+						<%= account.account_name %>
+						<% else %>
+						All Accounts
+						<% end %>
+					</div>
+				</div>
+
+				<!-- Primary Stats -->
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+					<div class="tracking-tight leading-tight bg-background-input-light dark:bg-background-input-dark flex flex-col gap-1 items-start rounded-lg px-4 py-3 border-l-4 border-emerald-500 dark:border-emerald-600">
+						<div class="text-base font-semibold text-text-light dark:text-text-dark">
+							Total Income
+						</div>
+						<div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+							<% if @selected_account_id.present? %>
+							<% account = current_user.accounts.find(@selected_account_id) %>
+							<%= number_to_currency(account.transactions.where("amount > 0").sum(:amount)) %>
+							<% else %>
+							<%= number_to_currency(current_user.transactions.where("amount > 0").sum(:amount)) %>
+							<% end %>
+						</div>
+						<div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+							<% income_count = @selected_account_id.present? ? 
+							current_user.accounts.find(@selected_account_id).transactions.where("amount > 0").count :
+							current_user.transactions.where("amount > 0").count %>
+							<%= pluralize(income_count, 'transaction') %>
+						</div>
+					</div>
+					<div class="tracking-tight leading-tight bg-background-input-light dark:bg-background-input-dark flex flex-col gap-1 items-start rounded-lg px-4 py-3 border-l-4 border-rose-500 dark:border-rose-600">
+						<div class="text-base font-semibold text-text-light dark:text-text-dark">
+							Total Expense
+						</div>
+						<div class="text-xl font-bold text-rose-600 dark:text-rose-400">
+							<% if @selected_account_id.present? %>
+							<% account = current_user.accounts.find(@selected_account_id) %>
+							<%= number_to_currency(account.transactions.where("amount < 0").sum(:amount)) %>
+							<% else %>
+							<%= number_to_currency(current_user.transactions.where("amount < 0").sum(:amount)) %>
+							<% end %>
+						</div>
+						<div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+							<% expense_count = @selected_account_id.present? ? 
+							current_user.accounts.find(@selected_account_id).transactions.where("amount < 0").count :
+							current_user.transactions.where("amount < 0").count %>
+							<%= pluralize(expense_count, 'transaction') %>
+						</div>
+					</div>
+				</div>
+
+				<!-- Net Worth and Savings -->
+				<div class="bg-background-input-light dark:bg-background-input-dark rounded-lg p-4">
+					<div class="flex justify-between items-center mb-3">
+						<div class="text-base font-semibold text-text-light dark:text-text-dark">Net Balance</div>
+						<% if @selected_account_id.present? %>
+						<% account = current_user.accounts.find(@selected_account_id) %>
+						<% net_balance = account.transactions.sum(:amount) %>
+						<% else %>
+						<% net_balance = current_user.transactions.sum(:amount) %>
+						<% end %>
+						<div class="text-lg font-bold <%= net_balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
+							<%= number_to_currency(net_balance) %>
+						</div>
+					</div>
+
+					<!-- Savings Rate -->
+					<% if @selected_account_id.present? %>
+					<% account = current_user.accounts.find(@selected_account_id) %>
+					<% income = account.transactions.where("amount > 0").sum(:amount) %>
+					<% expense = account.transactions.where("amount < 0").sum(:amount).abs %>
+					<% else %>
+					<% income = current_user.transactions.where("amount > 0").sum(:amount) %>
+					<% expense = current_user.transactions.where("amount < 0").sum(:amount).abs %>
+					<% end %>
+
+					<% savings_rate = income > 0 ? ((income - expense) / income * 100).round(1) : 0 %>
+
+					<div class="flex justify-between items-center mb-1">
+						<div class="text-sm text-gray-600 dark:text-gray-400">Savings Rate</div>
+						<div class="text-sm font-medium <%= savings_rate >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
+							<%= savings_rate %>%
+						</div>
+					</div>
+					<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+						<div class="bg-primary-500 h-2 rounded-full" style="width: <%= [savings_rate, 100].min %>%"></div>
+					</div>
+				</div>
+
+				<!-- Time-based Stats -->
+				<div class="mt-2">
+					<h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Time Period Analysis</h4>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+						<!-- Current Month -->
+						<div class="bg-background-input-light dark:bg-background-input-dark rounded-lg p-3">
+							<div class="text-xs text-gray-500 dark:text-gray-400">Current Month</div>
+							<% if @selected_account_id.present? %>
+							<% current_month_total = current_user.accounts.find(@selected_account_id).transactions.where("date >= ? AND date <= ?", Date.today.beginning_of_month, Date.today.end_of_month).sum(:amount) %>
+								<% else %>
+								<% current_month_total = current_user.transactions.where("date >= ? AND date <= ?", Date.today.beginning_of_month, Date.today.end_of_month).sum(:amount) %>
+									<% end %>
+									<div class="text-base font-medium <%= current_month_total >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
+										<%= number_to_currency(current_month_total) %>
+									</div>
+								</div>
+
+								<!-- Last Month -->
+								<div class="bg-background-input-light dark:bg-background-input-dark rounded-lg p-3">
+									<div class="text-xs text-gray-500 dark:text-gray-400">Last Month</div>
+									<% if @selected_account_id.present? %>
+									<% last_month_total = current_user.accounts.find(@selected_account_id).transactions.where("date >= ? AND date <= ?", Date.today.prev_month.beginning_of_month, Date.today.prev_month.end_of_month).sum(:amount) %>
+										<% else %>
+										<% last_month_total = current_user.transactions.where("date >= ? AND date <= ?", Date.today.prev_month.beginning_of_month, Date.today.prev_month.end_of_month).sum(:amount) %>
+											<% end %>
+											<div class="text-base font-medium <%= last_month_total >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
+												<%= number_to_currency(last_month_total) %>
+											</div>
+										</div>
+
+										<!-- Year to Date -->
+										<div class="bg-background-input-light dark:bg-background-input-dark rounded-lg p-3">
+											<div class="text-xs text-gray-500 dark:text-gray-400">Year to Date</div>
+											<% if @selected_account_id.present? %>
+											<% ytd_total = current_user.accounts.find(@selected_account_id).transactions.where("date >= ?", Date.today.beginning_of_year).sum(:amount) %>
+											<% else %>
+											<% ytd_total = current_user.transactions.where("date >= ?", Date.today.beginning_of_year).sum(:amount) %>
+											<% end %>
+											<div class="text-base font-medium <%= ytd_total >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
+												<%= number_to_currency(ytd_total) %>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Average Stats -->
+								<div class="mt-2">
+									<h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Transaction Averages</h4>
+									<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+										<!-- Average Income -->
+										<div class="flex justify-between items-center bg-background-input-light dark:bg-background-input-dark rounded-lg p-3">
+											<div class="text-sm text-gray-600 dark:text-gray-400">Average Income</div>
+											<% if @selected_account_id.present? %>
+											<% income_transactions = current_user.accounts.find(@selected_account_id).transactions.where("amount > 0") %>
+											<% else %>
+											<% income_transactions = current_user.transactions.where("amount > 0") %>
+											<% end %>
+											<% avg_income = income_transactions.any? ? income_transactions.average(:amount).to_f : 0 %>
+											<div class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+												<%= number_to_currency(avg_income) %>
+											</div>
+										</div>
+
+										<!-- Average Expense -->
+										<div class="flex justify-between items-center bg-background-input-light dark:bg-background-input-dark rounded-lg p-3">
+											<div class="text-sm text-gray-600 dark:text-gray-400">Average Expense</div>
+											<% if @selected_account_id.present? %>
+											<% expense_transactions = current_user.accounts.find(@selected_account_id).transactions.where("amount < 0") %>
+											<% else %>
+											<% expense_transactions = current_user.transactions.where("amount < 0") %>
+											<% end %>
+											<% avg_expense = expense_transactions.any? ? expense_transactions.average(:amount).to_f.abs : 0 %>
+											<div class="text-sm font-medium text-rose-600 dark:text-rose-400">
+												<%= number_to_currency(avg_expense) %>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 
-							<!-- Submit Button -->
-							<div class="flex justify-end">
-								<%= f.submit "Upload CSV", class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" %>
+							<!-- Account Filter Section -->
+							<div class="flex flex-col gap-4 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+								<h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Filter Transactions</h3>
+								<%= form_with url: finances_transactions_path, method: :get, local: true do |f| %>
+								<div class="flex flex-col gap-3">
+									<div>
+										<label for="account_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+											Select Account
+										</label>
+										<%= f.collection_select :account_id, 
+										current_user.accounts, 
+										:id, 
+										:account_name, 
+										{ include_blank: "All Accounts" }, 
+										{ 
+											id: "account_filter", 
+											class: "w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-200",
+												onchange: "this.form.submit();"
+											} 
+										%>
+									</div>
+								</div>
+								<% end %>
 							</div>
 						</div>
-					</div>
+
+							<!-- Transactions Table Section -->
+		<div class="flex flex-col w-full">
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex items-center mb-4">
+					<h2 class="text-xl font-semibold">Recent Transactions</h2>
 				</div>
-				<% end %>
-			</div>
-			<div class="flex flex-col gap-6 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
-				<div class="flex flex-col tracking-tight leading-tight">
-					<div class="text-3xl font-bold uppercase">
-						Statistics
-					</div>
-				</div>
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-					<div class="bg-background-input-light dark:bg-background-input-dark flex flex-col gap-1 items-start rounded-lg px-4 py-2">
-						<div class="text-lg font-semibold text-text-light dark:text-text-dark">
-							Total Sum
-						</div>
-						<div class="text-2xl font-bold text-text-light dark:text-text-dark">
-							<%= number_to_currency(current_user.transactions.sum(:amount)) %>
-						</div>
-					</div>
-					<%= button_to 'Recategorize All', recategorize_all_finances_transactions_path, method: :post, data: { confirm: 'Are you sure you want to recategorize all your transactions?' }, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+				<div id="transactions-table-container" 
+					 data-transactions="<%= @recent_transactions.to_json %>"
+					 data-accounts="<%= @accounts.to_json %>">
 				</div>
 			</div>
 		</div>
-		<div class="w-full lg:w-2/3">
-			<h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200">Your Transactions</h2>
-			<div class="overflow-x-auto">
-				<table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-md">
-					<thead>
-						<tr>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Date</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Description</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Type</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Account</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-right text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-right text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						<% @transactions.each do |transaction| %>
-						<tr class="transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100"><%= transaction.date.strftime("%d/%m/%Y") %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100"><%= transaction.description %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"><%= transaction.transaction_type %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"><%= transaction.account.account_name %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900 dark:text-gray-100"><%= number_to_currency(transaction.amount) %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900 dark:text-gray-100 underline"><%= link_to "View",finances_transaction_path(transaction.id) %></td>
-						</tr>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</main>
+					</div>
+				</main>
 
-	<!-- Script to Display Selected File Name -->
-	<script>
-		document.getElementById('file-upload').addEventListener('change', function() {
-			const fileName = this.files[0]?.name || '';
-			document.getElementById('file-name').textContent = fileName;
-		});
-	</script>
+<!-- Script to Display Selected File Name -->
+<script>
+	document.getElementById('file-upload').addEventListener('change', function() {
+		const fileName = this.files[0]?.name || 'No file selected';
+		document.getElementById('file-name').textContent = fileName;
 
-	<!-- Transactions List -->
-
-</div>
+		if (this.files[0]) {
+			document.getElementById('file-info').classList.add('text-primary-500');
+			document.getElementById('file-info').classList.remove('text-gray-500', 'dark:text-gray-400');
+		} else {
+			document.getElementById('file-info').classList.remove('text-primary-500');
+			document.getElementById('file-info').classList.add('text-gray-500', 'dark:text-gray-400');
+		}
+	});
+</script>

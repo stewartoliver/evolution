@@ -4,11 +4,20 @@ module Fitness
     before_action :set_exercise, only: [:show, :edit, :update]
 
     def index
-      @exercises = Exercise.includes(:exercise_type, :muscle_group).all
+      @exercises = Exercise.includes(:exercise_type, :muscle_group)
+                          .order(:name)
+                          .all
 
       respond_to do |format|
-        format.html    
-        format.json { render json: @exercises.to_json(include: [:exercise_type, :muscle_group]) }
+        format.html
+        format.json do
+          render json: @exercises.to_json(
+            include: {
+              exercise_type: { only: [:id, :name, :colour, :icon] },
+              muscle_group: { only: [:id, :name] }
+            }
+          )
+        end
       end
     end
 
@@ -19,11 +28,17 @@ module Fitness
     def create
       @exercise = Exercise.new(exercise_params)
       @exercise.added_by_id = current_user.id
+      
       if @exercise.save
-        redirect_to fitness_exercises_path, notice: 'Exercise was successfully created.'
+        respond_to do |format|
+          format.html { redirect_to fitness_exercises_path, notice: 'Exercise was successfully created.' }
+          format.json { render json: @exercise, status: :created }
+        end
       else
-        puts @exercise.errors.full_messages
-        render :new
+        respond_to do |format|
+          format.html { render :new }
+          format.json { render json: @exercise.errors, status: :unprocessable_entity }
+        end
       end
     end
 
@@ -32,9 +47,15 @@ module Fitness
 
     def update
       if @exercise.update(exercise_params)
-        redirect_to fitness_exercises_path, notice: 'Exercise was successfully updated.'
+        respond_to do |format|
+          format.html { redirect_to fitness_exercises_path, notice: 'Exercise was successfully updated.' }
+          format.json { render json: @exercise }
+        end
       else
-        render :edit
+        respond_to do |format|
+          format.html { render :edit }
+          format.json { render json: @exercise.errors, status: :unprocessable_entity }
+        end
       end
     end
 

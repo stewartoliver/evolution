@@ -17,7 +17,6 @@ module Fitness
 
     def edit
       @is_edit_page = true
-      # Associations are preloaded in set_routine
       # If you need to ensure at least one routine_exercise and routine_set, you can build them here if necessary
       if @routine.routine_exercises.empty?
         routine_exercise = @routine.routine_exercises.build

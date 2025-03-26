@@ -1,35 +1,60 @@
-<div class="flex flex-col lg:flex-row">
-	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
-		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
-		<div class="flex flex-col tracking-tight leading-tight">
-			<div class="text-2xl font-bold uppercase text-sky-900">
-				Create Account
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+		<div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+			<!-- Header Section -->
+			<div class="flex justify-between items-center">
+				<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+				</svg>
+				Back
+				<% end %>
 			</div>
-			<div class="text-gray-500 text-sm">
-				/finances /accounts /new
+			<div class="flex flex-col tracking-tight leading-tight">
+				<div class="text-4xl font-bold uppercase">
+					Create Account
+				</div>
+				<div class="mt-1 px-2 py-1 rounded-md font-semibold uppercase bg-success text-white text-xs tracking-wide w-min whitespace-nowrap">
+				</div>
 			</div>
+			<%= form_for([:finances, @account]) do |f| %>
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-1">
+					<%= f.label :account_name, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div>
+						<%= f.text_field :account_name, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<%= f.label :account_type, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div>
+						<%= f.text_field :account_type, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<%= f.label :balance, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div>
+						<div class="relative">
+							<span class="absolute left-3 top-2 text-gray-500">$</span>
+							<%= f.number_field :balance, step: 0.01, min: 0, class: "pl-7 rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+						</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-1 w-full">
+						<%= f.label :date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= f.date_field :date, value: Time.current.to_date.strftime("%Y-%m-%d"), class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex justify-end">
+					<%= f.submit "Create", class: "btn" %>
+				</div>
+			</div>
+			<% end %>
 		</div>
-		<%= form_for([:finances, @account]) do |form| %>
-		<div class="flex flex-col gap-2">
-			<div>
-				<%= form.label :account_name, class: "text-sm font-medium text-gray-700" %>
-				<%= form.text_field :account_name, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
-			</div>
-			<div>
-				<%= form.label :account_type, class: "text-sm font-medium text-gray-700" %>
-				<%= form.text_field :account_type, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
-			</div>
-			<div>
-				<%= form.label :balance, class: "text-sm font-medium text-gray-700" %>
-				<%= form.number_field :balance, step: "0.01", class: "w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-0 sm:text-sm text-gray-500" %>
-			</div>
-			<div class="flex">
-				<%= form.submit "Create", class: "inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-800 hover:bg-sky-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 w-full" %>
-			</div>
+
+		<!-- Board Section -->
+		<div class="flex flex-col w-full">
 		</div>
-		<% end %>
 	</div>
-	<div class="flex flex-col w-full bg-sky-900 text-white p-5">
-		<!-- Add any additional content here -->
-	</div>
-</div>
+</main>

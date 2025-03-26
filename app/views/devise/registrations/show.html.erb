@@ -1,59 +1,203 @@
 <main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
-		<div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
-			<!-- Header Section -->
-			<div class="flex justify-between items-center">
-				<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
-					<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-				</svg>
-				Back
-				<% end %>
-			</div>
-			<div class="flex flex-col tracking-tight leading-tight">
-				<div class="text-4xl font-bold uppercase">
-					<%= @user.full_name %>'s profile
+		<!-- Left Sidebar -->
+		<div class="flex flex-col gap-6 lg:w-1/3">
+			<!-- Basic Info Card -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex justify-between items-center mb-6">
+					<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+						<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+					</svg>
+					Back
+					<% end %>
+					<%= link_to edit_user_registration_path, class: "flex gap-1 items-center px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors" do %>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+						<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+					</svg>
+					Edit Profile
+					<% end %>
+				</div>
+				<div class="flex flex-col tracking-tight leading-tight">
+					<div class="text-4xl font-bold uppercase mb-6">
+						<%= @user.full_name %>'s profile
+					</div>
+					<div class="flex flex-col gap-3">
+						<div class="flex flex-col">
+							<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Email</div>
+							<div class="text-sm"><%= @user.email %></div>
+						</div>
+						<div class="flex flex-col">
+							<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Date of birth</div>
+							<div class="text-sm"><%= @user.date_of_birth&.strftime('%d %B %Y') || 'Not specified' %></div>
+						</div>
+						<div class="flex flex-col">
+							<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Gender</div>
+							<div class="text-sm"><%= @user.gender&.capitalize || 'Not specified' %></div>
+						</div>
+						<div class="flex flex-col">
+							<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Height</div>
+							<div class="text-sm"><%= @user.height ? "#{@user.height} #{@user.measurement_unit}" : 'Not specified' %></div>
+						</div>
+						<div class="flex flex-col">
+							<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Preferred Units</div>
+							<div class="text-sm"><%= @user.preferred_units&.capitalize || 'Not specified' %></div>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="flex flex-col gap-4">
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Email:
-					</div>
-					<div class="text-sm">
-						<%= @user.email %>
-					</div>
+
+			<!-- Health Info Card -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex items-center gap-2 mb-4">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 text-primary">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+					</svg>
+					<h2 class="text-xl font-semibold">Health Information</h2>
 				</div>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Date of birth:
+				<div class="flex flex-col gap-3">
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Current Weight</div>
+						<div class="text-sm"><%= @user.current_weight ? "#{@user.current_weight} #{@user.weight_unit}" : 'Not specified' %></div>
 					</div>
-					<div class="text-sm">
-						<%= @user.date_of_birth.strftime('%d %B %Y') %>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Goal Weight</div>
+						<div class="text-sm"><%= @user.goal_weight ? "#{@user.goal_weight} #{@user.weight_unit}" : 'Not specified' %></div>
 					</div>
-				</div>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Gender:
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">BMI</div>
+						<div class="text-sm"><%= @user.bmi ? "#{@user.bmi} (#{@user.bmi_status})" : 'Not specified' %></div>
 					</div>
-					<div class="text-sm">
-						<%= @user.gender.capitalize %>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">BMR</div>
+						<div class="text-sm"><%= @user.bmr ? "#{@user.bmr} kcal/day (#{@user.bmr_status})" : 'Not specified' %></div>
 					</div>
-				</div>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Gender:
-					</div>
-					<div class="text-sm">
-						(Preferred units set as <%= @user.preferred_units %>)<br>
-						<%= @user.height %> <%= @user.measurement_unit %>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Body Fat Percentage</div>
+						<div class="text-sm"><%= @user.body_fat_percentage ? "#{@user.body_fat_percentage}%" : 'Not specified' %></div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<!-- Board Section -->
-		<div class="flex flex-col w-full">
+		<!-- Main Content -->
+		<div class="flex flex-col gap-6 lg:w-2/3">
+			<!-- Fitness Card -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex items-center gap-2 mb-4">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 text-primary">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+					</svg>
+					<h2 class="text-xl font-semibold">Fitness Profile</h2>
+				</div>
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Activity Level</div>
+						<div class="text-sm"><%= @user.activity_level ? User::ACTIVITY_LEVELS[@user.activity_level] : 'Not specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Fitness Level</div>
+						<div class="text-sm"><%= @user.fitness_level_name %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Workout Schedule</div>
+						<div class="text-sm"><%= @user.workout_schedule %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Current Streak</div>
+						<div class="text-sm"><%= @user.current_streak %> days</div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Primary Fitness Goal</div>
+						<div class="text-sm"><%= @user.primary_fitness_goal || 'Not specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Injury Restrictions</div>
+						<div class="text-sm"><%= @user.injury_restrictions || 'None specified' %></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Health Details Card -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex items-center gap-2 mb-4">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 text-primary">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+					</svg>
+					<h2 class="text-xl font-semibold">Health Details</h2>
+				</div>
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Medical Conditions</div>
+						<div class="text-sm"><%= @user.medical_conditions || 'None specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Allergies</div>
+						<div class="text-sm"><%= @user.allergies || 'None specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Medications</div>
+						<div class="text-sm"><%= @user.medications || 'None specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Blood Type</div>
+						<div class="text-sm"><%= @user.blood_type || 'Not specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Emergency Contact</div>
+						<div class="text-sm"><%= @user.emergency_contact_info %></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Financial Profile Card -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex items-center gap-2 mb-4">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 text-primary">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.171-.879-1.172-2.303 0-3.182C10.536 7.719 11.768 7.5 12 7.5c1.45 0 2.9.439 4.003 1.318" />
+					</svg>
+					<h2 class="text-xl font-semibold">Financial Profile</h2>
+				</div>
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Default Currency</div>
+						<div class="text-sm"><%= @user.default_currency || 'Not specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Monthly Budget Target</div>
+						<div class="text-sm"><%= @user.monthly_budget_target ? "#{@user.default_currency} #{@user.monthly_budget_target}" : 'Not specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Savings Target</div>
+						<div class="text-sm"><%= @user.savings_target_percentage ? "#{@user.savings_target_percentage}%" : 'Not specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Primary Financial Goal</div>
+						<div class="text-sm"><%= @user.primary_financial_goal || 'Not specified' %></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Preferences Card -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex items-center gap-2 mb-4">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 text-primary">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a6.759 6.759 0 0 1 0 .255c-.007.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" />
+						<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+					</svg>
+					<h2 class="text-xl font-semibold">Preferences</h2>
+				</div>
+				<div class="flex flex-col gap-3">
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Time Zone</div>
+						<div class="text-sm"><%= @user.time_zone || 'Not specified' %></div>
+					</div>
+					<div class="flex flex-col">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Language</div>
+						<div class="text-sm"><%= @user.language_preference&.upcase || 'Not specified' %></div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </main>

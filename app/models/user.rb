@@ -23,8 +23,35 @@ class User < ApplicationRecord
   has_many :achievements, through: :goals
   has_many :user_weight_histories, dependent: :destroy
 
+  # Validations
+  validates :workout_days_per_week, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 7 }, allow_nil: true
+  validates :fitness_level, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 5 }, allow_nil: true
+  validates :savings_target_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }, allow_nil: true
+  validates :monthly_budget_target, numericality: { greater_than: 0 }, allow_nil: true
+  validates :blood_type, inclusion: { in: %w[A+ A- B+ B- O+ O- AB+ AB-], allow_nil: true }
+  validates :language_preference, inclusion: { in: %w[en es fr de it pt ru zh ja ko], allow_nil: true }
+  validates :activity_level, inclusion: { in: 0..3, allow_nil: true }
+
   # Callbacks
   before_save :update_calculated_fields
+  before_save :normalize_medical_info
+
+  # Constants
+  ACTIVITY_LEVELS = {
+    0 => "Sedentary",
+    1 => "Lightly Active",
+    2 => "Active",
+    3 => "Very Active"
+  }.freeze
+
+  FITNESS_LEVELS = {
+    0 => "Beginner",
+    1 => "Intermediate",
+    2 => "Advanced",
+    3 => "Expert",
+    4 => "Professional",
+    5 => "Elite"
+  }.freeze
 
   # Methods
 
@@ -179,8 +206,8 @@ class User < ApplicationRecord
                  else 1.2
                  end
 
-                 (bmr_value * multiplier).round(2)
-               end
+    (bmr_value * multiplier).round(2)
+  end
 
   # Method to update all calculated fields before saving the user
   def update_calculated_fields
@@ -200,5 +227,85 @@ class User < ApplicationRecord
   # Full name method
   def full_name
     "#{first_name} #{last_name}".strip
+  end
+
+  def current_streak
+    return 0 if fitness_log_entries.empty?
+
+    # Get all unique dates with workouts, ordered by date descending
+    workout_dates = fitness_log_entries.select(:date).distinct.order(date: :desc).pluck(:date)
+    return 0 if workout_dates.empty?
+
+    streak = 0
+    current_date = Time.current.to_date
+
+    # If the most recent workout was more than 1 day ago, streak is broken
+    return 0 if (current_date - workout_dates.first).to_i > 1
+
+    # Count consecutive days
+    workout_dates.each_with_index do |date, index|
+      if index == 0
+        # First date should be today or yesterday
+        if (current_date - date).to_i <= 1
+          streak += 1
+        else
+          break
+        end
+      else
+        # Check if this date is consecutive with the previous date
+        if (workout_dates[index - 1] - date).to_i == 1
+          streak += 1
+        else
+          break
+        end
+      end
+    end
+
+    streak
+  end
+
+  # New methods for profile management
+
+  def fitness_level_name
+    FITNESS_LEVELS[fitness_level] || "Not specified"
+  end
+
+  def workout_schedule
+    return "Not specified" if workout_days_per_week.nil?
+    "#{workout_days_per_week} days per week#{preferred_workout_time ? " at #{preferred_workout_time}" : ''}"
+  end
+
+  def health_summary
+    conditions = []
+    conditions << "Medical Conditions: #{medical_conditions}" if medical_conditions.present?
+    conditions << "Allergies: #{allergies}" if allergies.present?
+    conditions << "Medications: #{medications}" if medications.present?
+    conditions << "Blood Type: #{blood_type}" if blood_type.present?
+    conditions << "Injury Restrictions: #{injury_restrictions}" if injury_restrictions.present?
+    
+    conditions.empty? ? "No health information specified" : conditions.join("\n")
+  end
+
+  def emergency_contact_info
+    return "No emergency contact specified" unless emergency_contact_name.present?
+    "#{emergency_contact_name} (#{emergency_contact_phone})"
+  end
+
+  def financial_summary
+    conditions = []
+    conditions << "Monthly Budget Target: #{default_currency} #{monthly_budget_target}" if monthly_budget_target.present?
+    conditions << "Savings Target: #{savings_target_percentage}%" if savings_target_percentage.present?
+    conditions << "Primary Financial Goal: #{primary_financial_goal}" if primary_financial_goal.present?
+    
+    conditions.empty? ? "No financial goals specified" : conditions.join("\n")
+  end
+
+  private
+
+  def normalize_medical_info
+    self.medical_conditions = medical_conditions&.strip
+    self.allergies = allergies&.strip
+    self.medications = medications&.strip
+    self.injury_restrictions = injury_restrictions&.strip
   end
 end

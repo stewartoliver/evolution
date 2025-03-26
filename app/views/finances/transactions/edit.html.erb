@@ -17,6 +17,16 @@
 			</div>
 			<%= form_for([:finances, @transaction]) do |form| %>
 			<div class="flex flex-col gap-4">
+				<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-1 w-full">
+						<%= form.label :amount, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= form.number_field :amount, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+					<div class="flex flex-col gap-1 w-full">
+						<%= form.label :date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= form.date_field :date, value: Time.current.to_date.strftime("%Y-%m-%d"), class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
 						<%= form.label :account_id, "Select Account" %>
@@ -25,32 +35,30 @@
 						<%= form.collection_select :account_id, current_user.accounts, :id, :account_name, {}, {class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full"} %>				
 					</div>
 				</div>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						<%= form.label :transaction_type %>
+				<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-1 w-full">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							<%= form.label :transaction_type %>
+						</div>
+						<div class="text-sm">
+							<%= form.text_field :transaction_type, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+						</div>
 					</div>
-					<div class="text-sm">
-						<%= form.text_field :transaction_type, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
-					</div>
-				</div>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						<%= form.label :amount %>
-					</div>
-					<div class="flex justify-between items-center text-sm">
-						<div>
-							<%= form.number_field :amount, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					<div class="flex flex-col gap-1 w-full">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							<%= form.label :category_id, "Select Category" %>
+						</div>
+						<div class="text-sm">
+							<%= form.collection_select :category_id, Category.all, :id, :name, {}, {class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full"} %>				
 						</div>
 					</div>
 				</div>
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						<%= form.label :date %>
+						<%= form.label :description %>
 					</div>
-					<div class="flex justify-between items-center text-sm">
-						<div>
-							<%= form.date_field :date, value: Time.current.to_date.strftime("%Y-%m-%d"), class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
-						</div>
+					<div>
+						<%= form.text_area :description, rows: 4, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
 					</div>
 				</div>
 				<div class="flex justify-end">

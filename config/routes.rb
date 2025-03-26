@@ -27,6 +27,7 @@ Rails.application.routes.draw do
 
   namespace :operator do
     get 'dashboard', to: 'dashboard#index'
+    resources :categories, path: 'categories'
 
     namespace :fitness do
       resources :muscle_groups, path: 'muscle-groups'

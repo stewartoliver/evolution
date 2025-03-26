@@ -14,39 +14,14 @@
 					<div class="text-3xl font-bold uppercase">
 						Exercise Index
 					</div>
+					<div class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+						Browse and filter exercises by type and muscle group
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="w-full lg:w-2/3">
-			<div class="overflow-x-auto">
-				<table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-md">
-					<thead>
-						<tr>
-							<th class="px-1 py-4 border-b border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Type</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Name</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Description</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-								
-							</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						<% @exercises.each do |exercise| %>
-						<tr class="transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-							<td class="flex justify-center px-2 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100 <%= exercise.exercise_type.color.gsub('text-', 'bg-') %>"><%= exercise.exercise_type.icon.html_safe %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-100"><%= exercise.name.capitalize %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100"><%= exercise.description %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-								<%= link_to 'show', fitness_exercise_path(exercise), class: "badge" %>	
-								<%= link_to 'edit', edit_fitness_exercise_path(exercise), class: "badge" %>
-							</td>
-						</tr>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
+			<div id="exercise-directory-container" data-controller="react" data-react-component="ExerciseDirectory"></div>
 		</div>
-	</main>
-</div>
+	</div>
+</main>

@@ -69,7 +69,11 @@ class CsvImportService
       date: Date.strptime(row[:transaction_date], "%d/%m/%Y"),
       user_id: @user.id,
       account_id: @account_id,
-      description: build_description(row)
+      details: row[:details],
+      particulars: row[:particulars],
+      code: row[:code],
+      reference: row[:reference],
+      description: nil
     }
 
     transaction = Transaction.create!(attributes)
@@ -79,14 +83,5 @@ class CsvImportService
     Rails.logger.error "Failed to save transaction for row #{row.inspect}: #{e.record.errors.full_messages.join(', ')}"
   rescue => e
     Rails.logger.error "Error processing row #{row.inspect}: #{e.message}"
-  end
-
-  def build_description(row)
-    parts = []
-    parts << row[:details] if row[:details].present?
-    parts << row[:particulars] if row[:particulars].present?
-    parts << row[:code] if row[:code].present?
-    parts << row[:reference] if row[:reference].present?
-    parts.join(' | ')
   end
 end

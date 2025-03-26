@@ -12,10 +12,11 @@ const QuickSetModeForm = ({
     <div className="grid grid-cols-3 gap-4">
       {["sets", "reps", "weight"].map((field) => (
         <div key={field} className="flex flex-col">
-          <label className="text-sm font-medium mb-2 capitalize">
+          <label htmlFor={`quick-${field}`} className="text-sm font-medium mb-2 capitalize">
             {field}
           </label>
           <input
+            id={`quick-${field}`}
             type="number"
             className="rounded-md border bg-background-input-light dark:bg-background-input-dark p-2"
             placeholder={

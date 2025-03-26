@@ -15,7 +15,7 @@
 				<div class="text-4xl font-bold uppercase">
 					<%= @goal.title %>
 				</div>
-				<div class="mt-1 px-2 py-1 rounded-md font-semibold uppercase bg-success text-white text-xs tracking-wide w-min whitespace-nowrap">
+				<div style="background-color: <%= @goal.goal_type.colour %>;" class="mt-1 px-2 py-1 rounded-md font-semibold uppercase text-white text-xs tracking-wide w-min whitespace-nowrap">
 					<%= @goal.goal_type.name %>
 				</div>
 			</div>

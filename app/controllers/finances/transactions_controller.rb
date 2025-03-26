@@ -1,9 +1,11 @@
 module Finances
   class TransactionsController < ApplicationController
     before_action :set_transaction, only: [:show, :edit, :update, :destroy]
+    before_action :set_accounts, only: [:new, :edit, :show, :index]
 
     def index
-      @transactions = Transaction.all
+      @recent_transactions = Transaction.includes(:category, :account)
+                                     .order(created_at: :desc)
     end
 
     def show
@@ -16,7 +18,7 @@ module Finances
     def create
       @transaction = Transaction.new(transaction_params)
       if @transaction.save
-        redirect_to finances_transaction_path(@transaction), notice: 'Transaction was successfully created.'
+        redirect_to @transaction, notice: 'Transaction was successfully created.'
       else
         render :new
       end
@@ -27,6 +29,7 @@ module Finances
 
     def update
       if @transaction.update(transaction_params)
+        Rails.logger.info("Updating transaction: #{@transaction.inspect}")
         redirect_to finances_transaction_path(@transaction), notice: 'Transaction was successfully updated.'
       else
         render :edit
@@ -94,8 +97,12 @@ module Finances
       @transaction = Transaction.find(params[:id])
     end
 
+    def set_accounts
+      @accounts = Account.all
+    end
+
     def transaction_params
-      params.require(:transaction).permit(:account_id, :transaction_type, :amount, :description, :date)
+      params.require(:transaction).permit(:amount, :description, :transaction_type, :category_id, :account_id)
     end
   end
 end

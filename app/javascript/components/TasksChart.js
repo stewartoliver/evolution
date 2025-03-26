@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { LineChart } from 'react-chartkick';
-import 'chart.js'; // Ensure Chart.js is imported for Chartkick
+import { Chart } from 'chart.js/auto'; // Updated import
 import axios from 'axios';
 
 const TasksChart = () => {
