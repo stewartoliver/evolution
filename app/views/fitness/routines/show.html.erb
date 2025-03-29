@@ -62,61 +62,69 @@
 
     <!-- Main Content Section -->
     <div class="flex flex-col w-full">
-     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <% if @routine.routine_exercises.present? %>
-        <% @routine.routine_exercises.each_with_index do |exercise, index| %>
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <% if @routine.routine_exercises.present? %>
+      <% @routine.routine_exercises.each_with_index do |exercise, index| %>
         <div class="p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
           <!-- Exercise Header -->
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3">
               <div style="background-color: <%= exercise.exercise.exercise_type.colour %>" class="p-2 rounded-lg">
-               <%= exercise.exercise.exercise_type.icon.html_safe %>
-             </div>
-             <div>
-              <span class="text-lg font-medium">Exercise #<%= index + 1 %></span>
-              <span class="block text-sm"><%= exercise.exercise.name %></span>
+                <%= exercise.exercise.exercise_type.icon.html_safe %>
+              </div>
+              <div>
+                <span class="text-lg font-medium">Exercise #<%= index + 1 %></span>
+                <span class="block text-sm"><%= exercise.exercise.name %></span>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Sets Table -->
-          <table class="w-full table-auto">
-            <thead>
-              <tr class="text-sm">
-                <th class="px-4 py-2 text-left font-medium">Set</th>
-                <%# Determine fields based on exercise type %>
+          <!-- Sets Table -->
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-background-card dark:bg-background-card-dark">
+              <tr>
+                <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+                  Set
+                </th>
                 <% fields = case exercise.exercise.exercise_type_id
-                when 1 then ['Duration', 'Distance', 'Intensity']
-                when 2 then ['Reps', 'Weight']
-                when 3 then ['Duration', 'Style', 'Intensity']
-                else []
+                  when 1 then ['Duration', 'Distance', 'Intensity']
+                  when 2 then ['Reps', 'Weight']
+                  when 3 then ['Duration', 'Style', 'Intensity']
+                  else []
                   end %>
-                  <% fields.each do |field| %>
-                  <th class="px-2 py-1 text-left font-medium"><%= field %></th>
-                  <% end %>
-                </tr>
-              </thead>
-              <tbody>
-                <% exercise.routine_sets.each_with_index do |set, set_index| %>
-                <tr class="border-t">
-                  <td class="px-4 py-2 font-medium"><%= set_index + 1 %></td>
-                  <% fields.each do |field| %>
-                  <% field_key = field.downcase %>
-                  <td class="px-2 py-1">
-                    <%= set.send(field_key) || '—' %>
-                  </td>
-                  <% end %>
-                </tr>
+                <% fields.each do |field| %>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+                    <%= field %>
+                  </th>
                 <% end %>
-              </tbody>
-            </table>
+              </tr>
+            </thead>
+            <tbody class="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
+              <% exercise.routine_sets.each_with_index do |set, set_index| %>
+                <tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                    <%= set_index + 1 %>
+                  </td>
+                  <% fields.each do |field| %>
+                    <% field_key = field.downcase %>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                      <%= set.send(field_key) || '—' %>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
         </div>
-        <% end %>
-        <% else %>
-        <div class="text-center text-text-sub dark:text-text-sub-dark">
-          No exercises have been added to this log yet.
-        </div>
-        <% end %>
-      </div>
-    </div>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+          No similar transactions found
+        </td>
+      </tr>
+    <% end %>
+  </div>
+</div>
+
   </div>
 </main>
