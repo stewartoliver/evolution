@@ -42,16 +42,16 @@ module.exports = {
           900: "#032f2f",
         },
         background: {
-          light: "#E5E7EB", // Darkened slightly for better contrast with DEFAULT
+          light: "#e0f2fe", // Darkened slightly for better contrast with DEFAULT
           DEFAULT: "#FAFAFA", // Remains slightly off-white
           dark: "#1F2937", // Dark background remains unchanged
-          "card-light": "#D1D5DB", // Darkened to gray-300 for better differentiation
+          "card-light": "#caecfe", // Darkened to gray-300 for better differentiation
           "card-dark": "#27303F", // Dark card background remains unchanged
-          "input-light": "#D1D5DB", // Darkened to gray-300 for better differentiation
+          "input-light": "#ddf3ff", // Darkened to gray-300 for better differentiation
           "input-dark": "#374151", // Dark input background remains unchanged
         },
         text: {
-          light: "#4B5563", // Light text remains unchanged
+          light: "#3a424d", // Light text remains unchanged
           DEFAULT: "#111827", // Default text remains unchanged
           dark: "#F9FAFB", // Dark text remains unchanged
           sub: "#6B7280", // Subtext Light remains unchanged

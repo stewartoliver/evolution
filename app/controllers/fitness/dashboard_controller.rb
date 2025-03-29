@@ -3,7 +3,7 @@ module Fitness
     before_action :authenticate_user!
 
     def index
-      @logs_this_week = FitnessLogEntry.entries_this_week(current_user)
+      @logs_this_week = FitnessLogEntry.entries_this_week(current_user).order(date: :desc).limit(6)
     end
 
     def logs_this_week_chart

@@ -23,23 +23,24 @@
 				<table class="min-w-full bg-background-light dark:bg-gray-800 rounded-lg shadow-md">
 					<thead>
 						<tr>
-							<th class="px-1 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider"></th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Title</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+							<th class="py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider"></th>
+							<th class="px-4 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Title</th>
+							<th class="px-4 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
 							</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+							<th class="px-4 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						<% @tasks.each do |task| %>
 						<tr class="transition-colors duration-200 hover:bg-background-card-light dark:hover:bg-background-card-dark">
-							<td class="px-1 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-								<div style="background-color: <%= task.goal.goal_type.colour %>" class="w-1 rounded-full p-1.5">
-									</div>
+							<td class="py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+							<div style="background-color: <%= task.goal.goal_type.colour %>" class="px-2 py-1 rounded-md w-min text-xs font-medium hover:cursor-default">
+							<%= task.goal.goal_type.name %>
+							</div>
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100 w-full">
+							<td class="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100 w-full">
 								<div class="flex flex-col">
-									<div class="<%= 'bg-' + task.goal.goal_type.color %>">
+									<div>
 										<%= task.title.capitalize %>
 									</div>
 									<div class="leading-tight text-xs">
@@ -47,8 +48,8 @@
 									</div>
 								</div>
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+							<td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"></td>
+							<td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
 								<div class="flex items-center gap-4">
 									<%= link_to 'show', objectives_task_path(task), class: "underline text-sm" %>
 									<%= link_to 'edit', edit_objectives_task_path(task), class: "underline text-sm" %>

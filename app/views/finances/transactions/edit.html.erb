@@ -17,14 +17,42 @@
 			</div>
 			<%= form_for([:finances, @transaction]) do |form| %>
 			<div class="flex flex-col gap-4">
+				<div class="flex justify-end">
+					<div class="flex flex-col gap-1 w-1/2">
+						<%= form.label :date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= form.date_field :date, value: @transaction.date, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
 				<div class="flex items-center gap-2">
+				<div class="flex flex-col gap-1 w-full">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						<%= form.label :reference %>
+					</div>
+					<div class="text-sm">
+						<%= form.text_field :reference, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+					</div>
 					<div class="flex flex-col gap-1 w-full">
 						<%= form.label :amount, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
 						<%= form.number_field :amount, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
 					</div>
+				</div>
+				<div class="flex items-center gap-2">
 					<div class="flex flex-col gap-1 w-full">
-						<%= form.label :date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
-						<%= form.date_field :date, value: Time.current.to_date.strftime("%Y-%m-%d"), class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							<%= form.label :code %>
+						</div>
+						<div class="text-sm">
+							<%= form.text_field :code, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+						</div>
+					</div>
+					<div class="flex flex-col gap-1 w-full">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							<%= form.label :particulars %>
+						</div>
+						<div class="text-sm">
+							<%= form.text_field :particulars, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+						</div>
 					</div>
 				</div>
 				<div class="flex flex-col gap-1">

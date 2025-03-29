@@ -1,3 +1,60 @@
-<div>
-	Edit
-</div>
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+		<div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+			<!-- Header Section -->
+			<div class="flex justify-between items-center">
+				<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+				</svg>
+				Back
+				<% end %>
+			</div>
+			<div class="flex flex-col tracking-tight leading-tight">
+				<div class="text-4xl font-bold uppercase">
+					Edit Budget
+				</div>
+				<div class="mt-1 px-2 py-1 rounded-md font-semibold uppercase bg-success text-white text-xs tracking-wide w-min whitespace-nowrap">
+				</div>
+			</div>
+			<%= form_for([:finances, @budget]) do |f| %>
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-1">
+					<%= f.label :category, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div>
+						<%= f.collection_select :category, Category.all, :id, :name, {}, { class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" } %>
+					</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<%= f.label :amount, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div>
+						<div class="relative">
+							<span class="absolute left-3 top-2 text-gray-500">$</span>
+							<%= f.number_field :amount, step: 0.01, min: 0, class: "pl-7 rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+						</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-1 w-full">
+						<%= f.label :start_date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= f.date_field :start_date, value: @budget.start_date, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-1 w-full">
+						<%= f.label :end_date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= f.date_field :end_date, value: @budget.end_date, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex justify-end">
+					<%= f.submit "Update", class: "btn" %>
+				</div>
+			</div>
+			<% end %>
+		</div>
+
+		<!-- Board Section -->
+		<div class="flex flex-col w-full">
+		</div>
+	</div>
+</main>

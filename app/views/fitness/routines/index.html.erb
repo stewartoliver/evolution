@@ -20,25 +20,27 @@
 		<div class="w-full lg:w-2/3">
 			<h2 class="text-2xl font-semibold mb-6 text-text-light dark:text-text-dark">Your Routines</h2>
 			<div class="overflow-x-auto">
-				<table class="min-w-full bg-background-light dark:bg-gray-800 rounded-lg shadow-md">
+				<table class="min-w-full bg-background-light dark:bg-background-dark rounded-lg shadow-md">
 					<thead>
 						<tr>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Name</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Description</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Name</th>
+							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Description</th>
+							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
 								
 							</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						<% @routines.each do |routine| %>
 						<tr class="transition-colors duration-200 hover:bg-background-card-light dark:hover:bg-background-card-dark">
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100"><%= routine.name.capitalize %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100"><%= routine&.description %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-								<%= link_to 'show', fitness_routine_path(routine), class: "underline text-sm" %>																<%= link_to 'edit', edit_fitness_routine_path(routine), class: "underline text-sm" %>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark"><%= routine.name.capitalize %></td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark"><%= routine&.description %></td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark"></td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm">
+								<%= link_to 'show', fitness_routine_path(routine), class: "underline text-sm text-text-light dark:text-text-dark" %>
+								<%= link_to 'edit', edit_fitness_routine_path(routine), class: "underline text-sm text-text-light dark:text-text-dark" %>
+								<%= link_to 'use routine', use_routine_and_create_log_fitness_routine_path(routine), class: "underline text-sm text-green-500 dark:text-green-500", data: { turbo_method: :post } %>
 							</td>
 						</tr>
 						<% end %>

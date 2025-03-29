@@ -121,17 +121,16 @@
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<% @favourite_goals.each do |goal| %>
 								<div class="bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-									<div class="flex items-start justify-between p-6 border-b border-border-light dark:border-border-dark">
+									<div class="flex items-start justify-between p-6">
 										<div>
-											<div class="flex items-center gap-2">
-												<div style="background-color: <%= goal.goal_type.colour %>" class="w-1.5 h-1.5 rounded-full"></div>
+											<div class="flex flex-col gap-1">
 												<h3 class="text-xl font-semibold text-text-light dark:text-text-dark">
 													<%= goal.title %>
 												</h3>
+												<div style="background-color: <%= goal.goal_type.colour %>" class="px-2 py-1 rounded-sm w-min text-xs font-semibold hover:cursor-default text-text-light dark:text-text-light">
+												<%= goal.goal_type.name %>
+												</div>
 											</div>
-											<p class="text-sm text-text-sub dark:text-text-sub-dark mt-1">
-												<%= goal.description %>
-											</p>
 										</div>
 										<div class="flex items-center gap-2">
 											<div data-goal-id="<%= goal.id %>" data-initial-favourite="<%= goal.is_favourite %>" class="heart-icon"></div>
@@ -142,14 +141,14 @@
 											<% end %>
 										</div>
 									</div>
-									<div class="p-6 space-y-4">
+									<div class="px-6 pb-6 space-y-4">
 										<div>
 											<div class="flex items-center justify-between mb-1">
 												<span class="text-sm font-medium text-primary-500">Progress</span>
 												<span class="text-sm font-medium text-text-sub dark:text-text-sub-dark"><%= goal.progress %>%</span>
 											</div>
-											<div class="w-full bg-border-light dark:bg-border-dark rounded-full h-2">
-												<div class="bg-primary-500 h-2 rounded-full" style="width: <%= goal.progress %>%"></div>
+											<div class="w-full bg-border-light dark:bg-border-dark rounded-full h-1">
+												<div class="bg-primary-500 h-1 rounded-full" style="width: <%= goal.progress %>%"></div>
 											</div>
 										</div>
 										<button type="button" class="w-full px-4 py-2 text-sm font-medium text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-800 dark:hover:text-primary-400 dark:hover:bg-opacity-50 rounded-md transition" onclick="toggleTasks(<%= goal.id %>)">

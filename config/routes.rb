@@ -53,8 +53,18 @@ Rails.application.routes.draw do
   namespace :fitness do
     get 'dashboard', to: 'dashboard#index'
     resources :exercises
-    resources :routines
+    resources :routines do
+      member do
+        post 'use_routine_and_create_log'
+      end
+    end
     resources :logs
+
+  end
+
+  namespace :health do
+    get 'dashboard', to: 'dashboard#index'
+    resources :diets
   end
 
   namespace :objectives do

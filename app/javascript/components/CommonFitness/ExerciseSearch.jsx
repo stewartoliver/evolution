@@ -69,18 +69,19 @@ function ExerciseSearch({ onSelectExercise }) {
                 onClick={() => handleExerciseClick(exercise)}
                 aria-label={`Select ${exercise.name || 'Unnamed Exercise'}`}
               >
+                <div className='flex justify-end my-1'>
+                    <span style={{backgroundColor: exercise.exercise_type?.colour || 'transparent'}} className="font-semibold px-2 py-1 rounded-sm text-xs">{exercise.exercise_type?.name || 'Unknown Type'}</span> 
+                </div>
+
                 {/* Exercise Name */}
                 <div className="text-lg font-medium">
                   {exercise.name || 'Unnamed Exercise'}
                 </div>
 
                 {/* Exercise Details */}
-                <div className="flex flex-col gap-2 text-sm mt-1">
+                <div className="flex flex-col gap-2 text-sm my-1">
                   <div>
-                    <span className="font-semibold">Muscle:</span> {exercise.muscle_group?.name || 'Unknown Muscle Group'}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Type:</span> {exercise.exercise_type?.name || 'Unknown Type'}
+                    <span>Primary Muscle:</span> {exercise.muscle_group?.name || 'Unknown Muscle Group'}
                   </div>
                 </div>
               </div>

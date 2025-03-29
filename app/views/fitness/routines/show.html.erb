@@ -62,14 +62,14 @@
 
     <!-- Main Content Section -->
     <div class="flex flex-col w-full">
-      <div class="space-y-6">
+     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <% if @routine.routine_exercises.present? %>
         <% @routine.routine_exercises.each_with_index do |exercise, index| %>
-        <div class="w-full max-w-2xl p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
+        <div class="p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
           <!-- Exercise Header -->
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3">
-              <div class="p-2 rounded-lg <%= exercise.exercise.exercise_type.colour.gsub('text-', 'bg-') %>">
+              <div style="background-color: <%= exercise.exercise.exercise_type.colour %>" class="p-2 rounded-lg">
                <%= exercise.exercise.exercise_type.icon.html_safe %>
              </div>
              <div>
@@ -79,11 +79,10 @@
           </div>
         </div>
         <!-- Sets Table -->
-        <div class="bg-background-input-light dark:bg-background-input-dark rounded-lg p-4">
           <table class="w-full table-auto">
             <thead>
-              <tr class="text-sm font-medium">
-                <th class="px-2 py-4 text-left">Set</th>
+              <tr class="text-sm">
+                <th class="px-4 py-2 text-left font-medium">Set</th>
                 <%# Determine fields based on exercise type %>
                 <% fields = case exercise.exercise.exercise_type_id
                 when 1 then ['Duration', 'Distance', 'Intensity']
@@ -92,14 +91,14 @@
                 else []
                   end %>
                   <% fields.each do |field| %>
-                  <th class="px-2 py-1 text-left"><%= field %></th>
+                  <th class="px-2 py-1 text-left font-medium"><%= field %></th>
                   <% end %>
                 </tr>
               </thead>
               <tbody>
                 <% exercise.routine_sets.each_with_index do |set, set_index| %>
                 <tr class="border-t">
-                  <td class="px-2 py-4 font-medium"><%= set_index + 1 %></td>
+                  <td class="px-4 py-2 font-medium"><%= set_index + 1 %></td>
                   <% fields.each do |field| %>
                   <% field_key = field.downcase %>
                   <td class="px-2 py-1">
@@ -110,12 +109,11 @@
                 <% end %>
               </tbody>
             </table>
-          </div>
         </div>
         <% end %>
         <% else %>
         <div class="text-center text-text-sub dark:text-text-sub-dark">
-          No exercises have been added to this routine yet.
+          No exercises have been added to this log yet.
         </div>
         <% end %>
       </div>

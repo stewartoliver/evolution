@@ -12,6 +12,17 @@ class FitnessLogEntry < ApplicationRecord
     DateTime.new(date.year, date.month, date.day, time.hour, time.min, time.sec)
   end
 
+  def majority_type
+    return nil unless fitness_log_exercises.exists?
+  
+    type_counts = fitness_log_exercises
+                  .joins(exercise: :exercise_type)
+                  .group("exercise_types.name")
+                  .count
+  
+    type_counts.max_by { |_name, count| count }&.first
+  end
+
   def self.entries_this_week(user)
     where(user: user, date: Date.today.beginning_of_week..Date.today.end_of_week)
   end

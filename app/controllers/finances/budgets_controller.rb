@@ -16,7 +16,7 @@ module Finances
     def create
       @budget = current_user.budgets.build(budget_params)
       if @budget.save
-        redirect_to @budget, notice: 'Budget was successfully created.'
+        redirect_to finances_budget_path(@budget), notice: 'Budget was successfully created.'
       else
         render :new
       end
@@ -27,7 +27,7 @@ module Finances
 
     def update
       if @budget.update(budget_params)
-        redirect_to @budget, notice: 'Budget was successfully updated.'
+        redirect_to finances_budget_path(@budget), notice: 'Budget was successfully updated.'
       else
         render :edit
       end
@@ -35,7 +35,7 @@ module Finances
 
     def destroy
       @budget.destroy
-      redirect_to budgets_url, notice: 'Budget was successfully destroyed.'
+      redirect_to finances_budgets_url, notice: 'Budget was successfully destroyed.'
     end
 
     private

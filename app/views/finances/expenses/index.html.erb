@@ -32,9 +32,9 @@
 					<tbody>
 						<% @expenses.each do |expense| %>
 						<tr class="transition-colors duration-200 hover:bg-background-card-light dark:hover:bg-background-card-dark">
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">										<%= expense.category.name.capitalize %></td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100"><%= expense.name.capitalize %></td>
 							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">$<%= expense.amount %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">										<%= expense.account.account_name.capitalize %></td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100"><%= expense.account.account_name.capitalize %></td>
 							<td class="px-6 py-4 flex gap-2 items-center whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
 								<%= link_to 'show', finances_expense_path(expense), class: "underline text-sm" %>
 								<%= link_to 'edit', edit_finances_expense_path(expense), class: "underline text-sm" %>

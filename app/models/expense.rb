@@ -17,9 +17,7 @@ class Expense < ApplicationRecord
   validates :frequency_unit, presence: true, if: -> { recurring? && frequency == 'custom' }
   
   before_save :set_next_occurrence, if: :recurring?
-  after_update :recalculate_next_occurrence, if: -> { saved_change_to_date? || saved_change_to_frequency? || 
-                                                     saved_change_to_frequency_unit? || saved_change_to_custom_frequency? || 
-                                                     saved_change_to_day_of_month? || saved_change_to_day_of_week? }
+  after_update :recalculate_next_occurrence, if: -> { saved_change_to_date? || saved_change_to_frequency? || saved_change_to_frequency_unit? || saved_change_to_custom_frequency? || saved_change_to_day_of_month? || saved_change_to_day_of_week? }
   
   # Scopes
   scope :recurring, -> { where(recurring: true) }
@@ -66,10 +64,7 @@ class Expense < ApplicationRecord
   def calculate_next_occurrence
     # Always use the initial date as the reference point
     reference_date = date
-    
-    # If we already have a next_occurrence that's in the future, keep it
-    return next_occurrence if next_occurrence && next_occurrence >= Date.today
-    
+        
     # If the initial date is in the future, that's our next occurrence
     return reference_date if reference_date >= Date.today
     

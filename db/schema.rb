@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_25_120831) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_27_030454) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -123,15 +123,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_25_120831) do
     t.index ["user_id"], name: "index_expenses_on_user_id"
   end
 
-  create_table "finance_goals", force: :cascade do |t|
+  create_table "financial_goals", force: :cascade do |t|
     t.decimal "amount"
     t.datetime "date"
-    t.integer "bank_account_id"
-    t.string "goal_type", null: false
+    t.integer "account_id"
     t.bigint "goal_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["goal_type", "goal_id"], name: "index_finance_goals_on_goal"
   end
 
   create_table "financial_stores", id: :bigint, default: -> { "nextval('stores_id_seq'::regclass)" }, force: :cascade do |t|
@@ -372,6 +370,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_25_120831) do
     t.bigint "bank_statement_import_id"
     t.bigint "user_id", null: false
     t.bigint "category_id"
+    t.string "details"
+    t.string "particulars"
+    t.string "code"
+    t.string "reference"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["bank_statement_import_id"], name: "index_transactions_on_bank_statement_import_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"

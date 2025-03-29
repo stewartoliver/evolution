@@ -258,6 +258,7 @@ const initializeNavDropdowns = () => {
   const dropdowns = [
     { button: "finances-menu-button", dropdown: "finances-menu-dropdown" },
     { button: "fitness-menu-button", dropdown: "fitness-menu-dropdown" },
+    { button: "health-menu-button", dropdown: "health-menu-dropdown" },
     { button: "goals-menu-button", dropdown: "goals-menu-dropdown" },
   ];
 
