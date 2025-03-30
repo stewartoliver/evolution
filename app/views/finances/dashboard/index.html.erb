@@ -113,224 +113,116 @@
 								</div>
 							</div>
 						</div>
-						<div class="space-y-6 w-full">
-							<div class="flex items-center justify-between">
-								<h2 class="text-2xl font-bold text-primary-500">
-									Financial Accounts
-								</h2>
-								<%= link_to new_finances_account_path, class: "inline-flex items-center px-3 py-1.5 text-sm text-white bg-primary-500 rounded-md hover:bg-primary-600 transition-colors" do %>
-									<svg class="mr-1.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<line x1="12" y1="5" x2="12" y2="19"></line>
-										<line x1="5" y1="12" x2="19" y2="12"></line>
-									</svg>
-									New Account
-								<% end %>
-							</div>
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<% @user_financial_accounts.each do |account| %>
-								<div class="transaction-card bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-									<div class="flex items-start justify-between p-6 border-b border-border-light dark:border-border-dark">
-										<div>
-											<h3 class="text-2xl font-semibold text-text-light dark:text-text-dark">
-												<%= number_to_currency(account.balance) %>
-											</h3>
-											<p class="text-sm text-text-sub dark:text-text-sub-dark">
-												<%= account.account_name %>
-											</p>
-										</div>
-										<div class="flex items-center gap-2">
-											<%= link_to finances_account_path(account.id), class: "focus:outline-none", title: "View Details" do %>
-												<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5 text-primary-500 hover:text-primary-600 transition">
-													<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-												</svg>
-											<% end %>
-											<button class="focus:outline-none" title: "Update Balance">
-												<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5 text-primary-500 hover:text-primary-600 transition">
-													<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-												</svg>
-											</button>
-										</div>
-									</div>
-									<div class="p-6 space-y-4">
-										<div class="flex justify-between items-center">
-											<div class="text-sm font-medium text-primary-500"><%= account.account_type %></div>
-											<div class="text-sm text-text-sub dark:text-text-sub-dark">Last updated: <%= account.updated_at.strftime("%b %d, %Y") %></div>
-										</div>
-										<div class="flex justify-between items-center">
-											<div class="text-sm text-text-sub dark:text-text-sub-dark">
-												<%= pluralize(account.transactions.count, 'transaction') %>
-											</div>
-											<div class="text-sm text-text-sub dark:text-text-sub-dark">
-												<%= pluralize(account.expenses.count, 'expense') %>
-											</div>
-										</div>
-									</div>
-								</div>
-								<% end %>
-							</div>
-						</div>
+						<div class="space-y-4 w-full">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-primary-500">
+      Accounts
+    </h2>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <% @user_financial_accounts.each do |account| %>
+    <div class="transaction-card bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div class="flex items-start justify-between p-3 border-b border-border-light dark:border-border-dark">
+        <div>
+          <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">
+            <%= number_to_currency(account.balance) %>
+          </h3>
+          <p class="text-xs text-text-sub dark:text-text-sub-dark truncate max-w-[150px]">
+            <%= account.account_name %>
+          </p>
+        </div>
+        <div class="flex items-center gap-1">
+          <%= link_to finances_account_path(account.id), class: "focus:outline-none", title: "View Details" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4 text-primary-500 hover:text-primary-600 transition">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+            </svg>
+          <% end %>
+          <button class="focus:outline-none" title: "Update Balance">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4 text-primary-500 hover:text-primary-600 transition">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-3 space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <div class="font-medium text-primary-500"><%= account.account_type %></div>
+          <div class="text-text-sub dark:text-text-sub-dark">Updated: <%= account.updated_at.strftime("%b %d") %></div>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+          <div class="text-text-sub dark:text-text-sub-dark">
+            <%= pluralize(account.transactions.count, 'transactions') %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% end %>
+  </div>
+</div>
 					</div>
 				</section>
-				<section class="space-y-6">
-					<div class="flex items-center justify-between">
-						<h2 class="text-2xl font-bold text-primary-500">
-							Upcoming Expenses
-						</h2>
-						<%= link_to new_finances_expense_path, class: "inline-flex items-center px-3 py-1.5 text-sm text-white bg-primary-500 rounded-md hover:bg-primary-600 transition-colors" do %>
-							<svg class="mr-1.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" y1="5" x2="12" y2="19"></line>
-								<line x1="5" y1="12" x2="19" y2="12"></line>
-							</svg>
-							New Expense
-						<% end %>
-					</div>
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<% @user_upcoming_expenses.each do |expense| %>
-						<div class="transaction-card bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-							<div class="flex items-start justify-between p-6 border-b border-border-light dark:border-border-dark">
-								<div>
-									<p class="text-sm text-text-sub dark:text-text-sub-dark mb-1">
-										<%= expense.name.capitalize %>
-									</p>
-									<h3 class="text-2xl font-semibold text-text-light dark:text-text-dark">
-										<%= number_to_currency(expense.amount) %>
-									</h3>
-								</div>
-								<div class="flex items-center gap-2">
-									<%= link_to finances_expense_path(expense.id), class: "focus:outline-none", title: "View Details" do %>
-										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5 text-primary-500 hover:text-primary-600 transition">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-										</svg>
-									<% end %>
-									<button class="focus:outline-none" title: "Mark as Paid">
-										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5 text-primary-500 hover:text-primary-600 transition">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-										</svg>
-									</button>
-								</div>
-							</div>
-							<div class="p-6 space-y-4">
-								<div class="flex justify-between items-center">
-									<div class="flex items-center gap-2">
-										<div class="text-sm font-medium <%= expense.overdue? ? 'text-red-500' : 'text-text-light dark:text-text-dark' %>">
-											<%= expense.days_until_next_payment %> days away
-										</div>
-										<% if expense.overdue? %>
-											<span class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded-full">Overdue</span>
-										<% end %>
-									</div>
-									<div class="text-sm font-medium text-text-light dark:text-text-dark">
-										<%= expense.next_occurrence.strftime("%a, %-d %B %Y") %>
-									</div>
-								</div>
-								<div class="flex justify-between items-center">
-									<div class="text-sm font-medium text-text-light dark:text-text-dark">
-										<%= expense.account.account_name %>
-									</div>
-									<div class="text-sm font-medium text-primary-500">
-										<%= expense.frequency&.capitalize %>
-									</div>
-								</div>
-								<% if expense.description.present? %>
-									<div class="text-sm text-text-sub dark:text-text-sub-dark">
-										<%= expense.description %>
-									</div>
-								<% end %>
-							</div>
-						</div>
-						<% end %>
-					</div>
-				</section>
-
-				<section class="space-y-6">
-					<div class="flex items-center justify-between">
-						<h2 class="text-2xl font-bold text-primary-500">
-							Recent Transactions
-						</h2>
-						<%= link_to new_finances_transaction_path, class: "inline-flex items-center px-3 py-1.5 text-sm text-white bg-primary-500 rounded-md hover:bg-primary-600 transition-colors" do %>
-							<svg class="mr-1.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" y1="5" x2="12" y2="19"></line>
-								<line x1="5" y1="12" x2="19" y2="12"></line>
-							</svg>
-							New Transaction
-						<% end %>
-					</div>
-					<div class="bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
-						<% if @user_recent_transactions.any? %>
-							<!-- Mobile Cards (shown on small screens) -->
-							<div class="block md:hidden">
-								<div class="divide-y divide-border-light dark:divide-border-dark">
-									<% @user_recent_transactions.each do |transaction| %>
-										<div class="p-4 hover:bg-background-input-light dark:hover:bg-background-input-dark">
-											<div class="flex justify-between items-start mb-2">
-												<div class="text-sm font-medium text-text-light dark:text-text-dark max-w-[70%] truncate">
-													<%= transaction.description %>
-												</div>
-												<div class="text-sm font-medium <%= transaction.amount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
-													<%= number_to_currency(transaction.amount) %>
-												</div>
-											</div>
-											<div class="flex justify-between text-xs text-text-sub dark:text-text-sub-dark mb-2">
-												<span><%= transaction.date.strftime("%d/%m/%Y") %></span>
-												<span><%= transaction.account.account_name %></span>
-											</div>
-											<div class="flex justify-between items-center mt-2">
-												<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark">
-													<%= transaction.transaction_type %>
-												</span>
-												<%= link_to finances_transaction_path(transaction.id), class: "text-primary-500 dark:text-primary-400 text-sm font-medium hover:underline" %>
-											</div>
-										</div>
-									<% end %>
-								</div>
-							</div>
-
-							<!-- Desktop Table (hidden on small screens) -->
-							<div class="hidden md:block">
-								<table class="w-full">
-									<thead>
-										<tr class="bg-background-input-light dark:bg-background-input-dark">
-											<th class="px-4 py-3 text-left text-xs font-medium text-text-sub dark:text-text-sub-dark uppercase tracking-wider">Date</th>
-											<th class="px-4 py-3 text-left text-xs font-medium text-text-sub dark:text-text-sub-dark uppercase tracking-wider w-1/3">Description</th>
-											<th class="px-4 py-3 text-left text-xs font-medium text-text-sub dark:text-text-sub-dark uppercase tracking-wider">Account</th>
-											<th class="px-4 py-3 text-right text-xs font-medium text-text-sub dark:text-text-sub-dark uppercase tracking-wider">Amount</th>
-											<th class="px-4 py-3 text-right text-xs font-medium text-text-sub dark:text-text-sub-dark uppercase tracking-wider w-24">Actions</th>
-										</tr>
-									</thead>
-									<tbody class="divide-y divide-border-light dark:divide-border-dark">
-										<% @user_recent_transactions.each do |transaction| %>
-											<tr class="hover:bg-background-input-light dark:hover:bg-background-input-dark">
-												<td class="px-4 py-3 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-													<div><%= transaction.date.strftime("%d/%m/%Y") %></div>
-													<div class="text-xs text-text-sub dark:text-text-sub-dark"><%= transaction.transaction_type %></div>
-												</td>
-												<td class="px-4 py-3 text-sm text-text-light dark:text-text-dark">
-													<div class="truncate max-w-xs"><%= transaction.description %></div>
-												</td>
-												<td class="px-4 py-3 text-sm text-text-sub dark:text-text-sub-dark">
-													<%= transaction.account.account_name %>
-												</td>
-												<td class="px-4 py-3 text-sm text-right whitespace-nowrap font-medium <%= transaction.amount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
-													<%= number_to_currency(transaction.amount) %>
-												</td>
-												<td class="px-4 py-3 text-right">
-															<%= link_to "View", finances_transaction_path(transaction.id), class: "text-primary-500 dark:text-primary-400 text-sm font-medium hover:underline" %>
-												</td>
-											</tr>
-										<% end %>
-									</tbody>
-								</table>
-							</div>
-						<% else %>
-							<div class="p-8 text-center text-text-sub dark:text-text-sub-dark">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto w-12 h-12 mb-3 opacity-50">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-								</svg>
-								<p class="text-lg">No transactions found</p>
-								<p class="mt-1">Try adding a new transaction or importing from your bank.</p>
-							</div>
-						<% end %>
-					</div>
-				</section>
-			</main>
-		</div>
+				<section class="space-y-4">
+  					<div class="flex items-center justify-between">
+    				<h2 class="text-2xl font-bold text-primary-500">
+    				  Upcoming Expenses
+  				  </h2>
+  					</div>
+  					<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    				<% @user_upcoming_expenses.each do |expense| %>
+   					<div class="transaction-card bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div class="flex items-start justify-between p-3 border-b border-border-light dark:border-border-dark">
+        <div>
+          <p class="text-xs text-text-sub dark:text-text-sub-dark">
+            <%= expense.name.capitalize %>
+          </p>
+          <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">
+            <%= number_to_currency(expense.amount) %>
+          </h3>
+        </div>
+        <div class="flex items-center gap-1">
+          <%= link_to finances_expense_path(expense.id), class: "focus:outline-none", title: "View Details" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4 text-primary-500 hover:text-primary-600 transition">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+            </svg>
+          <% end %>
+          <button class="focus:outline-none" title: "Mark as Paid">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4 text-primary-500 hover:text-primary-600 transition">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-3 space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <div class="flex items-center gap-1">
+            <div class="font-medium <%= expense.overdue? ? 'text-red-500' : 'text-text-light dark:text-text-dark' %>">
+              <%= expense.days_until_next_payment %> days
+            </div>
+            <% if expense.overdue? %>
+              <span class="px-1.5 py-0.5 text-xs bg-red-100 text-red-700 rounded-full">Overdue</span>
+            <% end %>
+          </div>
+          <div class="font-medium text-text-light dark:text-text-dark">
+            <%= expense.next_occurrence.strftime("%-d %b") %>
+          </div>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+          <div class="font-medium text-text-light dark:text-text-dark truncate max-w-[120px]">
+            <%= expense.account.account_name %>
+          </div>
+          <div class="font-medium text-primary-500">
+            <%= expense.frequency&.capitalize %>
+          </div>
+        </div>
+        <% if expense.description.present? %>
+          <div class="text-xs text-text-sub dark:text-text-sub-dark line-clamp-1" title="<%= expense.description %>">
+            <%= expense.description %>
+          </div>
+        <% end %>
+      	</div>
+    </div>
+    <% end %>
+  	</div>
+	</section>
+	</main>
+</div>

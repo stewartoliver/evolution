@@ -62,30 +62,95 @@ class Expense < ApplicationRecord
   end
   
   def calculate_next_occurrence
-    # Always use the initial date as the reference point
+    return nil unless recurring?
+  
     reference_date = date
-        
-    # If the initial date is in the future, that's our next occurrence
-    return reference_date if reference_date >= Date.today
-    
-    # Otherwise, calculate the appropriate next occurrence based on the initial date
+    return nil if end_date.present? && reference_date > end_date
+  
+    next_occurrence = case frequency_unit
+    when 'day'
+      reference_date + (custom_frequency || 1).days
+    when 'week'
+      calculate_next_weekly_occurrence(reference_date)
+    when 'month'
+      calculate_next_monthly_occurrence(reference_date)
+    when 'year'
+      calculate_next_yearly_occurrence(reference_date)
+    else
+      reference_date
+    end
+  
+    # Ensure next occurrence is within the valid range
+    next_occurrence = [next_occurrence, end_date].compact.min
+  
+    # If next occurrence is still in the past, move to the next cycle
+    while next_occurrence < Date.today
+      next_occurrence = calculate_next_occurrence_after(next_occurrence)
+      break if end_date.present? && next_occurrence > end_date
+    end
+  
+    next_occurrence
+  end
+  
+  
+  private
+
+  def calculate_next_occurrence_after(reference_date)
+    return nil unless recurring?
+    return nil if end_date.present? && reference_date > end_date
+  
     case frequency
     when 'daily'
-      calculate_next_daily_occurrence(reference_date)
+      reference_date + 1.day
     when 'weekly'
-      calculate_next_weekly_occurrence(reference_date)
+      reference_date + 1.week
     when 'monthly'
-      calculate_next_monthly_occurrence(reference_date)
+      next_month = reference_date >> 1
+      target_day = day_of_month || reference_date.day
+      last_day_of_month = Date.new(next_month.year, next_month.month, -1).day
+      adjusted_day = [target_day, last_day_of_month].min
+      Date.new(next_month.year, next_month.month, adjusted_day)
     when 'yearly'
-      calculate_next_yearly_occurrence(reference_date)
+      next_year = reference_date >> 12
+      target_day = reference_date.day
+      last_day_of_month = Date.new(next_year.year, next_year.month, -1).day
+      adjusted_day = [target_day, last_day_of_month].min
+      Date.new(next_year.year, next_year.month, adjusted_day)
     when 'custom'
-      calculate_custom_frequency(reference_date)
+      case frequency_unit
+      when 'day'
+        reference_date + custom_frequency.days
+      when 'week'
+        if day_of_week.present?
+          # Find the next occurrence of this day of week
+          days_to_add = (day_of_week - reference_date.wday) % 7
+          # If days_to_add is 0 and we're not at the start of a cycle, add a full week
+          days_to_add = 7 if days_to_add == 0 && reference_date.wday != day_of_week
+          target_date = reference_date + days_to_add.days
+          # Then add the required number of weeks
+          target_date + (custom_frequency - 1).weeks
+        else
+          reference_date + custom_frequency.weeks
+        end
+      when 'month'
+        next_months = reference_date >> custom_frequency
+        target_day = day_of_month || reference_date.day
+        last_day_of_month = Date.new(next_months.year, next_months.month, -1).day
+        adjusted_day = [target_day, last_day_of_month].min
+        Date.new(next_months.year, next_months.month, adjusted_day)
+      when 'year'
+        next_years = reference_date >> (12 * custom_frequency)
+        target_day = reference_date.day
+        last_day_of_month = Date.new(next_years.year, next_years.month, -1).day
+        adjusted_day = [target_day, last_day_of_month].min
+        Date.new(next_years.year, next_years.month, adjusted_day)
+      else
+        reference_date
+      end
     else
       reference_date
     end
   end
-  
-  private
   
   def calculate_next_daily_occurrence(reference_date)
     # Calculate how many days have passed since the reference date
@@ -98,9 +163,13 @@ class Expense < ApplicationRecord
   end
   
   def calculate_next_weekly_occurrence(reference_date)
+    # Ensure reference_date is a Date object
+    reference_date = reference_date.to_date if reference_date.respond_to?(:to_date)
+    
     # Calculate how many weeks have passed since the reference date
-    weeks_passed = ((Date.today - reference_date).to_i / 7.0).ceil
-    frequency_weeks = custom_frequency || 1
+    days_difference = (Date.today - reference_date).to_i
+    weeks_passed = (days_difference / 7.0).ceil
+    frequency_weeks = (custom_frequency.presence || 1).to_i
     
     # Calculate how many periods have passed and what the next period would be
     periods_passed = (weeks_passed / frequency_weeks.to_f).ceil
@@ -108,77 +177,29 @@ class Expense < ApplicationRecord
   end
   
   def calculate_next_monthly_occurrence(reference_date)
-    # Use the day of month from the original date
     target_day = day_of_month || reference_date.day
-    
-    # Calculate months passed since reference date
-    months_passed = (Date.today.year - reference_date.year) * 12 + (Date.today.month - reference_date.month)
-    frequency_months = custom_frequency || 1
-    
-    # Calculate periods passed and months to add to reference date
-    periods_passed = (months_passed / frequency_months.to_f).ceil
-    months_to_add = periods_passed * frequency_months
-    
-    # Calculate target month and year
-    target_month = reference_date.month + months_to_add
-    target_year = reference_date.year
-    
-    # Adjust year if month overflows
-    while target_month > 12
-      target_month -= 12
-      target_year += 1
-    end
-    
-    # Ensure the day exists in the target month
-    last_day_of_month = Date.new(target_year, target_month, -1).day
+    months_passed = ((Date.today.year - reference_date.year) * 12 + (Date.today.month - reference_date.month)).ceil
+    months_to_add = (months_passed / (custom_frequency || 1)).ceil * (custom_frequency || 1)
+  
+    next_month = reference_date >> months_to_add # Move forward by months
+    last_day_of_month = Date.new(next_month.year, next_month.month, -1).day
     adjusted_day = [target_day, last_day_of_month].min
-    
-    result = Date.new(target_year, target_month, adjusted_day)
-    
-    # If the result is still in the past, add one more period
-    if result < Date.today
-      target_month += frequency_months
-      while target_month > 12
-        target_month -= 12
-        target_year += 1
-      end
-      last_day_of_month = Date.new(target_year, target_month, -1).day
-      adjusted_day = [target_day, last_day_of_month].min
-      result = Date.new(target_year, target_month, adjusted_day)
-    end
-    
-    result
-  end
+  
+    Date.new(next_month.year, next_month.month, adjusted_day)
+  end  
   
   def calculate_next_yearly_occurrence(reference_date)
-    # How many years have passed since the reference date
-    years_passed = Date.today.year - reference_date.year
-    frequency_years = custom_frequency || 1
-    
-    # Calculate periods passed and years to add
-    periods_passed = (years_passed / frequency_years.to_f).ceil
-    years_to_add = periods_passed * frequency_years
-    
-    # Next occurrence date
-    target_year = reference_date.year + years_to_add
+    target_day = reference_date.day
     target_month = reference_date.month
-    
-    # Handle Feb 29 in non-leap years
-    if reference_date.month == 2 && reference_date.day == 29 && !Date.leap?(target_year)
-      target_day = 28
-    else
-      target_day = reference_date.day
-    end
-    
-    result = Date.new(target_year, target_month, target_day)
-    
-    # If still in the past, add one more period
-    if result < Date.today
-      result = Date.new(target_year + frequency_years, target_month, target_day)
-    end
-    
-    result
-  end
+    years_passed = (Date.today.year - reference_date.year).ceil
+    years_to_add = (years_passed / (custom_frequency || 1)).ceil * (custom_frequency || 1)
+  
+    next_year = reference_date.year + years_to_add
+    last_day_of_month = Date.new(next_year, target_month, -1).day
+    adjusted_day = [target_day, last_day_of_month].min
+  
+    Date.new(next_year, target_month, adjusted_day)
+  end  
   
   def calculate_custom_frequency(reference_date)
     case frequency_unit
