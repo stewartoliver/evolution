@@ -26,20 +26,27 @@ const SetsTable = ({
   const fields = getFieldsForExerciseType(exerciseTypeId);
 
   return (
-    <div className="bg-background-input-light dark:bg-background-input-dark rounded-lg p-4">
-      <table className="w-full table-auto">
-        <thead>
-          <tr className="text-sm font-medium">
-            <th className="px-2 py-1 text-left">Set</th>
+    <div className="overflow-x-auto rounded-md">
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-background-card dark:bg-background-card-dark">
+          <tr>
+            <th className="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+              Set
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+              Previous
+            </th>
             {fields.map((field) => (
-              <th key={field} className="px-2 py-1 text-left capitalize">
+              <th key={field} className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider capitalize">
                 {field.replace('_', ' ')}
               </th>
             ))}
-            <th className="px-2 py-1 text-left">Actions</th>
+            <th className="px-4 py-3 text-center text-xs font-medium whitespace-nowrap text-text-light dark:text-text-dark uppercase tracking-wider">
+              Actions
+            </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
           {routineSets.map((set, setIndex) => (
             <SetRow
               key={`${exerciseIndex}-${setIndex}`}

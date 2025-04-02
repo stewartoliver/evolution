@@ -16,81 +16,146 @@
 					<%= @expense.name.capitalize %>
 				</div>
 				<div class="mt-1 px-2 py-1 rounded-md font-semibold uppercase <%= category_color_mapping[@expense.category.name.downcase] %> text-white text-xs tracking-wide w-min whitespace-nowrap">
-
+					<%= @expense.category.name %>
 				</div>
 			</div>
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Amount:
+					</div>
+					<div class="text-sm">
+						<%= number_to_currency @expense.amount %>
+					</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
 						Frequency:
 					</div>
 					<div class="text-sm">
-						<% if @expense.frequency.present? %> 
-						<%= @expense.frequency.capitalize %> on <%= @expense.day_of_week.present? ? Date::DAYNAMES[@expense.day_of_week] : 'N/A' %>s
+						<% if @expense.recurring? %>
+							<%= @expense.frequency.capitalize %>
+							<% if @expense.day_of_month.present? %>
+								on day <%= @expense.day_of_month %>
+							<% end %>
+						<% else %>
+							One-time
 						<% end %>
 					</div>
 				</div>
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Initial Payment Date:
+						Start Date:
 					</div>
 					<div class="text-sm">
-						<%= @expense.date.strftime("%a, %-d %B %Y") %> 
+						<%= @expense.date.strftime("%a, %-d %B %Y") %>
 					</div>
 				</div>
+				<% if @expense.end_date.present? %>
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Next Payment Date:
+						End Date:
 					</div>
 					<div class="text-sm">
-						<%= @expense.next_occurrence.strftime("%a, %-d %B %Y") %> 
+						<%= @expense.end_date.strftime("%a, %-d %B %Y") %>
 					</div>
 				</div>
+				<% end %>
+				<% if @expense.recurring? %>
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Account Name:
-					</div>
-					<div class="flex justify-between items-center text-sm">
-						<%= @expense.account.account_name.capitalize %>
-						<div>
-							<%= link_to "Show", finances_account_path(@expense.account.id), class: "inline-flex items-center px-2 py-1 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" %>
-						</div>
-					</div>
-				</div>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Amount:
+						Next Payment:
 					</div>
 					<div class="text-sm">
-						<%= number_to_currency @expense.amount %> 
+						<%= @expense.next_occurrence.strftime("%a, %-d %B %Y") %>
+					</div>
+				</div>
+				<% end %>
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Account:
+					</div>
+					<div>
+						<%= link_to @expense.account.account_name.capitalize, finances_account_path(@expense.account.id), class: "underline underline-offset-2 text-text-light dark:text-text-dark text-sm" %>
 					</div>
 				</div>
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Category:
-					</div>
-					<div class="flex gap-2 items-center text-sm">
-						<div class="w-1 h-4 rounded-full <%= category_color_mapping[@expense.category.name.downcase] %>"></div>
-						<%= @expense.category.name.capitalize %>
-					</div>
-				</div>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Last update:
+						Description:
 					</div>
 					<div class="text-sm">
-						<%= @expense.updated_at.strftime("%-d %B %Y") %> 
+						<%= @expense.description %>
 					</div>
 				</div>
-				<div class="flex justify-end">
+				<div class="flex justify-end gap-2">
 					<%= link_to "Edit", edit_finances_expense_path(@expense), class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" %>
 				</div>
 			</div>
 		</div>
-		
 
 		<!-- Board Section -->
 		<div class="flex flex-col w-full">
+			<!-- Transactions Table -->
+			<div class="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-700 shadow">
+				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead class="bg-background-card dark:bg-background-card-dark">
+						<tr>
+							<th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+								<div class="flex items-center space-x-1">
+									Date
+								</div>
+							</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+								<div class="flex items-center space-x-1">
+									Details
+								</div>
+							</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+								<div class="flex items-center space-x-1">
+									Description
+								</div>
+							</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+								<div class="flex items-center space-x-1">
+									Amount
+								</div>
+							</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+								Action
+							</th>
+						</tr>
+					</thead>
+					<tbody class="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
+						<% if @expense.related_transactions.any? %>
+						<% @expense.related_transactions.each do |transaction| %>
+						<tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+							<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+								<%= transaction.date.strftime("%a, %-d %B %Y") %>
+							</td>
+							<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+								<%= transaction.details %>
+							</td>
+							<td class="px-4 py-4 text-sm text-text-light dark:text-text-dark">
+								<%= transaction.description %>
+							</td>
+							<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+								<%= number_to_currency transaction.amount %>
+							</td>
+							<td class="px-4 py-4 whitespace-nowrap text-sm">
+								<%= link_to "View", finances_transaction_path(transaction), class:"text-blue-600 dark:text-blue-400 hover:underline" %>
+							</td>
+						</tr>
+						<% end %>
+						<% else %>
+						<tr>
+							<td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+								No related transactions found
+							</td>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </main>

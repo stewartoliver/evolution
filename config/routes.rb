@@ -44,6 +44,9 @@ Rails.application.routes.draw do
         post :import
         post :recategorize_all
       end
+      member do
+        post :create_expense_from_similar
+      end
     end    
     resources :incomes
     resources :expenses

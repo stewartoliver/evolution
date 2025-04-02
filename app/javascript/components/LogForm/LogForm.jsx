@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import ExerciseSearch from "../CommonFitness/ExerciseSearch";
 import PropTypes from "prop-types";
-import { Dumbbell, Timer, Heart, ChevronDown, ChevronUp, Plus, Copy, Save, Trash2 } from "lucide-react";
+import {
+  Dumbbell,
+  Timer,
+  Heart,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Copy,
+  Save,
+  Trash2,
+} from "lucide-react";
 import { isEqual } from "lodash";
 
 /**
@@ -19,13 +29,14 @@ const InlineButton = ({
     onClick={onClick}
     className={`
       inline-flex items-center 
-      ${variant === "outline" 
-        ? "border border-primary-500 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900"
-        : "bg-primary-500 text-white hover:bg-primary-600"
+      ${
+        variant === "outline"
+          ? "border border-primary-500 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900"
+          : "bg-primary-500 text-white hover:bg-primary-600"
       }
       ${size === "sm" ? "px-3 py-1.5 text-sm" : "px-4 py-2 text-base"}
       font-medium rounded-md transition ${className}
-    `}
+      `}
   >
     {children}
   </button>
@@ -43,8 +54,12 @@ const InlineSwitch = ({ checked, onCheckedChange }) => (
       onChange={(e) => onCheckedChange(e.target.checked)}
       className="hidden"
     />
-    <div className={`w-8 h-4 ${checked ? "bg-primary-500" : "bg-gray-300"} rounded-full relative`}>
-      <div className={`w-4 h-4 bg-white rounded-full transition-transform ${checked ? "translate-x-4" : ""}`} />
+    <div
+      className={`w-8 h-4 ${checked ? "bg-primary-500" : "bg-gray-300"} rounded-full relative`}
+    >
+      <div
+        className={`w-4 h-4 bg-white rounded-full transition-transform ${checked ? "translate-x-4" : ""}`}
+      />
     </div>
   </label>
 );
@@ -83,16 +98,18 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
           })),
         }));
       } else {
-        newExercises = [{
-          exercise_id: "",
-          exercise_name: "",
-          exercise_type_id: "",
-          fitness_log_sets: [{ reps: "", weight: "" }],
-          isSelected: false,
-          collapsed: false,
-          quickSetMode: false,
-          showExerciseSearch: true,
-        }];
+        newExercises = [
+          {
+            exercise_id: "",
+            exercise_name: "",
+            exercise_type_id: "",
+            fitness_log_sets: [{ reps: "", weight: "" }],
+            isSelected: false,
+            collapsed: false,
+            quickSetMode: false,
+            showExerciseSearch: true,
+          },
+        ];
       }
 
       setExercises(newExercises);
@@ -128,30 +145,35 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
   // Form validation
   const validateForm = useCallback(() => {
     const errors = [];
-    
+
     exercises.forEach((exercise, index) => {
       if (!exercise.isSelected) {
         errors.push(`Exercise #${index + 1} must be selected`);
       }
-      
+
       exercise.fitness_log_sets.forEach((set, setIndex) => {
         if (!set.reps || !set.weight) {
-          errors.push(`Exercise #${index + 1}, Set #${setIndex + 1} must have both reps and weight`);
+          errors.push(
+            `Exercise #${index + 1}, Set #${setIndex + 1} must have both reps and weight`,
+          );
         }
       });
     });
-    
+
     setFormErrors(errors);
     return errors.length === 0;
   }, [exercises]);
 
   // Form submission handler
-  const handleSubmit = useCallback((e) => {
-    if (!validateForm()) {
-      e.preventDefault();
-      return;
-    }
-  }, [validateForm]);
+  const handleSubmit = useCallback(
+    (e) => {
+      if (!validateForm()) {
+        e.preventDefault();
+        return;
+      }
+    },
+    [validateForm],
+  );
 
   // Exercise type icons
   const getExerciseTypeIcon = (typeId) => {
@@ -166,23 +188,26 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
   // Exercise management functions
   const addExercise = useCallback(() => {
     if (exercises[exercises.length - 1]?.isSelected) {
-      setExercises(prev => [...prev, {
-        exercise_id: "",
-        exercise_name: "",
-        exercise_type_id: "",
-        fitness_log_sets: [{ reps: "", weight: "" }],
-        isSelected: false,
-        collapsed: false,
-        quickSetMode: false,
-        showExerciseSearch: true,
-      }]);
+      setExercises((prev) => [
+        ...prev,
+        {
+          exercise_id: "",
+          exercise_name: "",
+          exercise_type_id: "",
+          fitness_log_sets: [{ reps: "", weight: "" }],
+          isSelected: false,
+          collapsed: false,
+          quickSetMode: false,
+          showExerciseSearch: true,
+        },
+      ]);
     } else {
       alert("Please select an exercise before adding a new one.");
     }
   }, [exercises]);
 
   const handleExerciseSelect = useCallback((exercise, index) => {
-    setExercises(prev => {
+    setExercises((prev) => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
@@ -198,7 +223,7 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
 
   // Set management functions
   const addSet = useCallback((exerciseIndex) => {
-    setExercises(prev => {
+    setExercises((prev) => {
       const updated = [...prev];
       updated[exerciseIndex].fitness_log_sets.push({ reps: "", weight: "" });
       return updated;
@@ -206,7 +231,7 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
   }, []);
 
   const removeSet = useCallback((exerciseIndex, setIndex) => {
-    setExercises(prev => {
+    setExercises((prev) => {
       const updated = [...prev];
       const setToRemove = updated[exerciseIndex].fitness_log_sets[setIndex];
 
@@ -223,7 +248,7 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
 
   // UI state management
   const toggleCollapse = (index) => {
-    setExercises(prev => {
+    setExercises((prev) => {
       const updated = [...prev];
       updated[index].collapsed = !updated[index].collapsed;
       return updated;
@@ -231,7 +256,7 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
   };
 
   const toggleQuickSetMode = (index) => {
-    setExercises(prev => {
+    setExercises((prev) => {
       const updated = [...prev];
       updated[index].quickSetMode = !updated[index].quickSetMode;
       return updated;
@@ -241,7 +266,7 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
   // Form handling
   const handleSetChange = useCallback((e, exerciseIndex, setIndex, field) => {
     const value = e.target.value;
-    setExercises(prev => {
+    setExercises((prev) => {
       const updated = [...prev];
       updated[exerciseIndex].fitness_log_sets[setIndex][field] = value;
       return updated;
@@ -250,44 +275,52 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
 
   const handleQuickSetChange = useCallback((e, exerciseIndex, field) => {
     const value = e.target.value;
-    setExercises(prev => {
+    setExercises((prev) => {
       const updated = [...prev];
       updated[exerciseIndex][field] = value;
       return updated;
     });
   }, []);
 
-  const generateSets = useCallback((exerciseIndex) => {
-    const exercise = exercises[exerciseIndex];
-    const { sets, reps, weight } = exercise;
+  const generateSets = useCallback(
+    (exerciseIndex) => {
+      const exercise = exercises[exerciseIndex];
+      const { sets, reps, weight } = exercise;
 
-    if (sets && reps && weight) {
-      const numberOfSets = parseInt(sets, 10);
-      if (isNaN(numberOfSets) || numberOfSets <= 0) {
-        alert("Please enter a valid number of sets.");
-        return;
+      if (sets && reps && weight) {
+        const numberOfSets = parseInt(sets, 10);
+        if (isNaN(numberOfSets) || numberOfSets <= 0) {
+          alert("Please enter a valid number of sets.");
+          return;
+        }
+
+        setExercises((prev) => {
+          const updated = [...prev];
+          updated[exerciseIndex].fitness_log_sets = Array(numberOfSets)
+            .fill(0)
+            .map(() => ({
+              reps: reps.toString(),
+              weight: weight.toString(),
+            }));
+          return updated;
+        });
+      } else {
+        alert("Please fill in Sets, Reps, and Weight to generate sets.");
       }
-
-      setExercises(prev => {
-        const updated = [...prev];
-        updated[exerciseIndex].fitness_log_sets = Array(numberOfSets)
-          .fill(0)
-          .map(() => ({
-            reps: reps.toString(),
-            weight: weight.toString(),
-          }));
-        return updated;
-      });
-    } else {
-      alert("Please fill in Sets, Reps, and Weight to generate sets.");
-    }
-  }, [exercises]);
+    },
+    [exercises],
+  );
 
   return (
     <div className="flex flex-col gap-5">
       {formErrors.length > 0 && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Please fix the following errors:</strong>
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold">
+            Please fix the following errors:
+          </strong>
           <ul className="mt-2 list-disc list-inside">
             {formErrors.map((error, index) => (
               <li key={index}>{error}</li>
@@ -304,8 +337,8 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
             name={`fitness_log_entry[fitness_log_exercises_attributes][${index}][_destroy]`}
             value="false"
           />
-          
-          <div className="flex flex-col gap-4 p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
+
+          <div className="flex flex-col gap-4 p-2 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
             {/* Exercise Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -313,28 +346,34 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
                   {getExerciseTypeIcon(exercise.exercise_type_id)}
                 </div>
                 <div>
-                  <span className="text-lg font-medium">Exercise #{index + 1}</span>
+                  <span className="text-lg font-medium">
+                    Exercise #{index + 1}
+                  </span>
                   {exercise.isSelected && exercise.exercise_name && (
-                    <span className="block text-sm">{exercise.exercise_name}</span>
+                    <span className="block text-sm">
+                      {exercise.exercise_name}
+                    </span>
                   )}
                 </div>
               </div>
-              
+
               {/* Exercise Controls */}
               <div className="flex gap-2">
                 {exercise.showExerciseSearch ? (
                   <>
-                    <ExerciseSearch 
-                      onSelectExercise={(ex) => handleExerciseSelect(ex, index)} 
+                    <ExerciseSearch
+                      onSelectExercise={(ex) => handleExerciseSelect(ex, index)}
                     />
                     <InlineButton
                       variant="outline"
                       size="sm"
-                      onClick={() => setExercises(prev => {
-                        const updated = [...prev];
-                        updated[index].showExerciseSearch = false;
-                        return updated;
-                      })}
+                      onClick={() =>
+                        setExercises((prev) => {
+                          const updated = [...prev];
+                          updated[index].showExerciseSearch = false;
+                          return updated;
+                        })
+                      }
                     >
                       Cancel
                     </InlineButton>
@@ -345,11 +384,13 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
                       <InlineButton
                         variant="outline"
                         size="sm"
-                        onClick={() => setExercises(prev => {
-                          const updated = [...prev];
-                          updated[index].showExerciseSearch = true;
-                          return updated;
-                        })}
+                        onClick={() =>
+                          setExercises((prev) => {
+                            const updated = [...prev];
+                            updated[index].showExerciseSearch = true;
+                            return updated;
+                          })
+                        }
                       >
                         Change Exercise
                       </InlineButton>
@@ -406,32 +447,35 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
                       onCheckedChange={() => toggleQuickSetMode(index)}
                     />
                   </div>
-                  <div className="flex gap-2">
-                    <InlineButton variant="outline" size="sm">
-                      <Copy className="w-4 h-4 mr-2" />Copy Last Workout
-                    </InlineButton>
-                    <InlineButton variant="outline" size="sm">
-                      <Save className="w-4 h-4 mr-2" />Save as Template
-                    </InlineButton>
-                  </div>
                 </div>
 
                 {/* Quick Set Mode or Regular Sets */}
                 {exercise.quickSetMode ? (
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
-                      {['sets', 'reps', 'weight'].map(field => (
+                      {["sets", "reps", "weight"].map((field) => (
                         <div key={field} className="flex flex-col">
-                          <label htmlFor={`quick-${field}-${index}`} className="text-sm font-medium mb-2 capitalize">
+                          <label
+                            htmlFor={`quick-${field}-${index}`}
+                            className="text-sm font-medium mb-2 capitalize"
+                          >
                             {field}
                           </label>
                           <input
                             id={`quick-${field}-${index}`}
                             type="number"
                             className="rounded-md border bg-background-input-light dark:bg-background-input-dark p-2"
-                            placeholder={field === 'sets' ? "3" : field === 'reps' ? "12" : "60"}
+                            placeholder={
+                              field === "sets"
+                                ? "3"
+                                : field === "reps"
+                                  ? "12"
+                                  : "60"
+                            }
                             value={exercise[field] || ""}
-                            onChange={(e) => handleQuickSetChange(e, index, field)}
+                            onChange={(e) =>
+                              handleQuickSetChange(e, index, field)
+                            }
                           />
                         </div>
                       ))}
@@ -442,26 +486,40 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="bg-background-input-light dark:bg-background-input-dark rounded-lg p-4">
-                      <table className="w-full table-auto">
-                        <thead>
-                          <tr className="text-sm font-medium">
-                            <th className="px-2 py-1 text-left">Set</th>
-                            <th className="px-2 py-1 text-left">Previous</th>
-                            <th className="px-2 py-1 text-left">Reps</th>
-                            <th className="px-2 py-1 text-left">Weight (kg)</th>
+                    <div className="overflow-x-auto rounded-md">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className="bg-background-card dark:bg-background-card-dark">
+                          <tr>
+                            <th className="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+                              Set
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+                              Previous
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
+                              Reps
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+                              Weight
+                            </th>
+                            <th className="px-4 py-3 text-center text-xs font-medium whitespace-nowrap text-text-light dark:text-text-dark uppercase tracking-wider">
+                              <InlineButton onClick={() => addSet(index)}>
+                                Add Set
+                                <Plus className="w-4 h-4 ml-2" />
+                              </InlineButton>
+                            </th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
                           {exercise.fitness_log_sets.map((set, setIndex) => (
-                            <tr key={`${index}-${setIndex}`} className="border-t">
+                            <tr>
                               {/* Add a hidden field to ensure empty arrays are sent */}
                               <input
                                 type="hidden"
                                 name={`fitness_log_entry[fitness_log_exercises_attributes][${index}][fitness_log_sets_attributes][${setIndex}][_destroy]`}
                                 value="false"
                               />
-                              
+
                               {/* Hidden input for set id */}
                               {set.id && (
                                 <input
@@ -470,48 +528,58 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
                                   value={set.id}
                                 />
                               )}
-                              <td className="px-2 py-1 font-medium">{setIndex + 1}</td>
-                              <td className="px-2 py-1 text-gray-500">
-                                {set.reps && set.weight ? `${set.reps} × ${set.weight}kg` : "—"}
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                                {setIndex + 1}
                               </td>
-                              <td className="px-2 py-1">
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                                {set.reps && set.weight
+                                  ? `${set.reps} × ${set.weight}kg`
+                                  : "—"}
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
                                 <input
                                   id={`set-${index}-${setIndex}-reps`}
                                   type="number"
                                   name={`fitness_log_entry[fitness_log_exercises_attributes][${index}][fitness_log_sets_attributes][${setIndex}][reps]`}
                                   placeholder="0"
                                   value={set.reps}
-                                  onChange={(e) => handleSetChange(e, index, setIndex, "reps")}
-                                  className="rounded-md border bg-background-input-light dark:bg-background-input-dark p-2 w-full"
+                                  onChange={(e) =>
+                                    handleSetChange(e, index, setIndex, "reps")
+                                  }
+                                  className="rounded-md border-0 bg-background-card-light dark:bg-background-card-dark w-full"
                                 />
                               </td>
-                              <td className="px-2 py-1">
-                                <div className="flex gap-2 items-center">
-                                  <input
-                                    type="number"
-                                    name={`fitness_log_entry[fitness_log_exercises_attributes][${index}][fitness_log_sets_attributes][${setIndex}][weight]`}
-                                    placeholder="0"
-                                    value={set.weight}
-                                    onChange={(e) => handleSetChange(e, index, setIndex, "weight")}
-                                    className="rounded-md border bg-background-input-light dark:bg-background-input-dark p-2 w-full"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => removeSet(index, setIndex)}
-                                    className="text-red-500 hover:text-red-600 p-1 rounded-md transition"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                                <input
+                                  type="number"
+                                  name={`fitness_log_entry[fitness_log_exercises_attributes][${index}][fitness_log_sets_attributes][${setIndex}][weight]`}
+                                  placeholder="0"
+                                  value={set.weight}
+                                  onChange={(e) =>
+                                    handleSetChange(
+                                      e,
+                                      index,
+                                      setIndex,
+                                      "weight",
+                                    )
+                                  }
+                                  className="rounded-md border-0 bg-background-card-light dark:bg-background-card-dark w-full"
+                                />
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                                <button
+                                  type="button"
+                                  onClick={() => removeSet(index, setIndex)}
+                                  className="text-red-500 hover:text-red-600 p-1 rounded-md transition"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                    <InlineButton onClick={() => addSet(index)}>
-                      <Plus className="w-4 h-4 mr-2" />Add Set
-                    </InlineButton>
                   </div>
                 )}
               </div>
@@ -523,7 +591,8 @@ const LogForm = ({ initialExercises = [], isEditPage = false }) => {
       {/* Add Exercise Button */}
       <div className="max-w-2xl">
         <InlineButton onClick={addExercise}>
-          <Plus className="w-4 h-4 mr-2" />Add Exercise
+          <Plus className="w-4 h-4 mr-2" />
+          Add Exercise
         </InlineButton>
       </div>
     </div>
@@ -534,14 +603,20 @@ LogForm.propTypes = {
   initialExercises: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
-      exercise_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      exercise_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
       exercise_name: PropTypes.string.isRequired,
-      exercise_type_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      exercise_type_id: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]).isRequired,
       fitness_log_sets: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.number,
-          reps: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-          weight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+          reps: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            .isRequired,
+          weight: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            .isRequired,
           duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
           distance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
           style: PropTypes.string,

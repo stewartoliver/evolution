@@ -18,7 +18,6 @@ import HabitLogForm from "./components/HabitLogForm";
 import ExerciseDirectory from "./components/CommonFitness/ExerciseDirectory";
 import GoalShow from "./components/GoalShow";
 import TransactionsTable from "./components/CommonFinancial/TransactionsTable";
-import { Chart } from 'chart.js/auto';
 import Chartkick from 'chartkick';
 
 // Keep track of mounted components
@@ -29,7 +28,7 @@ function renderComponent(Component, elementId, props = {}) {
   console.log(`Attempting to render component: ${Component.name} with ID: ${elementId}`);
   const element = document.getElementById(elementId);
   console.log('Element found:', element);
-  
+
   if (!element) {
     console.error(`Element with ID ${elementId} not found`);
     return;
@@ -101,7 +100,23 @@ const initializeReactComponents = () => {
 
   const logFormElement = document.getElementById("log-form-container");
   if (logFormElement) {
-    renderComponent(LogForm, "log-form-container");
+    const initialExercisesJson = logFormElement.dataset.initialExercises;
+    const isEditPage = JSON.parse(logFormElement.dataset.isEditPage || 'false');
+
+    let initialExercises = [];
+
+    try {
+      if (initialExercisesJson) {
+        initialExercises = JSON.parse(initialExercisesJson);
+      }
+    } catch (e) {
+      console.error("Failed to parse initialExercises:", e);
+    }
+
+    renderComponent(
+      () => <LogForm initialExercises={initialExercises} isEditPage={isEditPage} />,
+      "log-form-container"
+    );
   }
 
   const boardElement = document.getElementById("board-container");
@@ -118,12 +133,12 @@ const initializeReactComponents = () => {
   heartIconElements.forEach((element) => {
     const goalId = parseInt(element.getAttribute("data-goal-id"), 10);
     const initialFavourite = element.getAttribute("data-initial-favourite") === "true";
-    
+
     // Create a unique ID if one doesn't exist
     if (!element.id) {
       element.id = `heart-icon-${goalId}`;
     }
-    
+
     renderComponent(HeartIcon, element.id, {
       goalId,
       initialFavourite
@@ -186,10 +201,12 @@ const initializeReactComponents = () => {
   if (transactionsTableElement) {
     const initialTransactions = JSON.parse(transactionsTableElement.getAttribute("data-transactions") || "[]");
     const accounts = JSON.parse(transactionsTableElement.getAttribute("data-accounts") || "[]");
-    
+    const categories = JSON.parse(transactionsTableElement.getAttribute("data-categories") || "[]");
+
     renderComponent(TransactionsTable, "transactions-table-container", {
       initialTransactions,
-      accounts
+      accounts,
+      categories
     });
   }
 };
@@ -269,7 +286,7 @@ const initializeNavDropdowns = () => {
         menuDropdown.classList.add("hidden");
         const relatedButton = dropdowns.find(
           (d) => d.dropdown === dropdown,
-          )?.button;
+        )?.button;
         if (relatedButton) {
           const button = document.getElementById(relatedButton);
           button?.setAttribute("aria-expanded", "false");
@@ -293,7 +310,7 @@ const initializeNavDropdowns = () => {
     if (menuButton && menuDropdown) {
       menuButton.removeEventListener("click", menuButton.clickHandler);
       menuButton.clickHandler = (event) =>
-      handleButtonClick(event, menuButton, menuDropdown);
+        handleButtonClick(event, menuButton, menuDropdown);
       menuButton.addEventListener("click", menuButton.clickHandler);
     }
   };
@@ -312,11 +329,11 @@ const initializeNavDropdowns = () => {
         menuButton &&
         !menuButton.contains(event.target) &&
         !menuDropdown.contains(event.target)
-        ) {
+      ) {
         menuDropdown.classList.add("hidden");
-      menuButton.setAttribute("aria-expanded", "false");
-    }
-  });
+        menuButton.setAttribute("aria-expanded", "false");
+      }
+    });
   };
   document.addEventListener("click", document.closeDropdownsHandler);
 };
@@ -354,7 +371,7 @@ const initializeTheme = () => {
     const storedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)",
-      ).matches;
+    ).matches;
 
     console.log("Stored theme:", storedTheme);
     console.log("System prefers dark:", prefersDark);
@@ -392,7 +409,7 @@ const synchronizeThemeAcrossTabs = () => {
         console.log(
           "Theme synchronized across tabs:",
           isDark ? "Dark" : "Light",
-          );
+        );
       }
     }
   });

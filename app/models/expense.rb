@@ -64,7 +64,7 @@ class Expense < ApplicationRecord
   def calculate_next_occurrence
     return nil unless recurring?
   
-    reference_date = date
+    reference_date = date.to_date
     return nil if end_date.present? && reference_date > end_date
   
     next_occurrence = case frequency_unit
@@ -92,6 +92,18 @@ class Expense < ApplicationRecord
     next_occurrence
   end
   
+  def related_transactions
+    Transaction.where(
+      user_id: user_id,
+      account_id: account_id,
+      category_id: category_id,
+      amount: -amount  # Negative because expenses are positive amounts but transactions are negative
+    ).where(
+      "date >= ? AND date <= ?", 
+      date, 
+      end_date || Date.today
+    ).order(date: :desc)
+  end
   
   private
 
@@ -105,13 +117,13 @@ class Expense < ApplicationRecord
     when 'weekly'
       reference_date + 1.week
     when 'monthly'
-      next_month = reference_date >> 1
+      next_month = reference_date.next_month
       target_day = day_of_month || reference_date.day
       last_day_of_month = Date.new(next_month.year, next_month.month, -1).day
       adjusted_day = [target_day, last_day_of_month].min
       Date.new(next_month.year, next_month.month, adjusted_day)
     when 'yearly'
-      next_year = reference_date >> 12
+      next_year = reference_date.next_year
       target_day = reference_date.day
       last_day_of_month = Date.new(next_year.year, next_year.month, -1).day
       adjusted_day = [target_day, last_day_of_month].min
@@ -133,13 +145,13 @@ class Expense < ApplicationRecord
           reference_date + custom_frequency.weeks
         end
       when 'month'
-        next_months = reference_date >> custom_frequency
+        next_months = reference_date.next_month(custom_frequency)
         target_day = day_of_month || reference_date.day
         last_day_of_month = Date.new(next_months.year, next_months.month, -1).day
         adjusted_day = [target_day, last_day_of_month].min
         Date.new(next_months.year, next_months.month, adjusted_day)
       when 'year'
-        next_years = reference_date >> (12 * custom_frequency)
+        next_years = reference_date.next_year(custom_frequency)
         target_day = reference_date.day
         last_day_of_month = Date.new(next_years.year, next_years.month, -1).day
         adjusted_day = [target_day, last_day_of_month].min
@@ -159,7 +171,12 @@ class Expense < ApplicationRecord
     
     # Calculate how many periods have passed and what the next period would be
     periods_passed = (days_passed / frequency_days.to_f).ceil
-    reference_date + (periods_passed * frequency_days).days
+    next_date = reference_date + (periods_passed * frequency_days).days
+    
+    # Check if this would exceed the end_date
+    return nil if end_date.present? && next_date > end_date
+    
+    next_date
   end
   
   def calculate_next_weekly_occurrence(reference_date)
@@ -173,7 +190,12 @@ class Expense < ApplicationRecord
     
     # Calculate how many periods have passed and what the next period would be
     periods_passed = (weeks_passed / frequency_weeks.to_f).ceil
-    reference_date + (periods_passed * frequency_weeks).weeks
+    next_date = reference_date + (periods_passed * frequency_weeks).weeks
+    
+    # Check if this would exceed the end_date
+    return nil if end_date.present? && next_date > end_date
+    
+    next_date
   end
   
   def calculate_next_monthly_occurrence(reference_date)
@@ -181,11 +203,16 @@ class Expense < ApplicationRecord
     months_passed = ((Date.today.year - reference_date.year) * 12 + (Date.today.month - reference_date.month)).ceil
     months_to_add = (months_passed / (custom_frequency || 1)).ceil * (custom_frequency || 1)
   
-    next_month = reference_date >> months_to_add # Move forward by months
+    next_month = reference_date.next_month(months_to_add) # Use next_month instead of >>
     last_day_of_month = Date.new(next_month.year, next_month.month, -1).day
     adjusted_day = [target_day, last_day_of_month].min
   
-    Date.new(next_month.year, next_month.month, adjusted_day)
+    next_date = Date.new(next_month.year, next_month.month, adjusted_day)
+    
+    # Check if this would exceed the end_date
+    return nil if end_date.present? && next_date > end_date
+    
+    next_date
   end  
   
   def calculate_next_yearly_occurrence(reference_date)
@@ -198,8 +225,13 @@ class Expense < ApplicationRecord
     last_day_of_month = Date.new(next_year, target_month, -1).day
     adjusted_day = [target_day, last_day_of_month].min
   
-    Date.new(next_year, target_month, adjusted_day)
-  end  
+    next_date = Date.new(next_year, target_month, adjusted_day)
+    
+    # Check if this would exceed the end_date
+    return nil if end_date.present? && next_date > end_date
+    
+    next_date
+  end
   
   def calculate_custom_frequency(reference_date)
     case frequency_unit

@@ -46,7 +46,7 @@ const ExerciseItem = ({
 
   return (
     <div className="w-full max-w-2xl">
-      <div className="flex flex-col gap-4 p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
+      <div className="flex flex-col gap-4 p-2 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
         {/* Exercise Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

@@ -64,9 +64,9 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <% if @log.fitness_log_exercises.present? %>
       <% @log.fitness_log_exercises.each_with_index do |exercise, index| %>
-        <div class="p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
+        <div class="p-2 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm">
           <!-- Exercise Header -->
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-between mb-2 leading-tight">
             <div class="flex items-center gap-3">
               <div style="background-color: <%= exercise.exercise.exercise_type.colour %>" class="p-2 rounded-lg">
                 <%= exercise.exercise.exercise_type.icon.html_safe %>

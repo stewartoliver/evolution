@@ -11,7 +11,7 @@ const SetRow = ({
   handleSetChange,
   removeSet,
 }) => (
-  <tr className="border-t">
+  <tr className="text-text-light dark:text-text-dark">
     {/* Hidden inputs for set id */}
     {setData.id && (
       <input
@@ -20,20 +20,27 @@ const SetRow = ({
         value={setData.id}
       />
     )}
-    <td className="px-2 py-1 font-medium">{setIndex + 1}</td>
+    <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+      {setIndex + 1}
+    </td>
+    <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+      {setData.reps && setData.weight
+        ? `${setData.reps} × ${setData.weight}kg`
+        : "—"}
+    </td>
     {fields.map((field) => (
-      <td key={field} className="px-2 py-1">
+      <td key={field} className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
         <input
           type={field === "duration" || field === "distance" ? "number" : "text"}
           name={`routine[routine_exercises_attributes][${exerciseIndex}][routine_sets_attributes][${setIndex}][${field}]`}
-          placeholder={field}
+          placeholder="0"
           value={setData[field] || ""}
           onChange={(e) => handleSetChange(e, exerciseIndex, setIndex, field)}
-          className="rounded-md border bg-background-input-light dark:bg-background-input-dark p-2 w-full"
+          className="rounded-md border-0 bg-background-card-light dark:bg-background-card-dark w-full"
         />
       </td>
     ))}
-    <td className="px-2 py-1">
+    <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
       <button
         type="button"
         onClick={() => removeSet(exerciseIndex, setIndex)}

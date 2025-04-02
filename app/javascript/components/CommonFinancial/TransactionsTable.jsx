@@ -7,9 +7,11 @@ import {
   Calendar,
   Tag,
   DollarSign,
+  ChevronRight,
+  ChevronUp,
 } from "lucide-react";
 
-const TransactionsTable = ({ initialTransactions = [], accounts = [] }) => {
+const TransactionsTable = ({ initialTransactions = [], accounts = [], categories = [] }) => {
   const [transactions, setTransactions] = useState(initialTransactions);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("date");
@@ -18,16 +20,41 @@ const TransactionsTable = ({ initialTransactions = [], accounts = [] }) => {
   const [selectedAccount, setSelectedAccount] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(30);
+  const [expandedRows, setExpandedRows] = useState({});
+
+  // Create a mapping of category IDs to category names for quick lookup
+  const categoryMap = React.useMemo(() => {
+    const map = {};
+    categories.forEach(category => {
+      map[category.id] = category.name;
+    });
+    return map;
+  }, [categories]);
+
+  // Function to get category name from category ID
+  const getCategoryName = (categoryId) => {
+    return categoryId ? categoryMap[categoryId] || "Unknown" : "";
+  };
+
+  // Toggle row expansion
+  const toggleRowExpansion = (transactionId) => {
+    setExpandedRows((prevState) => ({
+      ...prevState,
+      [transactionId]: !prevState[transactionId],
+    }));
+  };
 
   // Filter transactions based on search term, type, and account
   const filteredTransactions = transactions.filter((transaction) => {
+    // Safely handle potentially null or undefined values
+    const description = transaction.description || "";
+    const details = transaction.details || "";
+    const categoryName = getCategoryName(transaction.category_id);
+    
     const matchesSearch =
-      transaction.description
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (transaction.category?.name?.toLowerCase() || "").includes(
-        searchTerm.toLowerCase()
-      );
+      description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      details.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      categoryName.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesType =
       filterType === "all" ||
@@ -36,40 +63,39 @@ const TransactionsTable = ({ initialTransactions = [], accounts = [] }) => {
 
     const matchesAccount =
       selectedAccount === "all" ||
-      transaction.account_id.toString() === selectedAccount;
+      transaction.account_id?.toString() === selectedAccount;
 
     return matchesSearch && matchesType && matchesAccount;
   });
 
   // Sort transactions
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    let aValue = a[sortField];
-    let bValue = b[sortField];
-
-    // Handle nested fields
     if (sortField === "category") {
-      aValue = a.category?.name || "";
-      bValue = b.category?.name || "";
-    } else if (sortField === "reference") {
-      aValue = a.reference?.name || "";
-      bValue = b.reference?.name || "";
-    }
-
-    if (sortField === "date") {
+      // Sort by category name
+      const categoryNameA = getCategoryName(a.category_id);
+      const categoryNameB = getCategoryName(b.category_id);
+      
       return sortDirection === "asc"
-        ? new Date(aValue) - new Date(bValue)
-        : new Date(bValue) - new Date(aValue);
-    }
-
-    if (sortField === "amount") {
+        ? categoryNameA.localeCompare(categoryNameB)
+        : categoryNameB.localeCompare(categoryNameA);
+    } else if (sortField === "date") {
+      // Handle date comparison
+      const dateA = a.date ? new Date(a.date) : new Date(0);
+      const dateB = b.date ? new Date(b.date) : new Date(0);
+      return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
+    } else if (sortField === "amount") {
+      // Handle amount comparison
+      const amountA = parseFloat(a.amount) || 0;
+      const amountB = parseFloat(b.amount) || 0;
+      return sortDirection === "asc" ? amountA - amountB : amountB - amountA;
+    } else {
+      // Default string comparison for other fields
+      const valueA = a[sortField] || "";
+      const valueB = b[sortField] || "";
       return sortDirection === "asc"
-        ? parseFloat(aValue) - parseFloat(bValue)
-        : parseFloat(bValue) - parseFloat(aValue);
+        ? String(valueA).localeCompare(String(valueB))
+        : String(valueB).localeCompare(String(valueA));
     }
-
-    return sortDirection === "asc"
-      ? String(aValue).localeCompare(String(bValue))
-      : String(bValue).localeCompare(String(aValue));
   });
 
   // Pagination
@@ -214,12 +240,12 @@ const TransactionsTable = ({ initialTransactions = [], accounts = [] }) => {
                 </div>
               </th>
               <th
-                onClick={() => handleSort("reference")}
+                onClick={() => handleSort("details")}
                 className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors"
               >
                 <div className="flex items-center space-x-1">
-                  <span>Reference</span>
-                  <span>{getSortIcon("reference")}</span>
+                  <span>Details</span>
+                  <span>{getSortIcon("details")}</span>
                 </div>
               </th>
               <th
@@ -250,51 +276,96 @@ const TransactionsTable = ({ initialTransactions = [], accounts = [] }) => {
                 </div>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
-                Action
               </th>
             </tr>
           </thead>
           <tbody className="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
             {currentItems.length > 0 ? (
               currentItems.map((transaction) => (
-                <tr
-                  key={transaction.id}
-                  className="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors"
-                >
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-                    {format(new Date(transaction.date), "d MMM, yyyy")}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-                    {transaction.reference || ""}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-text-light dark:text-text-dark">
-                    {transaction.description}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-                    {transaction.category?.name || ""}
-                  </td>
-                  <td
-                    className={`px-4 py-4 whitespace-nowrap text-sm font-medium ${
-                      transaction.amount >= 0
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
-                    }`}
-                  >
-                    {transaction.amount >= 0 ? "+" : ""}
-                    {transaction.amount.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "NZD",
-                    })}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm">
-                    <a
-                      href={`../finances/transactions/${transaction.id}`}
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                <React.Fragment key={transaction.id}>
+                  <tr className="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                      {transaction.date ? format(new Date(transaction.date), "d MMM, yyyy") : "N/A"}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                      {transaction.details || ""}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-text-light dark:text-text-dark">
+                      {transaction.description || ""}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                      {getCategoryName(transaction.category_id)}
+                    </td>
+                    <td
+                      className={`px-4 py-4 whitespace-nowrap text-sm font-medium ${
+                        (transaction.amount || 0) >= 0
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
                     >
-                      View
-                    </a>
-                  </td>
-                </tr>
+                      {(transaction.amount || 0) >= 0 ? "+" : ""}
+                      {(transaction.amount || 0).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "NZD",
+                      })}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => toggleRowExpansion(transaction.id)}
+                        className="flex items-center justify-center p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        aria-label="Expand transaction details"
+                      >
+                        {expandedRows[transaction.id] ? (
+                          <ChevronUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                  {expandedRows[transaction.id] && (
+                    <tr className="bg-gray-50 dark:bg-gray-800">
+                      <td colSpan="6" className="px-4 py-4">
+                        <div className="flex flex-col space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="">
+                              <div className="text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                                Code
+                              </div>
+                              <div className="text-sm text-text-light dark:text-text-dark">
+                                {transaction.code || "N/A"}
+                              </div>
+                            </div>
+                            <div className="">
+                              <div className="text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                                Particulars
+                              </div>
+                              <div className="text-sm text-text-light dark:text-text-dark">
+                                {transaction.particulars || "N/A"}
+                              </div>
+                            </div>
+                            <div className="">
+                              <div className="text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                                Reference
+                              </div>
+                              <div className="text-sm text-text-light dark:text-text-dark">
+                                {transaction.reference || "N/A"}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <a
+                              href={`../finances/transactions/${transaction.id}`}
+                              className="btn text-sm"
+                            >
+                              View
+                            </a>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <tr>
@@ -316,7 +387,7 @@ const TransactionsTable = ({ initialTransactions = [], accounts = [] }) => {
           <div className="text-sm text-gray-700 dark:text-gray-300">
             Showing{" "}
             <span className="font-medium">
-              {(currentPage - 1) * itemsPerPage + 1}
+              {Math.min((currentPage - 1) * itemsPerPage + 1, filteredTransactions.length)}
             </span>{" "}
             to{" "}
             <span className="font-medium">
@@ -338,13 +409,13 @@ const TransactionsTable = ({ initialTransactions = [], accounts = [] }) => {
               Previous
             </button>
             <span className="text-sm text-gray-700 dark:text-gray-300">
-              Page {currentPage} of {totalPages}
+              Page {currentPage} of {totalPages || 1}
             </span>
             <button
               onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages || 1))
               }
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || totalPages === 0}
               className="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 text-text-light dark:text-text-dark hover:bg-background-hover dark:hover:bg-background-hover-dark disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next

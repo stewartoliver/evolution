@@ -2,7 +2,7 @@ module Operator
   class CategoriesController < ApplicationController
     before_action :authenticate_user!
     before_action :check_operator
-    before_action :set_cateogry, only: [:show, :edit, :update]
+    before_action :set_category, only: [:show, :edit, :update]
 
     def index
       @categories = Category.all
@@ -26,7 +26,11 @@ module Operator
     end
 
     def update
-
+      if @category.update(category_params)
+        redirect_to operator_category_path(@category)
+      else
+        redirect_to :new
+      end
     end
 
     def show
@@ -44,7 +48,7 @@ module Operator
     end
 
     def category_params
-      params.require(:category).permit(:name, :category_type)
+      params.require(:category).permit(:name, :category_type, :keywords)
     end
   end
 end

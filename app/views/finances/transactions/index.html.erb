@@ -86,6 +86,9 @@
 					</div>
 					<% end %>
 				</div>
+				<div class="flex flex-col gap-4">
+					<%= button_to "Recategorize All", recategorize_all_finances_transactions_path, method: :post, class: "btn btn-primary" %>
+				</div>
 			</div>
 			<div class="flex flex-col gap-6 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
 				<div class="flex justify-between items-center">
@@ -261,17 +264,18 @@
 							</div>
 						</div>
 
-							<!-- Transactions Table Section -->
-		<div class="flex flex-col w-full z-0">
-			<div">
-				<div id="transactions-table-container" 
-					 data-transactions="<%= @recent_transactions.to_json %>"
-					 data-accounts="<%= @accounts.to_json %>">
-				</div>
-			</div>
-		</div>
+						<!-- Transactions Table Section -->
+						<div class="flex flex-col w-full z-0">
+							<div">
+								<div id="transactions-table-container" 
+								data-transactions="<%= @recent_transactions.to_json %>"
+								data-accounts="<%= @accounts.to_json %>"
+								data-categories="<%= @categories.to_json %>">
+							</div>
+						</div>
 					</div>
-				</main>
+				</div>
+			</main>
 
 <!-- Script to Display Selected File Name -->
 <script>

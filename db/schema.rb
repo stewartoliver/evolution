@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_27_030454) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -67,6 +67,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_27_030454) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "category_type", default: "expense", null: false
+    t.string "keywords"
   end
 
   create_table "diet_goals", force: :cascade do |t|
