@@ -25,6 +25,9 @@ class Transaction < ApplicationRecord
   scope :recurring_upcoming, ->(days = 14) { recurring.upcoming(days) }
   scope :by_category, ->(category_id) { where(category_id: category_id) }
   scope :search, ->(query) { where("description ILIKE ? OR reference ILIKE ?", "%#{query}%", "%#{query}%") }
+  scope :transfers, -> { where("code = ? OR description ILIKE ?", 'Transfer', '%transfer%') } 
+  scope :reversals, -> { where("details ILIKE ? OR description ILIKE ?", "%(Reversal)%", "%(Reversal)%") }
+  scope :failed_payments, -> { where("details ILIKE ? OR description ILIKE ?", "%Failed%", "%Failed%") }
 
   # Class method to find similar transactions
   def self.find_similar_transactions(user_id, details = nil, description = nil, amount = nil, limit = 10)
@@ -60,8 +63,45 @@ class Transaction < ApplicationRecord
     amount.abs
   end
 
+  def transfer?
+    code == 'Transfer' || description&.downcase&.include?('transfer')
+  end
+
+  def reversal?
+    details&.include?('(Reversal)') || description&.include?('(Reversal)')
+  end
+
+  def failed_payment?
+    details&.include?('Failed') || description&.include?('Failed')
+  end
+
+  def related_transactions
+    return [] unless reversal? || failed_payment?
+    
+    # For reversals, look for the original failed payment
+    if reversal?
+      Transaction.where(user_id: user_id)
+                 .where(amount: -amount) # Opposite amount
+                 .where("date <= ?", date)
+                 .where("details ILIKE ? OR description ILIKE ?", "%Failed%", "%Failed%")
+                 .order(date: :desc)
+                 .limit(1)
+    # For failed payments, look for the reversal
+    elsif failed_payment?
+      Transaction.where(user_id: user_id)
+                 .where(amount: -amount) # Opposite amount
+                 .where("date >= ?", date)
+                 .where("details ILIKE ? OR description ILIKE ?", "%(Reversal)%", "%(Reversal)%")
+                 .order(date: :asc)
+                 .limit(1)
+    end
+  end
+
   # Find similar transactions to this one
   def similar_transactions(limit = 5)
+    # Don't include reversals or failed payments in similar transactions unless the current transaction is one
+    return [] if (reversal? || failed_payment?) && !self.reversal? && !self.failed_payment?
+    
     # Start with transactions from same user, excluding self
     similar = Transaction.where.not(id: id)
                          .where(user_id: user_id)

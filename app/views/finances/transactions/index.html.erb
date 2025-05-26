@@ -30,62 +30,6 @@
 					</div>
 				</div>
 
-				<!-- CSV Import Section -->
-				<div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-					<div class="flex items-center gap-2 mb-4">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-primary-500">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-						</svg>
-						<h3 class="font-medium text-text-light dark:text-text-dark">Import Bank Transactions</h3>
-					</div>
-					
-					<%= form_with url: import_finances_transactions_path, method: :post, local: true, multipart: true do |f| %>
-					<div class="flex flex-col items-start gap-4">
-						<!-- Account Selection -->
-						<div class="flex flex-col gap-2">
-							<label class="text-sm font-medium text-text-light dark:text-text-dark">Select Destination Account</label>
-							<%= f.collection_select :account_id, 
-							current_user.accounts, 
-							:id, 
-							:account_name, 
-							{ prompt: "Choose an account" }, 
-							{ 
-								class: "rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm dark:bg-background-dark text-text-light dark:text-text-dark w-full" 
-								} 
-							%>
-							<div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-								Transactions will be imported to the selected account
-							</div>
-						</div>
-						<!-- File Upload -->
-						<div class="flex flex-col gap-2">
-							<label class="text-sm font-medium text-text-light dark:text-text-dark">Select CSV File</label>
-							<div class="flex items-center gap-2">
-								<div class="relative flex items-center">
-									<input id="file-upload" name="file" type="file" accept=".csv" class="hidden">
-									<label for="file-upload" class="cursor-pointer flex text-sm items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm py-2 px-4 bg-white dark:bg-background-dark text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-										<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-										</svg>
-										Select CSV File
-									</label>
-								</div>
-								<div id="file-info" class="text-sm text-text-light dark:text-text-dark mt-1 flex items-center">
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-									</svg>
-									<span id="file-name" class="hover:cursor-default">No file selected</span>
-								</div>    	
-							</div>
-						</div>
-					</div>
-
-					<!-- Upload Button -->
-					<div class="flex justify-end mt-4">
-						<%= f.submit "Import", class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition shadow-sm" %>
-					</div>
-					<% end %>
-				</div>
 				<div class="flex flex-col gap-4">
 					<%= button_to "Recategorize All", recategorize_all_finances_transactions_path, method: :post, class: "btn btn-primary" %>
 				</div>
@@ -266,11 +210,12 @@
 
 						<!-- Transactions Table Section -->
 						<div class="flex flex-col w-full z-0">
-							<div">
+							<div>
 								<div id="transactions-table-container" 
 								data-transactions="<%= @recent_transactions.to_json %>"
 								data-accounts="<%= @accounts.to_json %>"
 								data-categories="<%= @categories.to_json %>">
+								</div>
 							</div>
 						</div>
 					</div>

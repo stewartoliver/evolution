@@ -1,0 +1,31 @@
+<div class="checklist-item flex items-center gap-2 py-1" data-checklist-item-id="<%= checklist_item.id %>">
+  <div class="flex items-center gap-2 flex-1">
+    <%= check_box_tag "task[checklist_items_attributes][#{checklist_item.id}][completed]", 
+                     1, 
+                     checklist_item.completed,
+                     class: "checklist-item-completed h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500",
+                     data: { 
+                       action: "change->task#toggleChecklistItem",
+                       checklist_item_id: checklist_item.id
+                     } %>
+    
+    <div class="flex-1">
+      <%= text_field_tag "task[checklist_items_attributes][#{checklist_item.id}][title]",
+                        checklist_item.title,
+                        class: "checklist-item-title w-full bg-transparent border-none focus:ring-0 #{checklist_item.completed ? 'line-through text-gray-500' : ''}",
+                        data: { 
+                          action: "blur->task#updateChecklistItem",
+                          checklist_item_id: checklist_item.id
+                        } %>
+    </div>
+  </div>
+
+  <button type="button" 
+          class="text-gray-400 hover:text-red-500"
+          data-action="click->task#removeChecklistItem"
+          data-checklist-item-id="<%= checklist_item.id %>">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</div> 

@@ -26,9 +26,19 @@ const GoalShow = ({ goalId }) => {
     fetchTasks();
   }, [goalId]);
 
-  const handleEditClick = (task) => {
-    setCurrentTask(task);
-    setShowModal(true);
+  const handleEditClick = (task, isDragOperation = false) => {
+    if (isDragOperation) {
+      // For drag operations, just update the task status
+      const updatedTask = {
+        id: task.id,
+        status: task.status
+      };
+      handleSaveTask(updatedTask, true);
+    } else {
+      // For regular edits, open the modal
+      setCurrentTask(task);
+      setShowModal(true);
+    }
   };
 
   const handleCloseModal = () => {
@@ -36,28 +46,51 @@ const GoalShow = ({ goalId }) => {
     setCurrentTask(null);
   };
 
-  const handleSaveTask = async (updatedTask) => {
+  const handleSaveTask = async (updatedTask, isDragOperation = false) => {
     try {
+      const method = isDragOperation ? 'PATCH' : 'PUT';
+      const body = isDragOperation 
+        ? JSON.stringify({ task: { status: updatedTask.status } })
+        : JSON.stringify({ task: updatedTask });
+
       const response = await fetch(`/objectives/tasks/${updatedTask.id}`, {
-        method: 'PUT',
+        method,
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
         },
-        body: JSON.stringify(updatedTask),
+        body,
       });
 
       if (response.ok) {
         const updatedTaskData = await response.json();
-        setTasks(tasks.map(task => 
+        setTasks(prevTasks => prevTasks.map(task => 
           task.id === updatedTaskData.id ? updatedTaskData : task
         ));
-        setShowModal(false);
-        setCurrentTask(null);
+        if (!isDragOperation) {
+          setShowModal(false);
+          setCurrentTask(null);
+        }
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
     } catch (error) {
       console.error('Error saving task:', error);
+      // Revert the local state if the server update fails
+      if (isDragOperation) {
+        setTasks(prevTasks => [...prevTasks]);
+      }
     }
+  };
+
+  const handleDeleteClick = (taskId) => {
+    setTasks(tasks.filter(task => task.id !== taskId));
+  };
+
+  const handleAddTask = (status) => {
+    setShowModal(true);
+    setCurrentTask({ goal_id: goalId, status });
   };
 
   if (loading) {
@@ -66,7 +99,12 @@ const GoalShow = ({ goalId }) => {
 
   return (
     <div>
-      <Board tasks={tasks} onEditClick={handleEditClick} />
+      <Board 
+        goalId={goalId}
+        onEditClick={handleEditClick}
+        onDeleteClick={handleDeleteClick}
+        onAddTask={handleAddTask}
+      />
       <Modal show={showModal} onClose={handleCloseModal}>
         {currentTask && <EditTaskForm task={currentTask} onSave={handleSaveTask} />}
       </Modal>

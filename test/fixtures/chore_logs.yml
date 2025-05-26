@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  chore: one
+  completed_at: 2025-05-20 01:16:23
+  notes: MyText
+  was_skipped: false
+
+two:
+  user: two
+  chore: two
+  completed_at: 2025-05-20 01:16:23
+  notes: MyText
+  was_skipped: false

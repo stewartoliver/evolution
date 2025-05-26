@@ -1,0 +1,95 @@
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <!-- Left Column - Basic Information and Schedule -->
+    <div class="flex flex-col gap-6 lg:w-1/3">
+      <!-- Header Section with Basic Information -->
+      <div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+          <%= link_to objectives_chore_path(@chore), class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Back
+          <% end %>
+          <div class="text-primary-500 font-semibold">Editing Chore</div>
+        </div>
+
+        <%= form_with(model: [:objectives, @chore], class: "space-y-4") do |f| %>
+          <div>
+            <%= f.label :name, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.text_field :name, class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0", placeholder: "Enter chore name" %>
+          </div>
+
+          <div>
+            <%= f.label :category, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.select :category, 
+              ['Cleaning', 'Maintenance', 'Organization', 'Outdoor', 'Other'],
+              { include_blank: 'Select a category' },
+              class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0" %>
+          </div>
+
+          <div>
+            <%= f.label :description, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.text_area :description, rows: 3, class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0", placeholder: "Describe the chore in detail" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Schedule Settings -->
+      <div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Schedule Settings</h2>
+        <%= form_with(model: [:objectives, @chore], class: "space-y-4") do |f| %>
+          <div>
+            <%= f.label :repeat_rule, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.select :repeat_rule, 
+              ['Daily', 'Weekly', 'Every X Days'],
+              { include_blank: 'Select repeat rule' },
+              class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0" %>
+          </div>
+
+          <div>
+            <%= f.label :repeat_every, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.number_field :repeat_every, min: 1, class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0", placeholder: "How often to repeat" %>
+          </div>
+
+          <div>
+            <%= f.label :day_of_week, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.select :day_of_week, 
+              ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+              { include_blank: 'Select day of week' },
+              class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0" %>
+          </div>
+
+          <div>
+            <%= f.label :estimated_minutes, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.number_field :estimated_minutes, min: 1, class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0", placeholder: "Estimated time in minutes" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Right Column - Chore Chart Assignment -->
+    <div class="flex flex-col gap-6 lg:w-2/3">
+      <div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Chore Chart Assignment</h2>
+        <%= form_with(model: [:objectives, @chore], class: "space-y-4") do |f| %>
+          <div>
+            <%= f.label :chore_chart_id, class: "block text-sm font-medium text-text-sub dark:text-text-sub-dark mb-1" %>
+            <%= f.collection_select :chore_chart_id, 
+              ChoreChart.all, 
+              :id, 
+              :name,
+              { include_blank: 'Select a chore chart (optional)' },
+              class: "w-full rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0" %>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end gap-4 pt-4 border-t border-border-light dark:border-border-dark">
+            <%= link_to 'Cancel', objectives_chore_path(@chore), class: "px-4 py-2 text-text-light dark:text-text-dark hover:opacity-80 transition" %>
+            <%= f.submit 'Update Chore', class: "px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,191 +1,215 @@
-import React, { useState } from 'react';
-import { DragDropContext } from 'react-beautiful-dnd';
-import Column from './Column';
-import Modal from './Modal';
-import EditTaskForm from './EditTaskForm';
+import React, { useState, useEffect, useRef } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import Task from './Task';
+import TaskViewToggle from './TaskViewToggle';
+import TaskListView from './TaskListView';
+import ConfirmationModal from './ConfirmationModal';
 
-const Board = ({ tasks, onEditClick }) => {
-  const [columns, setColumns] = useState({
-    todo: { id: 'todo', title: 'To Do', taskIds: [] },
-    in_progress: { id: 'in_progress', title: 'In Progress', taskIds: [] },
-    done: { id: 'done', title: 'Done', taskIds: [] },
-  });
+const Board = ({ goalId, onEditClick, onDeleteClick, onAddTask }) => {
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentView, setCurrentView] = useState('board');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const deleteButtonRef = useRef(null);
 
-  const [taskMap, setTaskMap] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null);
+  useEffect(() => {
+    fetchTasks();
+  }, [goalId]);
 
-  // Initialize columns and taskMap when tasks change
-  React.useEffect(() => {
-    const newTaskMap = {};
-    const newColumns = {
-      todo: { id: 'todo', title: 'To Do', taskIds: [] },
-      in_progress: { id: 'in_progress', title: 'In Progress', taskIds: [] },
-      done: { id: 'done', title: 'Done', taskIds: [] },
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch(`/objectives/tasks/filter_by_goal?goal_id=${goalId}`, {
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch tasks: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      setTasks(data);
+    } catch (err) {
+      console.error('Error fetching tasks:', err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+  };
+
+  const handleTaskEdit = (result) => {
+    if (!result.destination) return;
+
+    const { source, destination, draggableId } = result;
+    const task = tasks.find(t => t.id.toString() === draggableId);
+    
+    if (!task) return;
+
+    // Create updated task with new status
+    const updatedTask = {
+      ...task,
+      status: destination.droppableId
     };
 
-    tasks.forEach(task => {
-      newTaskMap[task.id] = task;
-      newColumns[task.status].taskIds.push(task.id);
-    });
+    // Update local state immediately for better UX
+    const newTasks = tasks.map(t => 
+      t.id.toString() === draggableId ? updatedTask : t
+    );
+    setTasks(newTasks);
 
-    setTaskMap(newTaskMap);
-    setColumns(newColumns);
-  }, [tasks]);
+    // Call parent's onEditClick with the updated task and isDragOperation flag
+    // This will update the backend
+    onEditClick(updatedTask, true);
+  };
 
-  const onDragEnd = (result) => {
-    const { source, destination, draggableId } = result;
-
-    if (!destination) return;
-
-    if (source.droppableId === destination.droppableId) {
-      const column = columns[source.droppableId];
-      const newTaskIds = Array.from(column.taskIds);
-      newTaskIds.splice(source.index, 1);
-      newTaskIds.splice(destination.index, 0, draggableId);
-
-      setColumns((prevColumns) => ({
-        ...prevColumns,
-        [column.id]: {
-          ...column,
-          taskIds: newTaskIds,
-        },
-      }));
-    } else {
-      const startColumn = columns[source.droppableId];
-      const finishColumn = columns[destination.droppableId];
-
-      const startTaskIds = Array.from(startColumn.taskIds);
-      startTaskIds.splice(source.index, 1);
-      const finishTaskIds = Array.from(finishColumn.taskIds);
-      finishTaskIds.splice(destination.index, 0, draggableId);
-
-      setColumns((prevColumns) => ({
-        ...prevColumns,
-        [startColumn.id]: { ...startColumn, taskIds: startTaskIds },
-        [finishColumn.id]: { ...finishColumn, taskIds: finishTaskIds },
-      }));
-
-      // Update task status in the backend
-      fetch(`/objectives/tasks/${draggableId}`, {
-        method: 'PATCH',
+  const handleTaskDelete = async (taskId) => {
+    try {
+      const response = await fetch(`/objectives/tasks/${taskId}`, {
+        method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('[name=csrf-token]').content,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
         },
-        body: JSON.stringify({
-          task: {
-            status: finishColumn.id,
-          },
-        }),
-      }).catch(error => console.error('Error updating task status:', error));
-    }
-  };
+      });
 
-  const handleDelete = (taskId) => {
-    fetch(`/objectives/tasks/${taskId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('[name=csrf-token]').content,
-      },
-    })
-      .then(response => {
-        if (response.ok) {
-          const newTaskMap = { ...taskMap };
-          delete newTaskMap[taskId];
-
-          const newColumns = { ...columns };
-          Object.keys(newColumns).forEach(key => {
-            newColumns[key].taskIds = newColumns[key].taskIds.filter(id => id !== taskId);
-          });
-
-          setTaskMap(newTaskMap);
-          setColumns(newColumns);
-        }
-      })
-      .catch(error => console.error('Error deleting task:', error));
-  };
-
-  const handleAddTask = async (status) => {
-    const title = prompt('Enter task title');
-    if (title) {
-      try {
-        const response = await fetch(`/objectives/goals/${tasks[0].goal_id}/make_task`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('[name=csrf-token]').content,
-          },
-          body: JSON.stringify({
-            task: {
-              title,
-              status,
-            },
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Failed to add task: ${errorData.errors.join(', ')}`);
-        }
-
-        const newTask = await response.json();
-        const newTaskMap = { ...taskMap, [newTask.id]: newTask };
-        const newColumns = { ...columns };
-        newColumns[status].taskIds.push(newTask.id);
-        setTaskMap(newTaskMap);
-        setColumns(newColumns);
-      } catch (error) {
-        console.error('Error adding task:', error.message);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to delete task: ${errorText}`);
       }
+
+      setTasks(tasks.filter(task => task.id !== taskId));
+      onDeleteClick(taskId);
+      setDeleteModalOpen(false);
+      setSelectedTask(null);
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      setError(err.message);
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setCurrentTask(null);
+  const handleDeleteClick = (task) => {
+    setSelectedTask(task);
+    setDeleteModalOpen(true);
   };
 
-  const handleSaveTask = (updatedTask) => {
-    fetch(`/objectives/tasks/${updatedTask.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('[name=csrf-token]').content,
-      },
-      body: JSON.stringify({ task: updatedTask }),
-    })
-      .then(response => response.json())
-      .then(savedTask => {
-        const newTaskMap = { ...taskMap, [savedTask.id]: savedTask };
-        setTaskMap(newTaskMap);
-        setShowModal(false);
-        setCurrentTask(null);
-      })
-      .catch(error => console.error('Error updating task:', error));
+  const handleAddTask = (status) => {
+    onAddTask(status);
   };
+
+  const renderView = () => {
+    switch (currentView) {
+      case 'list':
+        return (
+          <TaskListView
+            tasks={tasks}
+            setTasks={setTasks}
+            handleDelete={handleTaskDelete}
+            handleEditClick={(task, isDragOperation) => onEditClick(task, isDragOperation)}
+            handleAddTask={handleAddTask}
+          />
+        );
+      case 'board':
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {['todo', 'in_progress', 'done'].map((status) => {
+              const statusTasks = tasks.filter(task => task.status === status);
+              return (
+                <div key={status} className="flex flex-col">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-text-light dark:text-text-dark">
+                      {status === 'todo' ? 'To Do' : status === 'in_progress' ? 'In Progress' : 'Done'}
+                    </h2>
+                    {status !== 'done' && (
+                      <button
+                        onClick={() => handleAddTask(status)}
+                        className="text-text-sub dark:text-text-sub-dark hover:text-primary-500 dark:hover:text-primary-500 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  <Droppable droppableId={status}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={`px-2 py-4 rounded-lg bg-background-card dark:bg-background-card-dark ${
+                          snapshot.isDraggingOver ? 'bg-background-input-light dark:bg-background-input-dark' : ''
+                        } ${statusTasks.length === 0 ? 'min-h-1' : ''}`}
+                      >
+                        {statusTasks.map((task, index) => {
+                          const draggableId = task.id.toString();
+                          return (
+                            <Draggable 
+                              key={draggableId}
+                              draggableId={draggableId}
+                              index={Number(index)}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`mb-4 last:mb-0 ${snapshot.isDragging ? 'shadow-lg' : ''} ${
+                                    task.status === 'done' ? 'opacity-50' : ''
+                                  }`}
+                                >
+                                  <Task
+                                    task={task}
+                                    onEditClick={() => onEditClick(task, false)}
+                                    onDeleteClick={() => handleDeleteClick(task)}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </div>
+              );
+            })}
+          </div>
+        );
+    }
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="board grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {Object.values(columns).map(column => (
-            <Column
-              key={column.id}
-              column={column}
-              tasks={column.taskIds.map(taskId => taskMap[taskId])}
-              handleDelete={handleDelete}
-              handleAddTask={handleAddTask}
-              handleEditClick={onEditClick}
-            />
-          ))}
-        </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-start w-full">
+        <TaskViewToggle currentView={currentView} onViewChange={handleViewChange} />
+      </div>
+      <DragDropContext onDragEnd={handleTaskEdit}>
+        {renderView()}
       </DragDropContext>
-      <Modal show={showModal} onClose={handleCloseModal}>
-        {currentTask && <EditTaskForm task={currentTask} onSave={handleSaveTask} />}
-      </Modal>
-    </>
+
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={() => selectedTask && handleTaskDelete(selectedTask.id)}
+        confirmText="Delete"
+        type="delete"
+        anchorRef={deleteButtonRef}
+      />
+    </div>
   );
 };
 

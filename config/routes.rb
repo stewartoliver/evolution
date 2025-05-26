@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get 'chore_charts/index'
+  get 'chore_charts/show'
+  get 'chore_charts/new'
+  get 'chore_charts/edit'
+  get 'chores/index'
+  get 'chores/show'
+  get 'chores/new'
+  get 'chores/edit'
   devise_for :users, path: '', path_names: { sign_in: 'sign-in', sign_out: 'sign-out', sign_up: 'sign-up' }, controllers: { registrations: 'users/registrations', sessions: 'users/sessions' }
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
@@ -31,7 +39,11 @@ Rails.application.routes.draw do
 
     namespace :fitness do
       resources :muscle_groups, path: 'muscle-groups'
-      resources :exercise_types, path: 'exercise-types'
+      resources :exercise_types, path: 'exercise-types' do
+        member do
+          post :merge
+        end
+      end
       resources :exercises
     end
   end
@@ -49,7 +61,12 @@ Rails.application.routes.draw do
       end
     end    
     resources :incomes
-    resources :expenses
+    resources :expenses do
+      member do
+        post :mark_as_paid
+        delete :unmark_as_paid
+      end
+    end
     resources :budgets
   end
 
@@ -74,8 +91,9 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'dashboard#index'
     resources :habits do
       member do
+        post :complete
         get :details
-        get 'today_occurrences'
+        get :today_occurrences
       end
       resources :habit_logs, only: [:create]
     end
@@ -93,8 +111,26 @@ Rails.application.routes.draw do
     resources :finance_goals
     resources :diet_goals
     get 'tasks/filter_by_goal', to: 'tasks#filter_by_goal', as: 'filter_by_goal_tasks'
-    resources :tasks
+    resources :tasks do
+      member do
+        post :reorder
+      end
+      resources :checklists do
+        resources :checklist_items do
+          member do
+            post :reorder
+          end
+        end
+      end
+    end
     resources :achievements
+    resources :chores do
+      member do
+        post :complete
+      end
+    end
+    resources :chore_charts
+    resources :chore_logs, only: [:create]
   end
 
   namespace :api do

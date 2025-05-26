@@ -31,6 +31,12 @@
 						<%= f.text_area :description, rows: 4, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full resize-y" %>
 					</div>
 				</div>
+				<div class="flex flex-col gap-1">
+					<%= f.label :habit_type, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div>
+						<%= f.select :habit_type, [['Positive', 'positive'], ['Negative', 'negative']], {}, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
 				<div class="flex items-center gap-2">
 					<div class="flex flex-col gap-1 w-full">
 						<%= f.label :frequency, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
@@ -39,6 +45,47 @@
 					<div class="flex flex-col gap-1 w-full">
 						<%= f.label :target_occurrences, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
 						<%= f.number_field :target_occurrences, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-1 w-full">
+						<%= f.label :target_duration, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= f.number_field :target_duration, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+					<div class="flex flex-col gap-1 w-full">
+						<%= f.label :duration_unit, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= f.select :duration_unit, [['Days', 'days'], ['Weeks', 'weeks']], {}, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-1 w-full">
+						<%= f.label :start_date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= f.date_field :start_date, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+					<div class="flex flex-col gap-1 w-full">
+						<%= f.label :end_date, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+						<%= f.date_field :end_date, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+					</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<%= f.label :reminder_time, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<%= f.time_field :reminder_time, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full" %>
+				</div>
+				<div class="flex flex-col gap-1">
+					<%= f.label :reminder_days, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div class="flex flex-wrap gap-2">
+						<% %w[monday tuesday wednesday thursday friday saturday sunday].each do |day| %>
+						<div class="flex items-center">
+							<%= f.check_box :reminder_days, { multiple: true, class: "rounded border-gray-300 text-primary-500 focus:ring-primary-500" }, day, nil %>
+							<%= f.label day.capitalize, class: "ml-2 text-sm text-text-light dark:text-text-dark" %>
+						</div>
+						<% end %>
+					</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<%= f.label :completion_criteria, class: "text-sm font-medium text-text-sub dark:text-text-sub-dark" %>
+					<div>
+						<%= f.text_area :completion_criteria, rows: 2, class: "rounded-md border bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark border-border-light dark:border-border-dark font-medium text-sm focus:ring-0 w-full resize-y" %>
 					</div>
 				</div>
 				<div class="flex justify-end">

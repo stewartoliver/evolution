@@ -20,14 +20,31 @@
 				</div>
 			</div>
 			<div class="flex flex-col gap-4">
+			<!-- Account Information -->
+
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Account:
+					</div>
+					<div class="flex items-center gap-2">
+						<%= link_to @expense.account.account_name.capitalize, finances_account_path(@expense.account.id), class: "text-lg font-semibold underline underline-offset-2 text-text-light dark:text-text-dark" %>
+						<span class="text-sm text-text-sub dark:text-text-sub-dark">
+							(<%= number_to_currency @expense.account.balance %>)
+						</span>
+					</div>
+				</div>
+
+			<!-- Expense Details -->
+			
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
 						Amount:
 					</div>
-					<div class="text-sm">
+					<div class="text-lg font-semibold">
 						<%= number_to_currency @expense.amount %>
 					</div>
 				</div>
+
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
 						Frequency:
@@ -43,24 +60,19 @@
 						<% end %>
 					</div>
 				</div>
+
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Start Date:
+						Date Range:
 					</div>
 					<div class="text-sm">
 						<%= @expense.date.strftime("%a, %-d %B %Y") %>
+						<% if @expense.end_date.present? %>
+							- <%= @expense.end_date.strftime("%a, %-d %B %Y") %>
+						<% end %>
 					</div>
 				</div>
-				<% if @expense.end_date.present? %>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						End Date:
-					</div>
-					<div class="text-sm">
-						<%= @expense.end_date.strftime("%a, %-d %B %Y") %>
-					</div>
-				</div>
-				<% end %>
+
 				<% if @expense.recurring? %>
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
@@ -71,14 +83,7 @@
 					</div>
 				</div>
 				<% end %>
-				<div class="flex flex-col gap-1">
-					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
-						Account:
-					</div>
-					<div>
-						<%= link_to @expense.account.account_name.capitalize, finances_account_path(@expense.account.id), class: "underline underline-offset-2 text-text-light dark:text-text-dark text-sm" %>
-					</div>
-				</div>
+
 				<div class="flex flex-col gap-1">
 					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
 						Description:
@@ -87,74 +92,153 @@
 						<%= @expense.description %>
 					</div>
 				</div>
+
 				<div class="flex justify-end gap-2">
 					<%= link_to "Edit", edit_finances_expense_path(@expense), class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" %>
 				</div>
 			</div>
 		</div>
 
-		<!-- Board Section -->
-		<div class="flex flex-col w-full">
-			<!-- Transactions Table -->
-			<div class="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-700 shadow">
-				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-					<thead class="bg-background-card dark:bg-background-card-dark">
-						<tr>
-							<th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
-								<div class="flex items-center space-x-1">
+		<!-- Right Section -->
+		<div class="flex flex-col w-full gap-6">
+			<!-- Transactions -->
+			<div class="flex flex-col gap-4">
+				<div class="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-700 shadow">
+					<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+						<thead class="bg-background-card dark:bg-background-card-dark">
+							<tr>
+								<th class="whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
 									Date
-								</div>
-							</th>
-							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
-								<div class="flex items-center space-x-1">
-									Details
-								</div>
-							</th>
-							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
-								<div class="flex items-center space-x-1">
-									Description
-								</div>
-							</th>
-							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
-								<div class="flex items-center space-x-1">
+								</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+									Type
+								</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+									Status
+								</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
 									Amount
-								</div>
-							</th>
-							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
-								Action
-							</th>
-						</tr>
-					</thead>
-					<tbody class="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
-						<% if @expense.related_transactions.any? %>
-						<% @expense.related_transactions.each do |transaction| %>
-						<tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
-							<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-								<%= transaction.date.strftime("%a, %-d %B %Y") %>
-							</td>
-							<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-								<%= transaction.details %>
-							</td>
-							<td class="px-4 py-4 text-sm text-text-light dark:text-text-dark">
-								<%= transaction.description %>
-							</td>
-							<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-								<%= number_to_currency transaction.amount %>
-							</td>
-							<td class="px-4 py-4 whitespace-nowrap text-sm">
-								<%= link_to "View", finances_transaction_path(transaction), class:"text-blue-600 dark:text-blue-400 hover:underline" %>
-							</td>
-						</tr>
-						<% end %>
+								</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+									Action
+								</th>
+							</tr>
+						</thead>
+						<tbody class="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
+							<% # First show actual transactions %>
+							<% if @expense.related_transactions.any? %>
+								<% @expense.related_transactions.each do |transaction| %>
+									<tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+										<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+											<%= transaction.date.strftime("%a, %-d %B %Y") %>
+										</td>
+										<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+											Actual
+										</td>
+										<td class="px-4 py-4 whitespace-nowrap text-sm">
+											<span class="px-2 py-1 text-xs font-medium bg-success text-text-light rounded-full">Paid</span>
+										</td>
+										<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+											<%= number_to_currency transaction.amount %>
+										</td>
+										<td class="px-4 py-4 whitespace-nowrap text-sm">
+											<%= link_to "View", finances_transaction_path(transaction), class:"text-blue-600 dark:text-blue-400 hover:underline" %>
+										</td>
+									</tr>
+								<% end %>
+							<% end %>
+
+							<% # Then show expected transactions %>
+							<% @expense.expected_transactions.each do |expected_date| %>
+								<tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+									<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+										<%= expected_date.strftime("%a, %-d %B %Y") %>
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+										Expected
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm">
+										<span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Pending</span>
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+										<%= number_to_currency @expense.amount %>
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm">
+										<%= button_to "Mark as Paid", mark_expense_as_paid_finances_expense_path(@expense, date: expected_date), 
+											method: :post, class: "text-blue-600 dark:text-blue-400 hover:underline" %>
+									</td>
+								</tr>
+							<% end %>
+
+							<% if @expense.related_transactions.empty? && @expense.expected_transactions.empty? %>
+								<tr>
+									<td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+										No transactions found
+									</td>
+								</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Payment Status -->
+			<div class="flex flex-col gap-4 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="text-lg font-semibold">Payment Status</div>
+				<div class="flex flex-col gap-2">
+					<div class="flex flex-col gap-1">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							Current Status:
+						</div>
+						<div class="text-lg font-semibold">
+							<% status = @expense.payment_status_for_date(Date.current) %>
+							<span class="<%= status == 'paid' ? 'text-green-600' : 'text-yellow-600' %>">
+								<%= status.titleize %>
+							</span>
+						</div>
+					</div>
+					<div class="flex space-x-4">
+						<% if status == 'unpaid' %>
+							<%= button_to 'Mark as Paid', mark_as_paid_finances_expense_path(@expense, date: Date.current),
+								method: :post, class: 'text-blue-600 dark:text-blue-400 hover:underline' %>
 						<% else %>
-						<tr>
-							<td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-								No related transactions found
-							</td>
-						</tr>
+							<%= button_to 'Unmark as Paid', unmark_as_paid_finances_expense_path(@expense, date: Date.current),
+								method: :delete, class: 'text-red-600 dark:text-red-400 hover:underline' %>
 						<% end %>
-					</tbody>
-				</table>
+					</div>
+				</div>
+
+				<% if @expense.expense_payments.any? %>
+				<div class="mt-6">
+					<div class="text-lg font-semibold">Payment History</div>
+					<div class="overflow-x-auto">
+						<table class="min-w-full">
+							<thead>
+								<tr>
+									<th class="px-4 py-2 text-left">Date</th>
+									<th class="px-4 py-2 text-left">Status</th>
+									<th class="px-4 py-2 text-left">Verified</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% @expense.expense_payments.order(date: :desc).each do |payment| %>
+								<tr>
+									<td class="px-4 py-2"><%= payment.date.strftime("%B %d, %Y") %></td>
+									<td class="px-4 py-2">
+										<span class="<%= payment.status == 'paid' ? 'text-green-600' : 'text-yellow-600' %>">
+											<%= payment.status.titleize %>
+										</span>
+									</td>
+									<td class="px-4 py-2">
+										<%= payment.verified ? 'Yes' : 'No' %>
+									</td>
+								</tr>
+								<% end %>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<% end %>
 			</div>
 		</div>
 	</div>

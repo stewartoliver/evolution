@@ -1,45 +1,125 @@
-<div class="flex flex-col lg:flex-row">
-	<div class="flex flex-col gap-5 lg:w-1/3 p-5">
-		<%= link_to "Back", :back, class: "text-gray-500 underline whitespace-nowrap w-min" %>
-		<div class="flex flex-col tracking-tight leading-tight">
-			<div class="text-xl font-bold uppercase text-sky-900">
-				<%= @task.title %>
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark" 
+      data-controller="task"
+      data-task-id="<%= @task.id %>">
+	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+		<div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+			<!-- Header Section -->
+			<div class="flex justify-between items-center">
+				<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+						<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+					</svg>
+					Back
+				<% end %>
 			</div>
-			<div class="text-gray-500 text-sm">
-				/tasks / <%= @task.id %>
-			</div>
-		</div>
-		<div class="flex flex-col gap-2">
-			<div>
-				<div class="text-gray-700 font-medium text-sm">
-					Description:
-				</div>
-				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					<%= @task.description.presence || 'N/A' %>
-				</div>
-			</div>
-			<div>
-				<div class="text-gray-700 font-medium text-sm">
-					Due date:
-				</div>
-				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					<%= @task&.due_date&.strftime("%-d %B %Y").presence || 'N/A' %>
 
+			<!-- Task Details -->
+			<div class="flex flex-col tracking-tight leading-tight">
+				<div class="text-4xl font-bold uppercase">
+					<%= @task.title %>
+				</div>
+				<% if @task.goal %>
+					<div style="background-color: <%= @task.goal.goal_type&.colour %>;" class="mt-1 px-2 py-1 rounded-md font-semibold uppercase text-white text-xs tracking-wide w-min whitespace-nowrap">
+						<%= @task.goal.goal_type&.name %>
+					</div>
+				<% end %>
+			</div>
+
+			<!-- Description -->
+			<div class="flex flex-col">
+				<div class="py-4">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Description:
+					</div>
+					<div class="text-sm">
+						<%= @task.description %>
+					</div>
+				</div>
+
+				<!-- Timeline -->
+				<div class="pt-4">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Timeline:
+					</div>
+					<div class="mt-2">
+						<div class="flex items-center gap-2">
+							<% if @task.due_date %>
+								<div class="flex flex-col items-start px-2 py-1 gap-1 rounded-md bg-background-input-light dark:bg-background-input-dark">
+									<span class="text-sm font-medium text-text-light dark:text-text-dark">Due Date:</span>
+									<div class="flex items-center gap-1">
+										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 <%= @task.overdue? ? 'text-red-500' : 'text-primary' %>">
+											<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+										</svg>
+										<span class="<%= @task.overdue? ? 'text-red-500 font-semibold' : '' %>">
+											<%= @task.due_date.strftime("%-d %b %Y") %>
+										</span>
+									</div>
+								</div>
+							<% end %>
+						</div>
+					</div>
+				</div>
+
+				<!-- Status -->
+				<div class="pt-4">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Status:
+					</div>
+					<div class="flex items-center justify-between text-base">
+						<div>
+							<%= @task.status.capitalize %>
+						</div>
+					</div>
+				</div>
+
+				<!-- Actions -->
+				<div class="flex justify-end gap-3 items-center pt-6">
+					<%= link_to edit_objectives_task_path(@task), class: "inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" do %>
+						Edit
+					<% end %>
 				</div>
 			</div>
-			<div>
-				<div class="text-gray-700 font-medium text-sm">
-					Status:
+		</div>
+
+		<!-- Task Content Section -->
+		<div class="flex flex-col w-full gap-6">
+			<!-- Subtasks Section -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex justify-between items-center mb-4">
+					<h2 class="text-xl font-semibold">Subtasks</h2>
+					<button type="button" 
+							class="text-primary-500 hover:text-primary-600"
+							data-action="click->task#addSubtask">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+						</svg>
+					</button>
 				</div>
-				<div class="text-gray-500 bg-white border-gray-300 border rounded-md px-4 py-2 text-sm">
-					<%= @task.status.gsub('_', ' ').capitalize %> 
+				<div id="subtasks-container" class="space-y-2" data-task-target="subtasksContainer">
+					<%= render partial: "subtask", collection: @task.subtasks.ordered %>
 				</div>
 			</div>
-			<div class="flex justify-end">
-				<%= link_to "Edit", edit_objectives_task_path(@task), class: "sky-btn" %>
+
+			<!-- Checklist Section -->
+			<div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+				<div class="flex justify-between items-center mb-4">
+					<h2 class="text-xl font-semibold">Checklist</h2>
+					<button type="button" 
+							class="text-primary-500 hover:text-primary-600"
+							data-action="click->task#addChecklistItem">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+						</svg>
+					</button>
+				</div>
+				<div id="checklist-container" class="space-y-2" data-task-target="checklistContainer">
+					<%= render partial: "checklist_item", collection: @task.checklist_items.ordered %>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="flex flex-col w-full bg-sky-900 text-stone-200 p-5 h-screen">
-	</div>
-</div>
+</main>
+
+<%= content_for :javascript do %>
+	<%= javascript_include_tag "tasks", "data-turbo-track": "reload", defer: true %>
+<% end %>

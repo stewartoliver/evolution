@@ -1,10 +1,12 @@
 module Objectives
   class HabitsController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_habit, only: [:edit, :update, :show, :details, :today_occurrences]
+    before_action :set_habit, only: [:edit, :update, :show, :details, :today_occurrences, :complete]
 
     def index
       @habits = current_user.habits
+      @positive_habits = @habits.positive
+      @negative_habits = @habits.negative
     end
 
     def new
@@ -32,6 +34,13 @@ module Objectives
     end
 
     def show
+      @habit_logs = @habit.habit_logs.order(date: :desc).limit(30)
+      @progress = @habit.progress_percentage
+    end
+
+    def complete
+      @habit.complete!
+      redirect_to objectives_habits_path, notice: 'Habit marked as completed.'
     end
 
     def today_occurrences
@@ -52,7 +61,12 @@ module Objectives
     end
 
     def habit_params
-      params.require(:habit).permit(:name, :description, :frequency, :target_occurrences, :goal_id, :task_id)
+      params.require(:habit).permit(
+        :name, :description, :frequency, :target_occurrences,
+        :goal_id, :task_id, :habit_type, :status, :target_duration,
+        :duration_unit, :start_date, :end_date, :completion_criteria,
+        :reminder_time, reminder_days: [], notification_preferences: {}
+      )
     end
   end
 end

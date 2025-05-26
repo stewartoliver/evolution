@@ -1,54 +1,102 @@
-<div class="flex p-5">
-	<div class="flex flex-col gap-4 rounded-md p-5 border border-gray-300">
-		<div class="flex justify-between pb-2 gap-8 border-b border-gray-300">
-			<div class="text-lg font-bold uppercase text-sky-900">
-				Show Exercise Type
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+		<div class="flex flex-col gap-6 lg:w-1/3 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+			<!-- Header Section -->
+			<div class="flex justify-between items-center">
+				<%= link_to operator_fitness_exercise_types_path, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+						<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+					</svg>
+					Back
+				<% end %>
 			</div>
-			<div class="flex gap-2 items-center">
-				<div>
-					<%= link_to "New", new_operator_fitness_exercise_type_path, class: "underline text-gray-500" %>
-				</div>
-			</div>
-		</div>
-		<div class="flex flex-col gap-2">
-			<div class="flex flex-col">
-				<div class="text-sm font-medium text-gray-700">
-					Name
-				</div>
-				<div class="w-full rounded-md shadow-sm border border-gray-300 sm:text-sm text-gray-500 px-3 py-2 bg-white">
+			<div class="flex flex-col tracking-tight leading-tight">
+				<div class="text-4xl font-bold uppercase">
 					<%= @exercise_type.name %>
 				</div>
 			</div>
-			<div class="flex flex-col">
-				<div class="text-sm font-medium text-gray-700">
-					Colour
+
+			<!-- Details Section -->
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Name:
+					</div>
+					<div class="text-sm">
+						<%= @exercise_type.name %>
+					</div>
 				</div>
-				<div class="w-full rounded-md shadow-sm border border-gray-300 sm:text-sm text-gray-500 px-3 py-2 bg-white">
-					<%= @exercise_type.colour || 'N/A' %>
+
+				<% if @exercise_type.colour.present? %>
+					<div class="flex flex-col gap-1">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							Colour:
+						</div>
+						<div class="flex items-center gap-2">
+							<div class="w-4 h-4 rounded-full" style="background-color: <%= @exercise_type.colour %>"></div>
+							<div class="text-sm">
+								<%= @exercise_type.colour %>
+							</div>
+						</div>
+					</div>
+				<% end %>
+
+				<% if @exercise_type.icon.present? %>
+					<div class="flex flex-col gap-1">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							Icon:
+						</div>
+						<div class="text-sm">
+							<%= @exercise_type.icon.html_safe %>
+						</div>
+					</div>
+				<% end %>
+
+				<% if @exercise_type.description.present? %>
+					<div class="flex flex-col gap-1">
+						<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+							Description:
+						</div>
+						<div class="text-sm">
+							<%= @exercise_type.description %>
+						</div>
+					</div>
+				<% end %>
+
+				<!-- Related Exercises Section -->
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+						Related Exercises:
+					</div>
+					<div class="text-sm">
+						<% if @exercise_type.exercises.any? %>
+							<ul class="list-disc pl-5 space-y-1">
+								<% @exercise_type.exercises.each do |exercise| %>
+									<li>
+										<%= link_to exercise.name, operator_fitness_exercise_path(exercise), class: "text-primary hover:text-primary-dark" %>
+									</li>
+								<% end %>
+							</ul>
+						<% else %>
+							No exercises associated with this type.
+						<% end %>
+					</div>
 				</div>
 			</div>
-			<div class="flex flex-col">
-				<div class="text-sm font-medium text-gray-700">
-					Icon
-				</div>
-				<div class="w-full rounded-md shadow-sm border border-gray-300 sm:text-sm text-gray-500 px-3 py-2 bg-white">
-					<%= @exercise_type.icon || 'N/A' %>
-				</div>
-			</div>
-			<div class="flex flex-col">
-				<div class="text-sm font-medium text-gray-700">
-					Description
-				</div>
-				<div class="w-full rounded-md shadow-sm border border-gray-300 sm:text-sm text-gray-500 px-3 py-2 bg-white">
-					<%= @exercise_type.description || 'N/A' %>
-				</div>
-			</div>
-			<div class="flex justify-end">
-				<%= link_to 'Edit Exercise Type', edit_operator_fitness_exercise_type_path(@exercise_type), class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500" %>
+
+			<div class="flex justify-end gap-2">
+				<%= link_to edit_operator_fitness_exercise_type_path(@exercise_type), class: "inline-flex w-min items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" do %>
+					Edit
+				<% end %>
 			</div>
 		</div>
+
+		<!-- Right Section -->
+		<div class="flex flex-col w-full">
+			<!-- Add any additional content here -->
+		</div>
 	</div>
-</div>
+</main>
 
 
 

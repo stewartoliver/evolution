@@ -6,57 +6,65 @@ import EditTaskForm from './EditTaskForm';
 let modalRoot = null;
 let modalContainer = null;
 
-function openEditTaskModal(task) {
+async function openEditTaskModal(task) {
     if (!modalContainer) {
         modalContainer = document.getElementById('edit-task-form-container');
     }
 
     if (!modalRoot) {
-        modalRoot = ReactDOM.createRoot(modalContainer); // Create the root only once
+        modalRoot = ReactDOM.createRoot(modalContainer);
     }
 
-    modalRoot.render(
-        <Modal show={true} onClose={closeEditTaskModal}>
-            <EditTaskForm task={task} onSave={handleSave} />
-        </Modal>
-    );
+    try {
+        // Fetch the task with its checklists
+        const response = await fetch(`/objectives/tasks/${task.id}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch task');
+        }
+        const taskWithChecklists = await response.json();
+
+        modalRoot.render(
+            <Modal show={true} onClose={closeEditTaskModal}>
+                <EditTaskForm task={taskWithChecklists} onSave={handleSave} />
+            </Modal>
+        );
+    } catch (error) {
+        console.error('Error fetching task:', error);
+    }
 }
 
 function closeEditTaskModal() {
     if (modalRoot) {
-        modalRoot.unmount(); // Unmount the modal component
-        modalRoot = null; // Reset the root so it can be re-created if needed
+        modalRoot.unmount();
+        modalRoot = null;
     }
 }
 
-function handleSave(updatedTask) {
-    console.log('Task saved:', updatedTask);
-
-    saveTask(updatedTask)
-        .then(() => {
-            closeEditTaskModal();
-            window.location.reload(); // Reload the page after saving the task
-        })
-        .catch((error) => {
-            console.error('Failed to save task:', error);
-            // Handle errors if needed
+async function handleSave(updatedTask) {
+    try {
+        const response = await fetch(`/objectives/tasks/${updatedTask.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ task: updatedTask }),
         });
-}
 
-// Example saveTask function
-function saveTask(task) {
-    return fetch(`/objectives/tasks/${task.id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(task),
-    }).then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('Failed to save task');
         }
-        return response.json();
-    });
+
+        // Update the task in the UI without reloading
+        const updatedTaskData = await response.json();
+        
+        // Dispatch a custom event to notify other components about the update
+        const event = new CustomEvent('taskUpdated', { detail: updatedTaskData });
+        document.dispatchEvent(event);
+    } catch (error) {
+        console.error('Error saving task:', error);
+        // You might want to show an error notification to the user here
+    }
 }
 
 window.openEditTaskModal = openEditTaskModal;

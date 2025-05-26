@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_22_075717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,68 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
     t.string "keywords"
   end
 
+  create_table "checklist_items", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description"
+    t.boolean "completed", default: false
+    t.datetime "completed_at"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "checklist_id", null: false
+    t.index ["checklist_id"], name: "index_checklist_items_on_checklist_id"
+  end
+
+  create_table "checklists", force: :cascade do |t|
+    t.string "title", null: false
+    t.bigint "task_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id"], name: "index_checklists_on_task_id"
+  end
+
+  create_table "chore_charts", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.string "rotation_frequency"
+    t.datetime "start_date"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_chore_charts_on_user_id"
+  end
+
+  create_table "chore_logs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "chore_id", null: false
+    t.datetime "completed_at", null: false
+    t.text "notes"
+    t.boolean "was_skipped", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chore_id"], name: "index_chore_logs_on_chore_id"
+    t.index ["user_id"], name: "index_chore_logs_on_user_id"
+  end
+
+  create_table "chores", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "chore_chart_id"
+    t.string "name"
+    t.text "description"
+    t.string "category"
+    t.string "repeat_rule"
+    t.integer "repeat_every"
+    t.string "day_of_week"
+    t.integer "estimated_minutes"
+    t.datetime "last_completed_at"
+    t.datetime "next_due_at"
+    t.boolean "completed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chore_chart_id"], name: "index_chores_on_chore_chart_id"
+    t.index ["user_id"], name: "index_chores_on_user_id"
+  end
+
   create_table "diet_goals", force: :cascade do |t|
     t.integer "calories"
     t.datetime "date"
@@ -78,6 +140,37 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["goal_type", "goal_id"], name: "index_diet_goals_on_goal"
+  end
+
+  create_table "equipment", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.string "image_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_equipment_on_name", unique: true
+  end
+
+  create_table "exercise_equipment", force: :cascade do |t|
+    t.bigint "exercise_id", null: false
+    t.bigint "equipment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["equipment_id"], name: "index_exercise_equipment_on_equipment_id"
+    t.index ["exercise_id", "equipment_id"], name: "index_exercise_equipment_on_exercise_id_and_equipment_id", unique: true
+    t.index ["exercise_id"], name: "index_exercise_equipment_on_exercise_id"
+  end
+
+  create_table "exercise_muscles", force: :cascade do |t|
+    t.bigint "exercise_id", null: false
+    t.bigint "muscle_id", null: false
+    t.string "muscle_type", null: false
+    t.integer "importance_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id", "muscle_id", "muscle_type"], name: "index_exercise_muscles_unique", unique: true
+    t.index ["exercise_id"], name: "index_exercise_muscles_on_exercise_id"
+    t.index ["muscle_id"], name: "index_exercise_muscles_on_muscle_id"
   end
 
   create_table "exercise_types", force: :cascade do |t|
@@ -95,8 +188,32 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
     t.integer "approved_by_id"
     t.bigint "exercise_type_id", null: false
     t.bigint "muscle_group_id", null: false
+    t.text "aliases", default: [], array: true
+    t.text "instructions", default: [], array: true
+    t.text "tips", default: [], array: true
+    t.string "tempo"
+    t.text "images", default: [], array: true
+    t.string "video"
+    t.text "variation_on", default: [], array: true
+    t.string "license_author"
+    t.jsonb "license"
     t.index ["exercise_type_id"], name: "index_exercises_on_exercise_type_id"
     t.index ["muscle_group_id"], name: "index_exercises_on_muscle_group_id"
+  end
+
+  create_table "expense_payments", force: :cascade do |t|
+    t.bigint "expense_id", null: false
+    t.bigint "user_id", null: false
+    t.date "date", null: false
+    t.boolean "verified", default: false
+    t.datetime "verified_at"
+    t.bigint "transaction_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expense_id", "date"], name: "index_expense_payments_on_expense_id_and_date", unique: true
+    t.index ["expense_id"], name: "index_expense_payments_on_expense_id"
+    t.index ["transaction_id"], name: "index_expense_payments_on_transaction_id"
+    t.index ["user_id"], name: "index_expense_payments_on_user_id"
   end
 
   create_table "expenses", force: :cascade do |t|
@@ -247,6 +364,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
     t.integer "occurrences", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
+    t.string "mood"
+    t.integer "difficulty_level"
+    t.string "location"
+    t.time "time_of_day"
     t.index ["habit_id"], name: "index_habit_logs_on_habit_id"
   end
 
@@ -260,6 +382,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
     t.integer "target_occurrences"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "habit_type", default: "positive"
+    t.string "status", default: "active"
+    t.integer "target_duration"
+    t.string "duration_unit"
+    t.date "start_date"
+    t.date "end_date"
+    t.text "completion_criteria"
+    t.integer "current_streak", default: 0
+    t.integer "longest_streak", default: 0
+    t.decimal "success_rate", precision: 5, scale: 2
+    t.time "reminder_time"
+    t.string "reminder_days", default: [], array: true
+    t.jsonb "notification_preferences", default: {}
+    t.datetime "completed_at"
     t.index ["goal_id"], name: "index_habits_on_goal_id"
     t.index ["task_id"], name: "index_habits_on_task_id"
     t.index ["user_id"], name: "index_habits_on_user_id"
@@ -296,10 +432,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
     t.index ["goal_id"], name: "index_milestones_on_goal_id"
   end
 
+  create_table "muscle_group_muscles", force: :cascade do |t|
+    t.bigint "muscle_group_id", null: false
+    t.bigint "muscle_id", null: false
+    t.integer "primary_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["muscle_group_id", "muscle_id"], name: "index_muscle_group_muscles_on_muscle_group_id_and_muscle_id", unique: true
+    t.index ["muscle_group_id"], name: "index_muscle_group_muscles_on_muscle_group_id"
+    t.index ["muscle_id"], name: "index_muscle_group_muscles_on_muscle_id"
+  end
+
   create_table "muscle_groups", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "muscles", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "scientific_name"
+    t.text "description"
+    t.string "image_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_muscles_on_name", unique: true
   end
 
   create_table "routine_exercises", force: :cascade do |t|
@@ -339,7 +496,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
   end
 
   create_table "tasks", force: :cascade do |t|
-    t.bigint "goal_id", null: false
+    t.bigint "goal_id"
     t.string "title", null: false
     t.text "description"
     t.datetime "due_date"
@@ -355,7 +512,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
     t.boolean "is_recurring"
     t.string "recurrence_interval"
     t.integer "user_id"
+    t.bigint "parent_task_id"
+    t.integer "position"
     t.index ["goal_id"], name: "index_tasks_on_goal_id"
+    t.index ["parent_task_id", "position"], name: "index_tasks_on_parent_task_id_and_position"
+    t.index ["parent_task_id"], name: "index_tasks_on_parent_task_id"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -468,8 +629,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
   add_foreign_key "achievements", "goals"
   add_foreign_key "achievements", "users"
   add_foreign_key "budgets", "users"
+  add_foreign_key "checklist_items", "checklists"
+  add_foreign_key "checklists", "tasks"
+  add_foreign_key "chore_charts", "users"
+  add_foreign_key "chore_logs", "chores"
+  add_foreign_key "chore_logs", "users"
+  add_foreign_key "chores", "chore_charts"
+  add_foreign_key "chores", "users"
+  add_foreign_key "exercise_equipment", "equipment"
+  add_foreign_key "exercise_equipment", "exercises"
+  add_foreign_key "exercise_muscles", "exercises"
+  add_foreign_key "exercise_muscles", "muscles"
   add_foreign_key "exercises", "exercise_types"
   add_foreign_key "exercises", "muscle_groups"
+  add_foreign_key "expense_payments", "expenses"
+  add_foreign_key "expense_payments", "transactions"
+  add_foreign_key "expense_payments", "users"
   add_foreign_key "expenses", "accounts"
   add_foreign_key "expenses", "categories"
   add_foreign_key "expenses", "financial_stores", column: "store_id"
@@ -487,10 +662,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_31_051937) do
   add_foreign_key "habits", "users"
   add_foreign_key "incomes", "accounts"
   add_foreign_key "milestones", "goals"
+  add_foreign_key "muscle_group_muscles", "muscle_groups"
+  add_foreign_key "muscle_group_muscles", "muscles"
   add_foreign_key "routine_exercises", "exercises"
   add_foreign_key "routine_exercises", "routines"
   add_foreign_key "routine_sets", "routine_exercises"
   add_foreign_key "tasks", "goals"
+  add_foreign_key "tasks", "tasks", column: "parent_task_id"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"

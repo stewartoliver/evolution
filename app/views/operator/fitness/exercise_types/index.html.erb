@@ -1,7 +1,7 @@
 <main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
 		<div class="flex flex-col gap-4 lg:gap-6 lg:w-1/3">
-			<div class="flex flex-col gap-6 p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-md">
+			<div class="flex flex-col gap-6 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
 				<div class="flex justify-between items-center">
 					<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
@@ -9,41 +9,92 @@
 					</svg>
 					Back
 					<% end %>
+					<%= link_to new_operator_fitness_exercise_type_path, class: "flex items-center px-3 py-1 text-sm text-white bg-primary-500 rounded hover:bg-primary-600 transition-colors" do %>
+						<svg class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="12" y1="5" x2="12" y2="19"></line>
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+						</svg>
+						New Exercise Type
+					<% end %>
 				</div>
 				<div class="flex flex-col tracking-tight leading-tight">
 					<div class="text-3xl font-bold uppercase">
-						Exercise Type Index
+						Exercise Types
 					</div>
-				</div>
-				<div>
-					<%= link_to "New", new_operator_fitness_exercise_type_path, class: "btn" %>
+					<p class="text-text-sub dark:text-text-sub-dark mt-1">Manage exercise types and categories.</p>
 				</div>
 			</div>
 		</div>
 		<div class="w-full lg:w-2/3">
-			<h2 class="text-2xl font-semibold mb-6 text-text-light dark:text-text-dark">Exercise Types</h2>
-			<div class="overflow-x-auto">
-				<table class="min-w-full bg-background-light dark:bg-gray-800 rounded-lg shadow-md">
-					<thead>
+			<div class="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-700 shadow">
+				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead class="bg-background-card dark:bg-background-card-dark">
 						<tr>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">ID</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Name</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Name</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Colour</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Icon</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Description</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Actions</th>
 						</tr>
 					</thead>
-					<tbody>
-						<% @exercise_types.each do |exercise_type| %>
-						<tr class="transition-colors duration-200 hover:bg-background-card-light dark:hover:bg-background-card-dark">
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">										<%= exercise_type.id %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"><%= exercise_type.name %></td>
-							<td class="px-6 py-4 flex gap-2 items-center whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-								<%= link_to 'show', operator_fitness_exercise_type_path(exercise_type), class: "underline text-sm" %>	<%= link_to 'edit', edit_operator_fitness_exercise_type_path(exercise_type), class: "underline text-sm" %>
-							</td>
-						</tr>
+					<tbody class="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
+						<% if @exercise_types.any? %>
+							<% @exercise_types.each do |exercise_type| %>
+								<tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+									<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+										<%= exercise_type.name %>
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+										<% if exercise_type.colour.present? %>
+											<div class="flex items-center">
+												<div class="w-4 h-4 rounded-md mr-2" style="background-color: <%= exercise_type.colour %>"></div>
+												<%= exercise_type.colour %>
+											</div>
+										<% else %>
+											<span class="text-text-sub dark:text-text-sub-dark">Not set</span>
+										<% end %>
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+										<%= exercise_type.icon.html_safe || 'Not set' %>
+									</td>
+									<td class="px-4 py-4 text-sm text-text-light dark:text-text-dark">
+										<%= truncate(exercise_type.description, length: 100) || 'No description' %>
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm">
+										<div class="flex items-center gap-4">
+											<%= link_to "View", operator_fitness_exercise_type_path(exercise_type), class: "text-primary hover:text-primary-dark" %>
+											<%= link_to "Edit", edit_operator_fitness_exercise_type_path(exercise_type), class: "text-primary hover:text-primary-dark" %>
+											<div class="relative inline-block text-left">
+												<button type="button" class="text-primary hover:text-primary-dark" id="merge-button-<%= exercise_type.id %>" aria-expanded="false" aria-haspopup="true">
+													Merge
+												</button>
+												<div class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-background-card dark:bg-background-card-dark ring-1 ring-black ring-opacity-5 z-10" id="merge-dropdown-<%= exercise_type.id %>" role="menu" aria-orientation="vertical">
+													<div class="py-1" role="none">
+														<% @exercise_types.where.not(id: exercise_type.id).each do |target_type| %>
+															<%= button_to merge_operator_fitness_exercise_type_path(exercise_type, target_id: target_type.id),
+																		method: :post,
+																		class: "w-full text-left px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-primary-100 dark:hover:bg-primary-800",
+																		data: { confirm: "Are you sure you want to merge '#{exercise_type.name}' into '#{target_type.name}'? This action cannot be undone." } do %>
+																Merge into <%= target_type.name %>
+															<% end %>
+														<% end %>
+													</div>
+												</div>
+											</div>
+										</div>
+									</td>
+								</tr>
+							<% end %>
+						<% else %>
+							<tr>
+								<td colspan="5" class="px-4 py-8 text-center text-sm text-text-sub dark:text-text-sub-dark">
+									No exercise types found
+								</td>
+							</tr>
 						<% end %>
 					</tbody>
 				</table>
 			</div>
 		</div>
-	</main>
-</div>
+	</div>
+</main>

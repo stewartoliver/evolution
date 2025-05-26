@@ -14,9 +14,40 @@
 				<div class="text-4xl font-bold uppercase">
 					<%= @habit.name %>
 				</div>
-				<div class="mt-1 px-2 py-1 rounded-md font-semibold uppercase bg-success text-white text-xs tracking-wide w-min whitespace-nowrap">
+				<div class="mt-1 px-2 py-1 rounded-md font-semibold uppercase <%= @habit.habit_type == 'positive' ? 'bg-success' : 'bg-danger' %> text-white text-xs tracking-wide w-min whitespace-nowrap">
+					<%= @habit.habit_type.titleize %>
 				</div>
 			</div>
+
+			<!-- Progress Section -->
+			<div class="flex flex-col gap-2">
+				<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Progress</div>
+				<div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+					<div class="<%= @habit.habit_type == 'positive' ? 'bg-success' : 'bg-danger' %> h-2.5 rounded-full" style="width: <%= @progress %>%"></div>
+				</div>
+				<div class="text-sm text-text-sub dark:text-text-sub-dark"><%= @progress %>% Complete</div>
+			</div>
+
+			<!-- Stats Section -->
+			<div class="grid grid-cols-2 gap-4">
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Current Streak</div>
+					<div class="text-lg font-semibold"><%= @habit.current_streak %> days</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Longest Streak</div>
+					<div class="text-lg font-semibold"><%= @habit.longest_streak %> days</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Success Rate</div>
+					<div class="text-lg font-semibold"><%= @habit.success_rate %>%</div>
+				</div>
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">Status</div>
+					<div class="text-lg font-semibold"><%= @habit.status.titleize %></div>
+				</div>
+			</div>
+
 			<% if @habit.description.present? %>
 			<div class="flex flex-col gap-1">
 				<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
@@ -43,6 +74,36 @@
 					<%= @habit.target_occurrences %> times per <%= @habit.frequency.downcase %>
 				</div>
 			</div>
+			<% if @habit.target_duration.present? %>
+			<div class="flex flex-col gap-1">
+				<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+					Duration:
+				</div>
+				<div class="text-sm">
+					<%= @habit.target_duration %> <%= @habit.duration_unit %>
+				</div>
+			</div>
+			<% end %>
+			<% if @habit.start_date.present? %>
+			<div class="flex flex-col gap-1">
+				<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+					Start Date:
+				</div>
+				<div class="text-sm">
+					<%= @habit.start_date.strftime("%B %d, %Y") %>
+				</div>
+			</div>
+			<% end %>
+			<% if @habit.end_date.present? %>
+			<div class="flex flex-col gap-1">
+				<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
+					End Date:
+				</div>
+				<div class="text-sm">
+					<%= @habit.end_date.strftime("%B %d, %Y") %>
+				</div>
+			</div>
+			<% end %>
 			<div class="flex flex-col gap-1">
 				<div class="text-sm font-medium text-text-sub dark:text-text-sub-dark">
 					Related Goal:
@@ -67,15 +128,59 @@
 					<% end %>			
 				</div>
 			</div>
-			<div class="flex justify-end">
-			<%= link_to edit_objectives_habit_path(@habit), class: "inline-flex w-min items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" do %>
+			<div class="flex justify-end gap-2">
+				<%= link_to edit_objectives_habit_path(@habit), class: "inline-flex w-min items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-md transition" do %>
 					Edit
-			<% end %>
+				<% end %>
+				<% unless @habit.completed? %>
+					<%= button_to complete_objectives_habit_path(@habit), method: :post, class: "inline-flex w-min items-center px-4 py-2 bg-success hover:bg-success-dark text-white text-sm font-medium rounded-md transition" do %>
+						Complete
+					<% end %>
+				<% end %>
 			</div>
 		</div>
 		<!-- Board Section -->
 		<div class="flex flex-col w-full">
 			<div class="habit-log-form" data-habit-id="<%= @habit.id %>" data-habit-name="<%= @habit.name %>"></div>
+			
+			<!-- Recent Logs Section -->
+			<div class="mt-6">
+				<h3 class="text-lg font-semibold mb-4">Recent Logs</h3>
+				<div class="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-700 shadow">
+					<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+						<thead class="bg-background-card dark:bg-background-card-dark">
+							<tr>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Date</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Occurrences</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Mood</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Difficulty</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Notes</th>
+							</tr>
+						</thead>
+						<tbody class="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
+							<% @habit_logs.each do |log| %>
+							<tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+								<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+									<%= log.date.strftime("%B %d, %Y") %>
+								</td>
+								<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+									<%= log.occurrences %>
+								</td>
+								<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+									<%= log.mood&.titleize %>
+								</td>
+								<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+									<%= log.difficulty_level %>
+								</td>
+								<td class="px-4 py-4 text-sm text-text-light dark:text-text-dark">
+									<%= log.notes %>
+								</td>
+							</tr>
+							<% end %>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	</div>
 </main>

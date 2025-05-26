@@ -7,6 +7,7 @@ module Objectives
       @favourite_goals = current_user.goals.where(completed_at: nil, is_favourite: true).order(created_at: :desc).limit(3)
       @overview_tasks = current_user.tasks.where.not(status: 2).order(created_at: :desc).limit(5)
       @overview_habits = current_user.habits.limit(2)
+      @upcoming_chores = current_user.chores.upcoming
     end
 
   end

@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  chore_chart: one
+  name: MyString
+  description: MyText
+  category: MyString
+  repeat_rule: MyString
+  repeat_every: 1
+  day_of_week: MyString
+  estimated_minutes: 1
+  last_completed_at: 2025-05-20 00:48:00
+  next_due_at: 2025-05-20 00:48:00
+  completed: false
+
+two:
+  user: two
+  chore_chart: two
+  name: MyString
+  description: MyText
+  category: MyString
+  repeat_rule: MyString
+  repeat_every: 1
+  day_of_week: MyString
+  estimated_minutes: 1
+  last_completed_at: 2025-05-20 00:48:00
+  next_due_at: 2025-05-20 00:48:00
+  completed: false

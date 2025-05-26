@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  user: one
+  rotation_frequency: MyString
+  start_date: 2025-05-20 00:47:53
+  description: MyText
+
+two:
+  name: MyString
+  user: two
+  rotation_frequency: MyString
+  start_date: 2025-05-20 00:47:53
+  description: MyText

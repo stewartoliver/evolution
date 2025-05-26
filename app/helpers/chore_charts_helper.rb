@@ -1,0 +1,2 @@
+module ChoreChartsHelper
+end

@@ -43,6 +43,7 @@ const ExerciseDirectory = () => {
 
   const uniqueMuscleGroups = [...new Set(exercises.map(ex => ex.muscle_group?.name))].filter(Boolean);
   const uniqueExerciseTypes = [...new Set(exercises.map(ex => ex.exercise_type?.name))].filter(Boolean);
+  const uniqueEquipment = [...new Set(exercises.map(ex => ex.equipment?.name))].filter(Boolean);
 
   const filteredExercises = exercises.filter(exercise => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -71,6 +72,11 @@ const ExerciseDirectory = () => {
       if (key === 'exercise_type' || key === 'muscle_group') {
         valA = a[key]?.name || '';
         valB = b[key]?.name || '';
+      }
+      // Handle equipment array
+      else if (key === 'equipment') {
+        valA = a[key]?.map(e => e.name).join(', ') || '';
+        valB = b[key]?.map(e => e.name).join(', ') || '';
       }
 
       if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
@@ -204,7 +210,7 @@ const ExerciseDirectory = () => {
                 className="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider cursor-pointer hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors"
               >
                 <div className="flex items-center space-x-1">
-                  <span>Muscle Group</span>
+                  <span>Area</span>
                   <span>{getSortIcon('muscle_group')}</span>
                 </div>
               </th>
@@ -217,8 +223,28 @@ const ExerciseDirectory = () => {
             {currentItems.length > 0 ? (
               currentItems.map((exercise) => (
                 <tr key={exercise.id} className="hover:bg-background-hover dark:hover:bg-background-hover-dark transition-colors">
-                  <td className="px-4 py-4 text-sm text-text-light dark:text-text-dark">{exercise.name}</td>
-                  <td className="px-4 py-4 text-sm text-text-light dark:text-text-dark">{exercise.exercise_type?.name || 'N/A'}</td>
+                  <td className="px-4 py-4 text-sm text-text-light dark:text-text-dark">
+                    <div className="flex flex-col leading-none">
+                      <span>{exercise.name}</span>
+                      {exercise.equipment?.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {[...new Set(exercise.equipment.map(e => e.name))].map((equipName) => (
+                            <span key={equipName} className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-md text-xs">
+                              {equipName}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-text-light dark:text-text-dark">
+                    <div className="flex items-center space-x-2">
+                      {exercise.exercise_type?.icon && (
+                        <div className="w-6 h-6" dangerouslySetInnerHTML={{ __html: exercise.exercise_type.icon }} />
+                      )}
+                      <span>{exercise.exercise_type?.name || 'N/A'}</span>
+                    </div>
+                  </td>
                   <td className="px-4 py-4 text-sm text-text-light dark:text-text-dark">{exercise.muscle_group?.name || 'N/A'}</td>
                   <td className="px-4 py-4 text-sm">
                     <a href={`../fitness/exercises/${exercise.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">

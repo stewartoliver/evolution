@@ -10,10 +10,11 @@
 		</div>
 		<div class="flex flex-col divide-y divide-border-light dark:divide-border-dark">
 			<% sections = [
-				{ title: 'Habits', actions: ['New', 'Browse'], new_path: new_objectives_habit_path, browse_path: objectives_habits_path },
+				{ title: 'Achievements', actions: ['Browse'], browse_path: objectives_achievements_path },
+				{ title: 'Chores', actions: ['New', 'Browse'], new_path: new_objectives_chore_path, browse_path: objectives_chores_path },
 				{ title: 'Goals', actions: ['New', 'Browse'], new_path: new_objectives_goal_path, browse_path: objectives_goals_path },
-				{ title: 'Tasks', actions: ['Browse'], browse_path: objectives_tasks_path },
-				{ title: 'Achievements', actions: ['Browse'], browse_path: objectives_achievements_path }
+				{ title: 'Habits', actions: ['New', 'Browse'], new_path: new_objectives_habit_path, browse_path: objectives_habits_path },
+				{ title: 'Tasks', actions: ['Browse'], browse_path: objectives_tasks_path }
 				] %>
 
 				<% sections.each_with_index do |section, index| %>
@@ -51,67 +52,6 @@
 			<section class="space-y-6">
 				<div class="flex gap-4 w-full">
 					<div class="space-y-6 w-full">
-						<div class="flex items-center justify-between">
-							<h2 class="text-2xl font-bold text-primary-500">
-								Statistics
-							</h2>
-						</div>
-						<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-							<div class="bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-								<div class="flex flex-col gap-2">
-									<div class="flex items-center justify-between">
-										<div class="uppercase text-xs font-medium text-text-sub dark:text-text-sub-dark">
-											Active Goals
-										</div>
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 fill-blue-400">
-											<path fill-rule="evenodd" d="M11.47 10.72a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06L12 12.31l-6.97 6.97a.75.75 0 0 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" />
-										</svg>
-									</div>
-									<div class="text-2xl font-semibold text-text-light dark:text-text-dark">
-										<%= current_user.goals.count %>
-									</div>
-									<div class="text-xs text-text-sub dark:text-text-sub-dark">
-										Total goals
-									</div>
-								</div>
-							</div>
-							<div class="bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-								<div class="flex flex-col gap-2">
-									<div class="flex items-center justify-between">
-										<div class="uppercase text-xs font-medium text-text-sub dark:text-text-sub-dark">
-											Active Habits
-										</div>
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 fill-green-400">
-											<path fill-rule="evenodd" d="M11.47 10.72a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06L12 12.31l-6.97 6.97a.75.75 0 0 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" />
-										</svg>
-									</div>
-									<div class="text-2xl font-semibold text-text-light dark:text-text-dark">
-										<%= current_user.habits.count %>
-									</div>
-									<div class="text-xs text-text-sub dark:text-text-sub-dark">
-										Total habits
-									</div>
-								</div>
-							</div>
-							<div class="bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
-								<div class="flex flex-col gap-2">
-									<div class="flex items-center justify-between">
-										<div class="uppercase text-xs font-medium text-text-sub dark:text-text-sub-dark">
-											Tasks Completed
-										</div>
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 fill-orange-400">
-											<path fill-rule="evenodd" d="M11.47 10.72a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06L12 12.31l-6.97 6.97a.75.75 0 0 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" />
-										</svg>
-									</div>
-									<div class="text-2xl font-semibold text-text-light dark:text-text-dark">
-										<%= current_user.tasks.where(status: 2).count %>
-									</div>
-									<div class="text-xs text-text-sub dark:text-text-sub-dark">
-										This week
-									</div>
-								</div>
-							</div>
-						</div>
 						<div class="space-y-6 w-full">
 							<div class="flex items-center justify-between">
 								<h2 class="text-2xl font-bold text-primary-500">
@@ -173,6 +113,43 @@
 								<% end %>
 							</div>
 						</div>
+						<% if @upcoming_chores.any? %>
+						<div class="space-y-6 w-full">
+							<div class="flex items-center justify-between">
+								<h2 class="text-2xl font-bold text-primary-500">
+									Upcoming Chores
+								</h2>
+							</div>
+								<div class="bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+									<div class="p-6 space-y-4">
+										<% @upcoming_chores.each do |chore| %>
+											<div class="flex items-center justify-between py-2 border-b border-border-light dark:border-border-dark last:border-b-0" id="chore-<%= chore.id %>">
+												<div class="flex items-center gap-3">
+													<%= form_with(model: [:objectives, ChoreLog.new], local: true, class: "chore-log-form") do |f| %>
+														<%= f.hidden_field :chore_id, value: chore.id %>
+														<%= f.hidden_field :completed_at, value: Time.current %>
+														<%= f.check_box :completed, class: "w-5 h-5 text-primary-500 border-gray-300 rounded focus:ring-primary-500", onchange: "this.form.submit()" %>
+													<% end %>
+													<div>
+														<h3 class="text-lg font-medium text-text-light dark:text-text-dark">
+															<%= chore.name %>
+														</h3>
+														<p class="text-sm text-text-sub dark:text-text-sub-dark">
+															Due in <%= pluralize(chore.days_until_due, 'day') %>
+														</p>
+													</div>
+												</div>
+												<%= link_to objectives_chore_path(chore), class: "text-gray-400 hover:text-primary-500 transition" do %>
+													<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+														<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+													</svg>
+												<% end %>
+											</div>
+										<% end %>
+									</div>
+								</div>
+						</div>
+						<% end %>
 					</div>
 				</div>
 			</section>

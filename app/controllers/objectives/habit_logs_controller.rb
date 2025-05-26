@@ -4,7 +4,7 @@ module Objectives
 
     def create
       today_log = @habit.habit_logs.find_or_initialize_by(date: Date.today)
-      today_log.occurrences = habit_log_params[:occurrences]
+      today_log.assign_attributes(habit_log_params)
 
       if today_log.save
         render json: today_log, status: :created
@@ -22,7 +22,10 @@ module Objectives
     end
 
     def habit_log_params
-      params.require(:habit_log).permit(:occurrences)
+      params.require(:habit_log).permit(
+        :occurrences, :notes, :mood, :difficulty_level,
+        :location, :time_of_day
+      )
     end
   end
 end

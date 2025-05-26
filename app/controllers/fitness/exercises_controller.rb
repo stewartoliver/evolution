@@ -5,6 +5,8 @@ module Fitness
 
     def index
       @exercises = Exercise.includes(:exercise_type, :muscle_group)
+                          .where.not(exercise_type_id: nil)
+                          .where.not(muscle_group_id: nil)
                           .order(:name)
                           .all
 
@@ -14,7 +16,8 @@ module Fitness
           render json: @exercises.to_json(
             include: {
               exercise_type: { only: [:id, :name, :colour, :icon] },
-              muscle_group: { only: [:id, :name] }
+              muscle_group: { only: [:id, :name] },
+              equipment: { only: [:id, :name] }
             }
           )
         end

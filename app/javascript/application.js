@@ -1,5 +1,6 @@
 import "@hotwired/turbo-rails";
 import "./controllers";
+import "./tasks";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -18,7 +19,13 @@ import HabitLogForm from "./components/HabitLogForm";
 import ExerciseDirectory from "./components/CommonFitness/ExerciseDirectory";
 import GoalShow from "./components/GoalShow";
 import TransactionsTable from "./components/CommonFinancial/TransactionsTable";
+import FinancialCharts from "./components/CommonFinancial/FinancialCharts";
+import Chart from 'chart.js/auto';
 import Chartkick from 'chartkick';
+import 'chartjs-adapter-date-fns';
+
+// Configure Chartkick to use Chart.js
+Chartkick.use(Chart);
 
 // Keep track of mounted components
 const mountedComponents = new Map();
@@ -209,6 +216,17 @@ const initializeReactComponents = () => {
       categories
     });
   }
+
+  const financialChartsElement = document.getElementById("financial-charts-container");
+  if (financialChartsElement) {
+    const transactions = JSON.parse(financialChartsElement.getAttribute("data-transactions") || "[]");
+    const categories = JSON.parse(financialChartsElement.getAttribute("data-categories") || "[]");
+
+    renderComponent(FinancialCharts, "financial-charts-container", {
+      transactions,
+      categories
+    });
+  }
 };
 
 // Initialize components when the page loads
@@ -278,6 +296,15 @@ const initializeNavDropdowns = () => {
     { button: "health-menu-button", dropdown: "health-menu-dropdown" },
     { button: "goals-menu-button", dropdown: "goals-menu-dropdown" },
   ];
+
+  // Add merge dropdowns
+  document.querySelectorAll('[id^="merge-button-"]').forEach(button => {
+    const id = button.id.split('-')[2];
+    dropdowns.push({
+      button: `merge-button-${id}`,
+      dropdown: `merge-dropdown-${id}`
+    });
+  });
 
   const closeOtherDropdowns = (currentDropdown) => {
     dropdowns.forEach(({ dropdown }) => {

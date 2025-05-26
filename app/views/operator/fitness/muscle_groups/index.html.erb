@@ -1,7 +1,7 @@
 <main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 	<div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
 		<div class="flex flex-col gap-4 lg:gap-6 lg:w-1/3">
-			<div class="flex flex-col gap-6 p-6 bg-background-card-light dark:bg-background-card-dark rounded-lg shadow-md">
+			<div class="flex flex-col gap-6 p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
 				<div class="flex justify-between items-center">
 					<%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
@@ -9,41 +9,58 @@
 					</svg>
 					Back
 					<% end %>
+					<%= link_to new_operator_fitness_muscle_group_path, class: "flex items-center px-3 py-1 text-sm text-white bg-primary-500 rounded hover:bg-primary-600 transition-colors" do %>
+						<svg class="mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="12" y1="5" x2="12" y2="19"></line>
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+						</svg>
+						New Muscle Group
+					<% end %>
 				</div>
 				<div class="flex flex-col tracking-tight leading-tight">
 					<div class="text-3xl font-bold uppercase">
-						Muscle Group Index
+						Muscle Groups
 					</div>
-				</div>
-				<div>
-					<%= link_to "New", new_operator_fitness_muscle_group_path, class: "btn" %>
+					<div class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+						Manage muscle groups and categories
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="w-full lg:w-2/3">
-			<h2 class="text-2xl font-semibold mb-6 text-text-light dark:text-text-dark">Muscle Groups</h2>
-			<div class="overflow-x-auto">
-				<table class="min-w-full bg-background-light dark:bg-gray-800 rounded-lg shadow-md">
-					<thead>
+			<div class="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-700 shadow">
+				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead class="bg-background-card dark:bg-background-card-dark">
 						<tr>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">ID</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Name</th>
-							<th class="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Name</th>
+							<th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">Actions</th>
 						</tr>
 					</thead>
-					<tbody>
-						<% @muscle_groups.each do |muscle_group| %>
-						<tr class="transition-colors duration-200 hover:bg-background-card-light dark:hover:bg-background-card-dark">
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">										<%= muscle_group.id %></td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300"><%= muscle_group.name %></td>
-							<td class="px-6 py-4 flex gap-2 items-center whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-								<%= link_to 'show', operator_fitness_muscle_groups_path(muscle_group), class: "underline text-sm" %>	<%= link_to 'edit', edit_operator_fitness_muscle_group_path(muscle_group), class: "underline text-sm" %>
-							</td>
-						</tr>
+					<tbody class="bg-background-light dark:bg-background-dark divide-y divide-gray-200 dark:divide-gray-700">
+						<% if @muscle_groups.any? %>
+							<% @muscle_groups.each do |muscle_group| %>
+								<tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
+									<td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+										<%= muscle_group.name %>
+									</td>
+									<td class="px-4 py-4 whitespace-nowrap text-sm">
+										<div class="flex items-center gap-4">
+											<%= link_to "View", operator_fitness_muscle_group_path(muscle_group), class: "text-blue-600 dark:text-blue-400 hover:underline" %>
+											<%= link_to "Edit", edit_operator_fitness_muscle_group_path(muscle_group), class: "text-blue-600 dark:text-blue-400 hover:underline" %>
+										</div>
+									</td>
+								</tr>
+							<% end %>
+						<% else %>
+							<tr>
+								<td colspan="3" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+									No muscle groups found
+								</td>
+							</tr>
 						<% end %>
 					</tbody>
 				</table>
 			</div>
 		</div>
-	</main>
-</div>
+	</div>
+</main>

@@ -4,6 +4,7 @@ class Expense < ApplicationRecord
   belongs_to :category, optional: true
   belongs_to :financial_store, optional: true
   belongs_to :user_store, optional: true
+  has_many :expense_payments, dependent: :destroy
   
   validates :amount, presence: true, numericality: true
   validates :sub_category, presence: true
@@ -104,6 +105,69 @@ class Expense < ApplicationRecord
       end_date || Date.today
     ).order(date: :desc)
   end
+
+  # New methods for expected transactions
+  def expected_transactions
+    return [] unless recurring?
+    
+    transactions = []
+    current_date = date
+    
+    # Skip the start date if it's in the past and has a transaction
+    if current_date < Date.today && transaction_exists_for_date?(current_date)
+      current_date = calculate_next_occurrence_after(current_date)
+    end
+    
+    while current_date.present? && current_date <= (end_date || Date.today + 1.year)
+      # Skip dates that already have transactions
+      unless transaction_exists_for_date?(current_date)
+        transactions << current_date
+      end
+      
+      # Calculate next date
+      next_date = calculate_next_occurrence_after(current_date)
+      
+      # Break if we've reached the end date or if next_date is nil
+      break if next_date.nil? || (end_date.present? && next_date > end_date)
+      
+      current_date = next_date
+    end
+    
+    transactions
+  end
+  
+  def transaction_exists_for_date?(date)
+    related_transactions.where.not(transaction_type: 'Failed Payment').exists?(date: date)
+  end
+
+  def payment_status_for_date(date)
+    if transaction_exists_for_date?(date)
+      'paid'
+    elsif expense_payments.exists?(date: date)
+      'paid'
+    else
+      'unpaid'
+    end
+  end
+
+  def mark_as_paid(date, user)
+    expense_payments.create!(date: date, user: user)
+  end
+
+  def unmark_as_paid(date)
+    expense_payments.where(date: date).destroy_all
+  end
+
+  def verify_payment(date, transaction)
+    payment = expense_payments.find_by(date: date)
+    return unless payment
+
+    payment.update!(
+      verified: true,
+      verified_at: Time.current,
+      transaction: transaction
+    )
+  end
   
   private
 
@@ -117,17 +181,9 @@ class Expense < ApplicationRecord
     when 'weekly'
       reference_date + 1.week
     when 'monthly'
-      next_month = reference_date.next_month
-      target_day = day_of_month || reference_date.day
-      last_day_of_month = Date.new(next_month.year, next_month.month, -1).day
-      adjusted_day = [target_day, last_day_of_month].min
-      Date.new(next_month.year, next_month.month, adjusted_day)
+      calculate_next_monthly_occurrence(reference_date)
     when 'yearly'
-      next_year = reference_date.next_year
-      target_day = reference_date.day
-      last_day_of_month = Date.new(next_year.year, next_year.month, -1).day
-      adjusted_day = [target_day, last_day_of_month].min
-      Date.new(next_year.year, next_year.month, adjusted_day)
+      calculate_next_yearly_occurrence(reference_date)
     when 'custom'
       case frequency_unit
       when 'day'
