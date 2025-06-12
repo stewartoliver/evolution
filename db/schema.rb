@@ -98,6 +98,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_22_075717) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "rotation_day"
     t.index ["user_id"], name: "index_chore_charts_on_user_id"
   end
 
@@ -111,6 +112,33 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_22_075717) do
     t.datetime "updated_at", null: false
     t.index ["chore_id"], name: "index_chore_logs_on_chore_id"
     t.index ["user_id"], name: "index_chore_logs_on_user_id"
+  end
+
+  create_table "chore_rotation_users", force: :cascade do |t|
+    t.bigint "chore_rotation_id", null: false
+    t.string "name", null: false
+    t.string "email"
+    t.bigint "user_id"
+    t.integer "position", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chore_rotation_id", "position"], name: "index_chore_rotation_users_on_chore_rotation_id_and_position", unique: true
+    t.index ["chore_rotation_id"], name: "index_chore_rotation_users_on_chore_rotation_id"
+    t.index ["user_id"], name: "index_chore_rotation_users_on_user_id"
+  end
+
+  create_table "chore_rotations", force: :cascade do |t|
+    t.bigint "chore_chart_id", null: false
+    t.bigint "chore_id", null: false
+    t.integer "rotation_number"
+    t.date "start_date"
+    t.date "end_date"
+    t.boolean "completed", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chore_chart_id", "rotation_number"], name: "index_chore_rotations_on_chore_chart_id_and_rotation_number"
+    t.index ["chore_chart_id"], name: "index_chore_rotations_on_chore_chart_id"
+    t.index ["chore_id"], name: "index_chore_rotations_on_chore_id"
   end
 
   create_table "chores", force: :cascade do |t|
@@ -128,7 +156,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_22_075717) do
     t.boolean "completed"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
     t.index ["chore_chart_id"], name: "index_chores_on_chore_chart_id"
+    t.index ["position"], name: "index_chores_on_position"
     t.index ["user_id"], name: "index_chores_on_user_id"
   end
 
@@ -634,6 +664,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_22_075717) do
   add_foreign_key "chore_charts", "users"
   add_foreign_key "chore_logs", "chores"
   add_foreign_key "chore_logs", "users"
+  add_foreign_key "chore_rotation_users", "chore_rotations"
+  add_foreign_key "chore_rotation_users", "users"
+  add_foreign_key "chore_rotations", "chore_charts"
+  add_foreign_key "chore_rotations", "chores"
   add_foreign_key "chores", "chore_charts"
   add_foreign_key "chores", "users"
   add_foreign_key "exercise_equipment", "equipment"

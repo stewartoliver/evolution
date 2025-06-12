@@ -125,11 +125,34 @@ Rails.application.routes.draw do
     end
     resources :achievements
     resources :chores do
+      collection do
+        get :search
+      end
       member do
-        post :complete
+        patch :complete
       end
     end
-    resources :chore_charts
+    resources :chore_charts do
+      member do
+        get 'chores'
+        post 'add_chore'
+        delete 'remove_chore'
+        post 'complete_chore'
+        patch 'reorder'
+        post 'chores/:chore_id/assign_user', to: 'chore_charts#assign_user'
+        
+        # User management routes
+        post 'users', to: 'chore_charts#add_user'
+        delete 'users/:user_id', to: 'chore_charts#remove_user'
+        patch 'users/:user_id/position', to: 'chore_charts#update_user_position'
+      end
+      resources :chores, only: [:create] do
+        member do
+          patch :update_position
+        end
+      end
+      resources :users, only: [:create]
+    end
     resources :chore_logs, only: [:create]
   end
 

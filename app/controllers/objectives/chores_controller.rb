@@ -3,12 +3,19 @@ module Objectives
     before_action :set_chore, only: [:show, :edit, :update, :destroy, :complete]
 
     def index
+      add_breadcrumb 'Objectives', objectives_dashboard_path
+      add_breadcrumb 'Chores', objectives_chores_path
+      
       @chores = Chore.where(user: current_user)
       @chore_charts = ChoreChart.where(user: current_user)
       # TODO: Split into Today, Upcoming, Overdue
     end
 
-    def show; end
+    def show
+      add_breadcrumb 'Objectives', objectives_dashboard_path
+      add_breadcrumb 'Chores', objectives_chores_path
+      add_breadcrumb @chore.name, objectives_chore_path(@chore)
+    end
 
     def new
       @chore = Chore.new
@@ -45,6 +52,15 @@ module Objectives
       # TODO: Calculate next_due_at based on repeat_rule
       @chore.save
       redirect_to objectives_chores_path, notice: 'Chore marked as complete.'
+    end
+
+    def search
+      @chores = Chore.where(user_id: current_user.id)
+                    .where('name ILIKE ?', "%#{params[:query]}%")
+                    .limit(10)
+                    .order(:name)
+
+      render json: @chores
     end
 
     private

@@ -1,4 +1,96 @@
-<div>
-  <h1 class="font-bold text-4xl">ChoreCharts#new</h1>
-  <p>Find me in app/views/chore_charts/new.html.erb</p>
-</div>
+<main class="flex-1 p-6 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+  <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
+    <!-- Left Column - Basic Information -->
+    <div class="flex flex-col gap-6 lg:w-1/2">
+      <div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+          <%= link_to :back, class: "flex gap-1 items-center font-semibold text-text-light dark:text-text-dark hover:opacity-80 whitespace-nowrap w-min" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Back
+          <% end %>
+        </div>
+        <h1 class="text-3xl font-bold mb-6">New Chore List</h1>
+        <%= render_breadcrumbs %>
+      </div>
+
+      <%= form_with(model: [:objectives, @chore_chart], class: "space-y-6") do |f| %>
+        <!-- Basic Information -->
+        <div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Basic Information</h2>
+          <div class="space-y-4">
+            <div>
+              <%= f.label :name, class: "block text-sm font-medium text-text-light dark:text-text-dark mb-1" %>
+              <%= f.text_field :name, class: "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark", placeholder: "Enter chore list name" %>
+            </div>
+
+            <div>
+              <%= f.label :description, class: "block text-sm font-medium text-text-light dark:text-text-dark mb-1" %>
+              <%= f.text_area :description, rows: 3, class: "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark", placeholder: "Enter description" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schedule Settings -->
+        <div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Schedule Settings</h2>
+          <div class="space-y-4">
+            <div>
+              <%= f.label :rotation_frequency, class: "block text-sm font-medium text-text-light dark:text-text-dark mb-1" %>
+              <%= f.select :rotation_frequency, 
+                  options_for_select([
+                    ['Daily', 'daily'],
+                    ['Weekly', 'weekly'],
+                    ['Bi-weekly', 'biweekly'],
+                    ['Monthly', 'monthly']
+                  ]),
+                  { include_blank: 'Select rotation frequency' },
+                  class: "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark" %>
+            </div>
+
+            <div>
+              <%= f.label :rotation_day, class: "block text-sm font-medium text-text-light dark:text-text-dark mb-1" %>
+              <%= f.select :rotation_day, 
+                  options_for_select([
+                    ['Monday', 'Monday'],
+                    ['Tuesday', 'Tuesday'],
+                    ['Wednesday', 'Wednesday'],
+                    ['Thursday', 'Thursday'],
+                    ['Friday', 'Friday'],
+                    ['Saturday', 'Saturday'],
+                    ['Sunday', 'Sunday']
+                  ]),
+                  { include_blank: 'Select rotation day' },
+                  class: "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark" %>
+            </div>
+
+            <div>
+              <%= f.label :start_date, class: "block text-sm font-medium text-text-light dark:text-text-dark mb-1" %>
+              <%= f.date_field :start_date, class: "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-background-input-light dark:bg-background-input-dark text-text-light dark:text-text-dark" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end gap-4">
+          <%= link_to "Cancel", objectives_chore_charts_path, class: "px-4 py-2 text-sm font-medium text-text-light dark:text-text-dark hover:opacity-80" %>
+          <%= f.submit "Create Chore List", class: "px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded hover:bg-primary-600 transition-colors" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Right Column - Preview -->
+    <div class="flex flex-col gap-6 lg:w-1/2">
+      <div class="p-6 bg-background-card dark:bg-background-card-dark rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Preview</h2>
+        <div class="prose dark:prose-invert max-w-none">
+          <p class="text-text-sub dark:text-text-sub-dark">
+            This section will show a preview of how the chore list will appear to users.
+            You can see the changes you make in real-time as you edit the form.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

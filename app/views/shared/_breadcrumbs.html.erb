@@ -1,0 +1,17 @@
+<% if breadcrumbs.any? %>
+  <div class="flex items-center space-x-2 text-sm text-text-sub dark:text-text-sub-dark mb-4">
+    <% breadcrumbs.each_with_index do |crumb, index| %>
+      <% if crumb[:path] && index < breadcrumbs.length - 1 %>
+        <%= link_to crumb[:title], crumb[:path], class: "hover:text-primary-500 transition-colors" %>
+      <% else %>
+        <span class="text-text-light dark:text-text-dark"><%= crumb[:title] %></span>
+      <% end %>
+      
+      <% if index < breadcrumbs.length - 1 %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      <% end %>
+    <% end %>
+  </div>
+<% end %> 

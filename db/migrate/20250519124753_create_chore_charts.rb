@@ -5,6 +5,7 @@ class CreateChoreCharts < ActiveRecord::Migration[7.1]
       t.references :user, null: false, foreign_key: true
       t.string :rotation_frequency
       t.datetime :start_date
+      t.string :rotation_day
       t.text :description
 
       t.timestamps

@@ -30,6 +30,7 @@
           <div class="text-3xl font-bold uppercase">
             All Chores
           </div>
+          <%= render_breadcrumbs %>
         </div>
       </div>
     </div>
@@ -52,7 +53,7 @@
                 <th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
                   Due Date
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
+                <th class="px-4 py-3 text-right text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
                   Action
                 </th>
               </tr>
@@ -82,18 +83,38 @@
                         </div>
                       </div>
                     </td>
-                    <td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark text-right">
                       <% if chore.next_due_at %>
                         <%= chore.next_due_at.strftime("%b %d, %Y") %>
                       <% else %>
                         Not set
                       <% end %>
                     </td>
-                    <td class="px-4 py-4 whitespace-nowrap text-sm">
-                      <div class="flex items-center gap-4">
-                        <%= link_to "View", objectives_chore_path(chore), class: "text-blue-600 dark:text-blue-400 hover:underline" %>
-                        <%= link_to "Edit", edit_objectives_chore_path(chore), class: "text-blue-600 dark:text-blue-400 hover:underline" %>
-                        <%= button_to "Complete", complete_objectives_chore_path(chore), method: :post, class: "text-green-600 dark:text-green-400 hover:underline" %>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-right">
+                      <div class="flex items-center justify-end gap-4">
+                        <%= link_to objectives_chore_path(chore), class: "text-blue-600 dark:text-blue-400 hover:underline hover:opacity-80 transition-opacity" do %>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 13C6.6 5 17.4 5 21 13" />
+                            <circle cx="12" cy="14" r="3" />
+                          </svg>
+                        <% end %>
+                        <%= button_to complete_objectives_chore_path(chore), method: :post, class: "text-green-600 dark:text-green-400 hover:underline flex items-center hover:opacity-80 transition-opacity" do %>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 12.5L10 15.5L17 8.5" />
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
+                          </svg>
+                        <% end %>
+                        <%= button_to objectives_chore_path(chore), 
+                            method: :delete,
+                            class: "text-red-600 dark:text-red-400 hover:underline flex items-center hover:opacity-80 transition-opacity",
+                            data: { 
+                              turbo_confirm: "Are you sure you want to delete this chore?"
+                            } do %>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                           <path d="M9.17218 14.8284L12.0006 12M14.829 9.17157L12.0006 12M12.0006 12L9.17218 9.17157M12.0006 12L14.829 14.8284" />
+                           <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
+                          </svg>
+                        <% end %>
                       </div>
                     </td>
                   </tr>
@@ -121,9 +142,6 @@
                   Name
                 </th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
-                  Description
-                </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-text-light dark:text-text-dark uppercase tracking-wider">
                   Action
                 </th>
               </tr>
@@ -134,9 +152,6 @@
                   <tr class="hover:bg-background-card-light dark:hover:bg-background-card-dark transition-colors">
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
                       <%= chart.name.capitalize %>
-                    </td>
-                    <td class="px-4 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">
-                      <%= chart.description&.capitalize %>
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm">
                       <div class="flex items-center gap-4">

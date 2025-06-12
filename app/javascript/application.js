@@ -23,6 +23,8 @@ import FinancialCharts from "./components/CommonFinancial/FinancialCharts";
 import Chart from 'chart.js/auto';
 import Chartkick from 'chartkick';
 import 'chartjs-adapter-date-fns';
+import ChoreListTable from './components/ChoreListTable'
+import { QueryProvider } from './providers/QueryProvider'
 
 // Configure Chartkick to use Chart.js
 Chartkick.use(Chart);
@@ -60,6 +62,7 @@ function renderComponent(Component, elementId, props = {}) {
 
 // Initialize React components on page load
 const initializeReactComponents = () => {
+  console.log('Initializing React components');
   // Clean up any existing mounted components
   mountedComponents.forEach((root, elementId) => {
     root.unmount();
@@ -226,6 +229,20 @@ const initializeReactComponents = () => {
       transactions,
       categories
     });
+  }
+
+  const choreListTableElement = document.getElementById('chore-list-table');
+  if (choreListTableElement) {
+    console.log('Found chore list table element');
+    const choreChartId = choreListTableElement.dataset.choreChartId;
+    console.log('Chore chart ID:', choreChartId);
+    renderComponent(
+      (props) => React.createElement(QueryProvider, null,
+        React.createElement(ChoreListTable, props)
+      ),
+      'chore-list-table',
+      { choreChartId }
+    );
   }
 };
 
@@ -458,3 +475,11 @@ document.addEventListener("turbo:render", () => {
 window.toggleTasks = toggleTasks;
 window.openEditTaskModal = openEditTaskModal;
 window.closeEditTaskModal = closeEditTaskModal;
+
+// Register React components
+window.ChoreListTable = (props) => {
+  console.log('ChoreListTable component called with props:', props);
+  return React.createElement(QueryProvider, null,
+    React.createElement(ChoreListTable, props)
+  );
+}

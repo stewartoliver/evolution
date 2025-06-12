@@ -24,6 +24,7 @@ class User < ApplicationRecord
   has_many :achievements, through: :goals
   has_many :user_weight_histories, dependent: :destroy
   has_many :chores
+  has_many :chore_charts
 
   # Validations
   validates :workout_days_per_week, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 7 }, allow_nil: true
